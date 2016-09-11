@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:paddingEnd="10dp"
+            tools:text="Symbol"/>
+
+        <TextView
+            android:id="@+id/purchase_lot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            tools:text="123 @ 45.64" />
+
+        <TextView
+            android:id="@+id/purchase_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="Purchase Date"
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+            android:textAlignment="viewEnd" />
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp">
+
+        <TextView
+            android:id="@+id/current_price"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            tools:text="0.00"/>
+
+        <TextView
+            android:id="@+id/profit"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            tools:text="$0.00"/>
+
+        <TextView
+            android:id="@+id/price_percent_change"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            tools:text="+%0"/>
+
+        <TextView
+            android:id="@+id/dividends_earned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="$0"/>
+
+    </LinearLayout>
+
+</LinearLayout>

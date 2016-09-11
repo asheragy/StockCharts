@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:columnCount="2"
+    tools:context="org.cerion.stockcharts.PositionViewActivity">
+
+    <TextView android:text="Symbol" style="@style/TextAppearance.GridLabel"/>
+
+    <TextView
+        android:id="@+id/symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="X"/>
+
+    <TextView android:text="Count" style="@style/TextAppearance.GridLabel"/>
+
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="55" />
+
+    <TextView android:text="Purchase Date" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/purchase_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="1/1/2000" />
+
+    <TextView android:text="Purchase Price" style="@style/TextAppearance.GridLabel"/>
+
+    <TextView
+        android:id="@+id/purchase_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00"/>
+
+    <TextView android:text="Purchase Value" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/purchase_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Dividends Reinvested" style="@style/TextAppearance.GridLabel" android:paddingBottom="20dp"/>
+    <TextView
+        android:id="@+id/dividends_reinvested"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="No" />
+
+    <TextView android:text="Current Price" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/current_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Current Value" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/current_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Percent Change" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/price_percent_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="%0.0" />
+
+    <TextView android:text="Profit" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/profit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Dividends" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/dividends_earned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Total Profit" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/profit_with_dividends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Total Percent Change" style="@style/TextAppearance.GridLabel" android:paddingBottom="20dp"/>
+    <TextView
+        android:id="@+id/total_percent_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="%0.0" />
+
+    <TextView android:text="Last Dividend" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/last_dividend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Last Dividend Date" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/last_dividend_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="1/1/2000" />
+
+    <TextView android:text="Next Dividend Est" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/next_dividend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="1/1/2000" />
+
+    <TextView android:text="Break Even Price" style="@style/TextAppearance.GridLabel"/>
+    <TextView
+        android:id="@+id/break_even_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+    <TextView android:text="Break Even w/Dividends" style="@style/TextAppearance.GridLabel" android:paddingEnd="10dp"/>
+    <TextView
+        android:id="@+id/break_even_dividends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$0.00" />
+
+</GridLayout>
