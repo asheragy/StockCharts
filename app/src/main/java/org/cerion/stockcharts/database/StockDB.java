@@ -27,7 +27,7 @@ public class StockDB extends DBBase implements StockDataStore
     private static StockDB mInstance;
     private StockDB(Context context)
     {
-        super(new StockDBOpenHelper(context));
+        super(StockDBOpenHelper.getInstance(context));
     }
 
     public synchronized static StockDB getInstance(Context context)

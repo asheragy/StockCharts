@@ -45,7 +45,7 @@ public class SymbolListFragment extends ListFragment {
         Intent intent = new Intent(getActivity(),PriceListActivity.class);
         intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
 
-        //Intent intent = new Intent(getActivity(),ChartTestActivity.class);
+        //Intent intent = new Intent(getActivity(),ChartViewActivity.class);
         //intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
 
         startActivity(intent);

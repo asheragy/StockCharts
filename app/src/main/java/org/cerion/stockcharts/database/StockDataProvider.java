@@ -14,6 +14,7 @@ public class StockDataProvider extends ContentProvider {
     private static final String AUTHORITY = "org.cerion.stockcharts.stockdataprovider";
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private SQLiteDatabase db;
+    private StockDBOpenHelper openHelper;
 
     private static final String PRICES_PATH = "prices"; // TODO should be 3 different interval tables
     public static final Uri CONTENT_URI_PRICES = Uri.parse("content://" + AUTHORITY + "/" + PRICES_PATH);
@@ -29,8 +30,8 @@ public class StockDataProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        StockDBOpenHelper openHelper = new StockDBOpenHelper(getContext());
-        db = openHelper.getWritableDatabase();
+        openHelper = StockDBOpenHelper.getInstance(getContext());
+        //db = openHelper.getWritableDatabase();
         return true;
     }
 
@@ -38,7 +39,7 @@ public class StockDataProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         int match = sUriMatcher.match(uri);
-
+        db = openHelper.getWritableDatabase();
         switch(match) {
             case PRICES:
                 // TODO, workaround for missing _id column

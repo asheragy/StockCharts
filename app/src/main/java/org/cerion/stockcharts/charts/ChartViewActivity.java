@@ -1,8 +1,11 @@
 package org.cerion.stockcharts.charts;
 
+
+import android.app.DialogFragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.Chart;
@@ -16,47 +19,71 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stocklist.Enums;
+import org.cerion.stocklist.Function;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.model.FunctionCall;
+import org.cerion.stocklist.model.FunctionDef;
+import org.cerion.stocklist.model.FunctionId;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChartTestActivity extends AppCompatActivity {
-
+public class ChartViewActivity extends AppCompatActivity implements IndicatorsDialogFragment.OnSelectListener {
 
     LinearLayout mCharts;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+    private PriceList mList;
+    public static final String EXTRA_SYMBOL = "symbol";
+    private String mSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chart_test_activity);
 
+        mSymbol = getIntent().getStringExtra(EXTRA_SYMBOL);
         mCharts = (LinearLayout) findViewById(R.id.charts);
 
         StockDB db = StockDB.getInstance(this);
-        PriceList list = db.getPriceList("AAPL", Enums.Interval.MONTHLY);
+        mList = db.getPriceList(mSymbol, Enums.Interval.MONTHLY);
 
-        mCharts.addView(getPriceChart(list));
-        mCharts.addView(getVolumeChart(list));
-        mCharts.addView(getSMAChart(list));
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        //TODO, fix chartlist bug for 0 entries on overlays
+
+        //mCharts.addView(getPriceChart(mList));
+        //mCharts.addView(getVolumeChart(list));
+        //mCharts.addView(getSMAChart(mList));
+
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddChart();
+            }
+        });
+    }
+
+    private void onAddChart() {
+        DialogFragment newFragment = IndicatorsDialogFragment.newInstance(R.string.indicators);
+        newFragment.show(getFragmentManager(),"dialog");
+    }
+
+    @Override
+    public void select(FunctionId id) {
+
+        FunctionCall call = null;
+
+        if(id != null) {
+            FunctionDef def = Function.getDef(id);
+            call = new FunctionCall(id, def.default_values);
+        }
+
+        Chart chart = Charts.getLineChart(this, mList, null, call);
+        mCharts.addView(chart);
     }
 
     public Chart getSMAChart(PriceList list) {
@@ -180,45 +207,5 @@ public class ChartTestActivity extends AppCompatActivity {
             dates.add(mDateFormat.format(p.date));
 
         return dates;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "ChartTest Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://org.cerion.stockcharts/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "ChartTest Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://org.cerion.stockcharts/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
     }
 }

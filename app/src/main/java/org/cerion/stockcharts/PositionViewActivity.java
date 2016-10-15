@@ -18,7 +18,7 @@ public class PositionViewActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "position";
     private Position mPosition;
-    private Quote mQuote;
+
     private static DecimalFormat df = new DecimalFormat("0.00");
     private StockDB mDb;
 
@@ -39,13 +39,15 @@ public class PositionViewActivity extends AppCompatActivity {
                 mPosition.addDividends(mDb.getDividends(mPosition.getSymbol()));
 
                 // Get most recent quote
-                // TODO, skip if already available when passed in
-                mQuote = YahooFinance.getQuote(mPosition.getSymbol());
+                if(mPosition.getCurrPrice() == 0) {
+                    Quote q = YahooFinance.getQuote(mPosition.getSymbol());
+                    mPosition.setCurrPrice(q.lastTrade);
+                }
             }
 
             @Override
             public void onFinish() {
-                updateQuote();
+                onQuoteUpdated();
             }
         }).execute();
     }
@@ -62,16 +64,18 @@ public class PositionViewActivity extends AppCompatActivity {
 
         // If dividends reinvested hide all the dividend related fields, its treated as part of the stock price in this case
         if(mPosition.IsDividendsReinvested()) {
-            // TODO need to add something to hide labels
-            //hideField(R.id.last_dividend);
-            //hideField(R.id.next_dividend);
-            //hideField(R.id.last_dividend_date);
+            hideField(R.id.last_dividend);
+            hideField(R.id.next_dividend);
+            hideField(R.id.last_dividend_date);
+
+            //Labels
+            hideField(R.id.last_dividend_label);
+            hideField(R.id.next_dividend_label);
+            hideField(R.id.last_dividend_date_label);
         }
     }
 
-    private void updateQuote() {
-        mPosition.setCurrPrice(mQuote.lastTrade);
-
+    private void onQuoteUpdated() {
         setText(R.id.current_price, df.format(mPosition.getCurrPrice()));
         setText(R.id.current_value, "$" + df.format(mPosition.getCurrValue()));
 

@@ -4,6 +4,8 @@ import org.cerion.stocklist.Dividend;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -116,22 +118,23 @@ public class Position implements Serializable {
         if(list == null || list.size() == 0)
             return;
 
-        // TODO, redo this by removing and sorting
+        //Sort in descending order so most recent dividend is first
+        Collections.sort(list, new Comparator<Dividend>() {
+            @Override
+            public int compare(Dividend lhs, Dividend rhs) {
+                return rhs.mDate.compareTo(lhs.mDate);
+            }
+        });
+
         // Get total dividend amount
         for(Dividend d : list) {
             if(d.mDate.after(date)) {
                 totalDividends += d.mDividend;
-            }
-
-            // Last dividend
-            if(lastDividend == null || d.mDate.after(lastDividend.mDate))
-                lastDividend = d;
+            } else
+                break;
         }
 
-        // This should never happen
-        if(lastDividend == null)
-            return;
-
+        lastDividend = list.get(0);
         this.lastDividendAmount = lastDividend.mDividend;
         this.lastDividendDate = lastDividend.mDate;
 

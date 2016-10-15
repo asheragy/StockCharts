@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        //mViewPager.setCurrentItem(2);
+
+        mViewPager.setCurrentItem(1); //DEBUG
 
 
         // Give the TabLayout the ViewPager
@@ -100,10 +101,18 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 //List<String> symbols = Symbols.getSP500List();
                 //DJI http://www.nasdaq.com/quotes/djia-stocks.aspx
-                List<String> symbols = new ArrayList<>( Arrays.asList("AAPL", "GOOGL", "MSFT", "^GSPC", "XLE") );
+
+                //List<String> symbols = new ArrayList<>( Arrays.asList("AAPL", "", "", "", "") );
+                List<Symbol> symbols = new ArrayList<>(Arrays.asList(
+                        new Symbol("AAPL", "Apple Inc.", ""),
+                        new Symbol("GOOGL", "Google", ""),
+                        new Symbol("MSFT", "Microsoft", ""),
+                        new Symbol("^GSPC", "S&P 500", ""),
+                        new Symbol("XLE", "Energy Select Sector SPDR ETF", "")
+                ));
+
                 StockDB db = StockDB.getInstance(MainActivity.this);
-                for(String symbol : symbols) {
-                    Symbol s = new Symbol(symbol); // TODO get other info
+                for(Symbol s : symbols) {
                     db.addSymbol(s);
                 }
 

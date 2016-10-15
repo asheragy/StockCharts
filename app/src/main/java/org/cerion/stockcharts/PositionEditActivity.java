@@ -1,7 +1,5 @@
 package org.cerion.stockcharts;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,20 +7,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
+import org.cerion.stockcharts.common.DatePickerFragment;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
 import java.util.Date;
 import java.util.Locale;
 
 public class PositionEditActivity extends AppCompatActivity
-        implements DatePickerDialog.OnDateSetListener {
+        implements DatePickerFragment.OnDateSetListener {
 
     public static final String TAG = PositionEditActivity.class.getSimpleName();
     private EditText mSymbol;
@@ -82,30 +80,9 @@ public class PositionEditActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int month, int day) {
-        Calendar c = Calendar.getInstance();
-        c.set(year, month, day);
-
+    public void onDateSet(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        String formattedDate = sdf.format(c.getTime());
-
-        mDate = c.getTime();
-        ((Button)findViewById(R.id.date)).setText(formattedDate);
-    }
-
-    // TODO add to seperate file and include listener parameter for result
-    public static class DatePickerFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener)getActivity(), year, month, day);
-        }
+        mDate = date;
+        ((Button)findViewById(R.id.date)).setText( sdf.format(date) );
     }
 }

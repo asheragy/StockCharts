@@ -27,9 +27,15 @@
             android:name=".charts.ChartEditActivity"
             android:label="Charts Editor" />
         <activity
-            android:name=".charts.ChartTestActivity"
+            android:name=".charts.ChartViewActivity"
             android:label="@string/title_activity_chart_test"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

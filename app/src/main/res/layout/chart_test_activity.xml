@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="4"
-    tools:context=".charts.ChartTestActivity">
+    tools:context=".charts.ChartViewActivity">
 
 
     <ScrollView
@@ -23,8 +23,13 @@
 
             <!-- Dynamically add charts here-->
 
-        </LinearLayout>
+            <Button
+                android:text="Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button" />
 
+        </LinearLayout>
 
     </ScrollView>
 
