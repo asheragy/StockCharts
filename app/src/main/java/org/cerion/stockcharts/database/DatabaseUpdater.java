@@ -28,4 +28,11 @@ public class DatabaseUpdater {
         db.log();
     }
 
+    public void getLatestPrices(String symbol, Interval interval) {
+        //Thread.currentThread() == c.getMainLooper().getThread();
+        // Check historical dates
+        // Updated if needed
+        // Return latest value
+    }
+
 }

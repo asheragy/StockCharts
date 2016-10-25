@@ -1,5 +1,6 @@
 package org.cerion.stockcharts.database;
 
+import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stockcharts.model.Position;
 import org.cerion.stockcharts.model.Symbol;
 import org.cerion.stocklist.Enums.Interval;
@@ -25,6 +26,9 @@ public interface StockDataStore {
     PriceList getPriceList(String symbol, Interval interval);
     void addPriceList(PriceList list);
     void deletePrices(String symbol, Interval interval);
+
+    // Historical info
+    HistoricalDates getHistoricalDates(String symbol, Interval interval);
 
     // Debug
     void log();

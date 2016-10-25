@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     return "Symbols";
                 case 1:
-                    return "Charts";
+                    return "ChartHelper";
                 case 2:
                     return "Positions";
             }

@@ -2,6 +2,7 @@ package org.cerion.stockcharts.charts;
 
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -19,12 +20,14 @@ public class Overlay {
     public static final int TYPE_EMA = 0;
     public static final int TYPE_SMA = 1;
     public static final int TYPE_BB = 2;
-
+    public static final int TYPE_KAMA = 3;
 
     private ValueArray mValues;
     private int mType;
     private int p1;
     private float f1;
+    private int p2;
+    private int p3;
 
     private boolean isVolume()
     {
@@ -58,6 +61,14 @@ public class Overlay {
         return result;
     }
 
+    public static Overlay getKAMA(int p1, int p2, int p3) {
+        Overlay result = new Overlay(TYPE_KAMA);
+        result.p1 = p1;
+        result.p2 = p2;
+        result.p3 = p3;
+        return result;
+    }
+
     public ValueArray eval()
     {
         if(isVolume())
@@ -75,7 +86,7 @@ public class Overlay {
                 case TYPE_SMA: return values.sma(p1);
                 case TYPE_EMA: return values.ema(p1);
                 case TYPE_BB: return values.bb(p1,f1);
-
+                case TYPE_KAMA: return values.kama(p1,p2,p3);
             }
         }
 
@@ -88,6 +99,7 @@ public class Overlay {
             case TYPE_SMA: return "SMA " + p1;
             case TYPE_EMA: return "EMA " + p1;
             case TYPE_BB: return "BB " + p1 + "," + f1;
+            case TYPE_KAMA: return "KAMA " + p1 + "," + f1;
         }
 
         return "";
@@ -108,6 +120,7 @@ public class Overlay {
     static int i = 0;
     private LineDataSet getSingleDataSet()
     {
+        Log.d("TEMP", "getSingleDataSet");
         ArrayList<Entry> entries = new ArrayList<>();
         ValueArray values = eval();
 
@@ -125,9 +138,9 @@ public class Overlay {
         set.setDrawCircles(false);
         set.setDrawValues(false);
 
-        if(i == 0)
+        if(i % 3 == 0)
             set.setColor(Color.RED);
-        else if(i == 1)
+        else if(i % 3 == 1)
             set.setColor(Color.BLUE);
         else
             set.setColor(Color.GREEN);

@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import org.cerion.stockcharts.model.Position;
-import org.cerion.stockcharts.model.Symbol;
+import org.cerion.stockcharts.model.*;
+import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Dividend;
 import org.cerion.stocklist.Enums;
 import org.cerion.stocklist.Enums.Interval;
@@ -168,6 +168,17 @@ public class StockDB extends DBBase implements StockDataStore
             insert(db, table, values);
         }
 
+        //Add dates
+        Date first = list.getDates()[0];
+        Date last = list.getDates()[list.size() - 1];
+        table = StockDBOpenHelper.HistoricalDates.getTableName(list.getInterval());
+        ContentValues values = new ContentValues();
+        values.put(StockDBOpenHelper.HistoricalDates._SYMBOL, list.mSymbol);
+        values.put(StockDBOpenHelper.HistoricalDates._FIRST, first.getTime());
+        values.put(StockDBOpenHelper.HistoricalDates._LAST, last.getTime());
+        values.put(StockDBOpenHelper.HistoricalDates._UPDATED, new Date().getTime());
+        insert(db, table, values);
+
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
@@ -177,6 +188,28 @@ public class StockDB extends DBBase implements StockDataStore
     public void deletePrices(String symbol, Interval interval) {
         String table = Prices.getTableName(interval);
         delete(table, String.format("%s='%s'", Prices._SYMBOL, symbol) );
+    }
+
+    @Override
+    public HistoricalDates getHistoricalDates(String symbol, Interval interval) {
+        SQLiteDatabase db = openReadOnly();
+
+        String where = String.format(StockDBOpenHelper.HistoricalDates._SYMBOL + "='%s'", symbol);
+        Cursor c = db.query(StockDBOpenHelper.HistoricalDates.getTableName(interval), null, where, null, null, null, null);
+        HistoricalDates result = null;
+        if(c != null) {
+            if (c.moveToFirst()) {
+                result = new HistoricalDates();
+                result.Symbol = symbol;
+                result.FirstDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._FIRST)));
+                result.LastDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._LAST)));
+                result.LastUpdated = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._UPDATED)));
+            }
+            c.close();
+        }
+
+        db.close();
+        return result;
     }
 
     public void addDividends(String symbol, List<Dividend> list) {
@@ -237,10 +270,26 @@ public class StockDB extends DBBase implements StockDataStore
             c.close();
         }
 
+        // Prices
         for(Interval interval : Interval.values()) {
             Log.d(TAG, interval.toString());
 
             c = db.rawQuery(String.format("SELECT %s,count(*) FROM %s GROUP BY %s", Prices._SYMBOL, Prices.getTableName(interval), Prices._SYMBOL), null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String symbol = c.getString(0);
+                    int count = c.getInt(1);
+                    Log.d(TAG, "  " + symbol + ": " + count);
+                }
+                c.close();
+            }
+        }
+
+        // History Dates
+        for(Interval interval : Interval.values()) {
+            Log.d(TAG, interval.toString());
+
+            c = db.rawQuery(String.format("SELECT %s,count(*) FROM %s GROUP BY %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates.getTableName(interval), StockDBOpenHelper.HistoricalDates._SYMBOL), null);
             if (c != null) {
                 while (c.moveToNext()) {
                     String symbol = c.getString(0);

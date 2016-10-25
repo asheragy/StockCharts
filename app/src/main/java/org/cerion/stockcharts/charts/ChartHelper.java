@@ -32,12 +32,13 @@ CHART
     Line color [Edit color]
     Overlay(s) if single line [Add/Remove]
  */
-public class Charts {
+public class ChartHelper {
 
     //TODO make this a non static class, takes context and pricelist as constructor, can get charts from passing Function + overlays
     public static final int CHART_HEIGHT = 800;
 
 
+    /*
     public static Chart getLineChart(Context context, FloatArray base, List<String> dates, String label, List<Overlay> overlays)
     {
         LineChart chart = new LineChart(context);
@@ -68,6 +69,7 @@ public class Charts {
 
         return chart;
     }
+    */
 
     public static Chart getLineChart(Context context, PriceList list, List<Overlay> overlays, FunctionCall functionCall)
     {
@@ -102,12 +104,12 @@ public class Charts {
         ArrayList<LineDataSet> sets = new ArrayList<>();
         sets.add(dataSet);
 
-        //for(Overlay overlay : overlays) {
-        //    sets.addAll(overlay.getDataSets(base));
-        //}
+        for(Overlay overlay : overlays) {
+            sets.addAll(overlay.getDataSets(base));
+        }
 
         ///-------- overlay start
-        sets.add(getOverlay(base));
+        //sets.add(getOverlay(base));
         //TODO for bollingerbands 2 sets are added
         //--------- end
 
