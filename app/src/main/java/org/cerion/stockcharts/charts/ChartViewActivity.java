@@ -49,6 +49,7 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
     public static final String EXTRA_SYMBOL = "symbol";
     private String mSymbol;
     private ViewGroup mLastActiveChart;
+    private static final Enums.Interval INTERVAL = Enums.Interval.DAILY;
 
     //TODO make its own class and pass to chartHelper
     private class ChartParams {
@@ -65,14 +66,14 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
         mCharts = (LinearLayout) findViewById(R.id.charts);
 
         StockDB db = StockDB.getInstance(this);
-        HistoricalDates dates = db.getHistoricalDates(mSymbol, Enums.Interval.MONTHLY);
+        HistoricalDates dates = db.getHistoricalDates(mSymbol, INTERVAL);
 
         if(dates == null) {
             GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
                 @Override
                 public void run() {
                     DatabaseUpdater du = new DatabaseUpdater(ChartViewActivity.this);
-                    du.updatePrices(mSymbol, Enums.Interval.MONTHLY);
+                    du.updatePrices(mSymbol, INTERVAL);
                 }
 
                 @Override
@@ -84,9 +85,7 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
             task.execute();
         }
 
-        //mList = db.getPriceList(mSymbol, Enums.Interval.MONTHLY);
-
-
+        select((FunctionId)null);
 
         //mCharts.addView(getPriceChart(mList));
         //mCharts.addView(getVolumeChart(list));
@@ -123,15 +122,15 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
 
         // TODO async
         if(mList == null) {
-            mList = StockDB.getInstance(this).getPriceList(mSymbol, Enums.Interval.MONTHLY);
+            mList = StockDB.getInstance(this).getPriceList(mSymbol, INTERVAL);
         }
 
         ChartParams params = new ChartParams();
         params.function = call;
 
-        //List<Overlay> overlays = new ArrayList<>();
-        //overlays.add(Overlay.getEMA(17));
-        Chart chart = ChartHelper.getLineChart(this, mList, params.overlays, call);
+        params.overlays.add(Overlay.getBB(20,2.0f));
+
+        Chart chart = ChartHelper.getLineChart(this, mList, call, params.overlays);
 
         final View holder = getLayoutInflater().inflate(R.layout.chart_holder, null);
         holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
@@ -171,59 +170,9 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
 
         FrameLayout frame = (FrameLayout)mLastActiveChart.findViewById(R.id.chart_frame);
 
-        Chart chart = ChartHelper.getLineChart(this, mList, params.overlays, params.function);
+        Chart chart = ChartHelper.getLineChart(this, mList, params.function, params.overlays);
         frame.addView(chart);
     }
-
-    public Chart getSMAChart(PriceList list) {
-
-        List<Overlay> overlays = new ArrayList<>();
-        overlays.add(Overlay.getEMA(20));
-        overlays.add(Overlay.getSMA(100));
-        overlays.add(Overlay.getBB(20, 2.0f));
-
-        return null;//ChartHelper.getLineChart(this, list.getClose(), getDates(list), "Price", overlays);
-    }
-
-/*
-    public Chart getSMAChart(PriceList list) {
-
-        LineChart chart = new LineChart(this);
-        chart.setMinimumHeight(CHART_HEIGHT);
-
-        ArrayList<Entry> entries = new ArrayList<>();
-        int pos = 0;
-        for (Price p : list) {
-            entries.add(new Entry(p.close, pos));
-            pos++;
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Price");
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-
-        ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.add(dataSet);
-
-        sets.addAll(Overlay.getEMA(20).getDataSets(list.getClose()));
-        sets.addAll(Overlay.getSMA(100).getDataSets(list.getClose()));
-        sets.addAll(Overlay.getBB(20, 2.0f).getDataSets(list.getClose()));
-
-        LineData lineData = new LineData(getDates(list), sets);
-        chart.setData(lineData);
-
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.setDescription("");
-
-        //LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        //llp.setMargins(0, 50, 0, 0); // llp.setMargins(left, top, right, bottom);
-        //chart.setLayoutParams(llp);
-
-        return chart;
-    }
-    */
-
 
     public Chart getVolumeChart(PriceList list) {
 
@@ -258,31 +207,6 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
         chart.getAxisLeft().setDrawLabels(false);
         chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         chart.getAxisRight().setLabelCount(3, false);
-
-        return chart;
-    }
-
-    public Chart getPriceChart(PriceList list) {
-
-        LineChart chart = new LineChart(this);
-        chart.setMinimumHeight(ChartHelper.CHART_HEIGHT);
-
-        ArrayList<Entry> entries = new ArrayList<>();
-        int pos = 0;
-        for (Price p : list) {
-            entries.add(new Entry(p.close, pos));
-            pos++;
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Price");
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-
-        LineData lineData = new LineData(getDates(list), dataSet);
-        chart.setData(lineData);
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.setDescription("");
 
         return chart;
     }

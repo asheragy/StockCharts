@@ -22,7 +22,7 @@ public class DatabaseUpdater {
         cal.set(1990, Calendar.JANUARY, 1);
         //PriceList list = YahooFinance.getPrices(symbol, interval, cal);
         //TODO limit for now
-        PriceList list = YahooFinance.getPrices(symbol, interval, 100);
+        PriceList list = YahooFinance.getPrices(symbol, interval, 500);
 
         db.addPriceList(list);
         db.log();

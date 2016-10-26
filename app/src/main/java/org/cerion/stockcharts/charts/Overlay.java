@@ -28,6 +28,7 @@ public class Overlay {
     private float f1;
     private int p2;
     private int p3;
+    private int mColor;
 
     private boolean isVolume()
     {
@@ -37,8 +38,18 @@ public class Overlay {
         return false;
     }
 
+    private static int i = 0;
     private Overlay(int type) {
         mType = type;
+
+        if(i % 3 == 0)
+            mColor = Color.RED;
+        else if(i % 3 == 1)
+            mColor = Color.BLUE;
+        else
+            mColor = Color.GREEN;
+
+        i++;
     }
 
     public static Overlay getEMA(int period) {
@@ -93,7 +104,7 @@ public class Overlay {
         return null;
     }
 
-    private String getLabel() {
+    public String getLabel() {
 
         switch(mType) {
             case TYPE_SMA: return "SMA " + p1;
@@ -103,6 +114,10 @@ public class Overlay {
         }
 
         return "";
+    }
+
+    public int getColor() {
+        return mColor;
     }
 
     public List<LineDataSet> getDataSets(ValueArray arr)
@@ -116,8 +131,6 @@ public class Overlay {
         return sets;
     }
 
-
-    static int i = 0;
     private LineDataSet getSingleDataSet()
     {
         Log.d("TEMP", "getSingleDataSet");
@@ -137,15 +150,7 @@ public class Overlay {
         LineDataSet set = new LineDataSet(entries, getLabel());
         set.setDrawCircles(false);
         set.setDrawValues(false);
-
-        if(i % 3 == 0)
-            set.setColor(Color.RED);
-        else if(i % 3 == 1)
-            set.setColor(Color.BLUE);
-        else
-            set.setColor(Color.GREEN);
-
-        i++;
+        set.setColor(mColor);
 
         return set;
     }
@@ -169,7 +174,7 @@ public class Overlay {
         for(LineDataSet set : sets) {
             set.setDrawCircles(false);
             set.setDrawValues(false);
-            set.setColor(Color.LTGRAY);
+            set.setColor(mColor);
         }
 
 

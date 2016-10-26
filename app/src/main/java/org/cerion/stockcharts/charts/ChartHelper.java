@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -71,7 +73,7 @@ public class ChartHelper {
     }
     */
 
-    public static Chart getLineChart(Context context, PriceList list, List<Overlay> overlays, FunctionCall functionCall)
+    public static Chart getLineChart(Context context, PriceList list, FunctionCall functionCall, List<Overlay> overlays)
     {
         //TODO, null function call just uses closing price
         FloatArray base;
@@ -120,27 +122,22 @@ public class ChartHelper {
         chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         chart.setDescription("");
 
+        // Set labels so multi-line sets are not duplicated on legend
+        Legend l = chart.getLegend();
+        int[] colors = new int[overlays.size() + 1];
+        String[] labels = new String[overlays.size() + 1];
+        colors[0] = Color.BLACK;
+        labels[0] = getLabel(functionCall);
+
+        for(int i = 1; i <= overlays.size(); i++) {
+            Overlay o = overlays.get(i-1);
+            labels[i] = o.getLabel();
+            colors[i] = o.getColor();
+        }
+
+        l.setCustom(colors, labels);
+
         return chart;
-    }
-
-    private static LineDataSet getOverlay(FloatArray arr)
-    {
-        ArrayList<Entry> entries = new ArrayList<>();
-        FloatArray values = arr.ema(20);
-
-        for (int i = 0; i < values.size(); i++)
-            entries.add(new Entry(values.get(i), i));
-
-        LineDataSet set = new LineDataSet(entries, "EMA 20");
-        set.setDrawCircles(false);
-        set.setDrawValues(false);
-
-        //set.setColor(Color.RED);
-        //set.setColor(Color.BLUE);
-        //set.setColor(Color.GREEN);
-
-
-        return set;
     }
 
     private static String getLabel(FunctionCall call) {
