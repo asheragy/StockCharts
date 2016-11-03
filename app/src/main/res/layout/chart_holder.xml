@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -17,16 +18,51 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:text="Remove"
+            android:text="Save"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:id="@+id/remove" />
+            android:id="@+id/save_edit_button" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/edit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/interval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/intervals" />
+
+        <LinearLayout
+            android:id="@+id/parameters"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                tools:text="Parameters go here"
+                tools:visibility="visible"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
         <Button
             android:text="Overlay"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:id="@+id/add_overlay" />
+
+        <Button
+            android:text="Remove"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/remove" />
 
     </LinearLayout>
 

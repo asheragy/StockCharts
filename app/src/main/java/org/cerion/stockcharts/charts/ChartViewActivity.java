@@ -6,19 +6,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
@@ -28,12 +24,8 @@ import org.cerion.stockcharts.database.DatabaseUpdater;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Enums;
-import org.cerion.stocklist.Function;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.data.FloatArray;
-import org.cerion.stocklist.model.FunctionCall;
-import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.FunctionId;
 
 import java.text.DateFormat;
@@ -48,19 +40,13 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
     private PriceList mList;
     public static final String EXTRA_SYMBOL = "symbol";
     private String mSymbol;
-    private ViewGroup mLastActiveChart;
+    private ChartHolder mLastActiveChart;
     private static final Enums.Interval INTERVAL = Enums.Interval.DAILY;
-
-    //TODO make its own class and pass to chartHelper
-    private class ChartParams {
-        FunctionCall function;
-        List<Overlay> overlays = new ArrayList<>();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chart_test_activity);
+        setContentView(R.layout.chart_view_activity);
 
         mSymbol = getIntent().getStringExtra(EXTRA_SYMBOL);
         mCharts = (LinearLayout) findViewById(R.id.charts);
@@ -85,8 +71,6 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
             task.execute();
         }
 
-        select((FunctionId)null);
-
         //mCharts.addView(getPriceChart(mList));
         //mCharts.addView(getVolumeChart(list));
         //mCharts.addView(getSMAChart(mList));
@@ -104,35 +88,18 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
         newFragment.show(getFragmentManager(),"dialog");
     }
 
-    private void onAddOverlay() {
-        DialogFragment newFragment = OverlaysDialogFragment.newInstance(R.string.overlays);
-        newFragment.show(getFragmentManager(),"dialog");
-    }
-
     @Override
     public void select(FunctionId id) {
-
-        FunctionDef def = null;
-        FunctionCall call = null;
-
-        if(id != null) {
-            def = Function.getDef(id);
-            call = new FunctionCall(id, def.default_values);
-        }
-
         // TODO async
         if(mList == null) {
             mList = StockDB.getInstance(this).getPriceList(mSymbol, INTERVAL);
         }
 
-        ChartParams params = new ChartParams();
-        params.function = call;
+        final ChartHolder holder = new ChartHolder(this, mList, id);
 
-        params.overlays.add(Overlay.getBB(20,2.0f));
+        //params.overlays.add(Overlay.getBB(20,2.0f));
+        //Chart chart = ChartHelper.getLineChart(this, mList, call, null);
 
-        Chart chart = ChartHelper.getLineChart(this, mList, call, params.overlays);
-
-        final View holder = getLayoutInflater().inflate(R.layout.chart_holder, null);
         holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,38 +107,25 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
             }
         });
 
-        //TODO see if holder can be its own class to automatically handle this stuff
         holder.findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLastActiveChart = (ViewGroup)holder;
+                mLastActiveChart = holder;
                 onAddOverlay();
             }
         });
-
-        // If overlay is not allowed then hide it
-        if(def != null && def.result != FloatArray.class) {
-            holder.findViewById(R.id.add_overlay).setVisibility(View.GONE);
-        }
-
-        holder.setTag(params);
-
-        FrameLayout frame = (FrameLayout)holder.findViewById(R.id.chart_frame);
-        frame.addView(chart);
 
         mCharts.addView(holder);
     }
 
     @Override
     public void select(Overlay overlay) {
+        mLastActiveChart.addOverlay(overlay);
+    }
 
-        ChartParams params = (ChartParams)mLastActiveChart.getTag();
-        params.overlays.add(overlay);
-
-        FrameLayout frame = (FrameLayout)mLastActiveChart.findViewById(R.id.chart_frame);
-
-        Chart chart = ChartHelper.getLineChart(this, mList, params.function, params.overlays);
-        frame.addView(chart);
+    private void onAddOverlay() {
+        DialogFragment newFragment = OverlaysDialogFragment.newInstance(R.string.overlays);
+        newFragment.show(getFragmentManager(),"dialog");
     }
 
     public Chart getVolumeChart(PriceList list) {

@@ -73,8 +73,10 @@ public class ChartHelper {
     }
     */
 
-    public static Chart getLineChart(Context context, PriceList list, FunctionCall functionCall, List<Overlay> overlays)
-    {
+    public static Chart getLineChart(Context context, PriceList list, ChartParams params) {
+        FunctionCall functionCall = params.function;
+        List<Overlay> overlays = params.overlays;
+
         //TODO, null function call just uses closing price
         FloatArray base;
 
@@ -106,8 +108,10 @@ public class ChartHelper {
         ArrayList<LineDataSet> sets = new ArrayList<>();
         sets.add(dataSet);
 
-        for(Overlay overlay : overlays) {
-            sets.addAll(overlay.getDataSets(base));
+        if(overlays != null) {
+            for (Overlay overlay : overlays) {
+                sets.addAll(overlay.getDataSets(base));
+            }
         }
 
         ///-------- overlay start
@@ -122,17 +126,21 @@ public class ChartHelper {
         chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         chart.setDescription("");
 
+        int size = (overlays != null ? overlays.size() + 1 : 1);
+
         // Set labels so multi-line sets are not duplicated on legend
         Legend l = chart.getLegend();
-        int[] colors = new int[overlays.size() + 1];
-        String[] labels = new String[overlays.size() + 1];
+        int[] colors = new int[size];
+        String[] labels = new String[size];
         colors[0] = Color.BLACK;
         labels[0] = getLabel(functionCall);
 
-        for(int i = 1; i <= overlays.size(); i++) {
-            Overlay o = overlays.get(i-1);
-            labels[i] = o.getLabel();
-            colors[i] = o.getColor();
+        if(overlays != null) {
+            for (int i = 1; i <= overlays.size(); i++) {
+                Overlay o = overlays.get(i - 1);
+                labels[i] = o.getLabel();
+                colors[i] = o.getColor();
+            }
         }
 
         l.setCustom(colors, labels);

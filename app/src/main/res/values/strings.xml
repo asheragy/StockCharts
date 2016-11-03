@@ -5,4 +5,10 @@
     <string name="title_activity_chart_test">ChartTestActivity</string>
     <string name="indicators">Indicators</string>
     <string name="overlays">Overlays</string>
+
+    <string-array name="intervals">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
 </resources>
