@@ -27,16 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-CHART
--List of 1 or more functions on a PriceList
--Each function has options
-    Line color [Edit color]
-    Overlay(s) if single line [Add/Remove]
- */
-public class ChartHelper {
+public class ChartFactory {
 
-    //TODO make this a non static class, takes context and pricelist as constructor, can get charts from passing Function + overlays
+    //TODO make this a non static class
+    //TODO make this class get the chart data, pass in symbol + params
     public static final int CHART_HEIGHT = 800;
 
 
@@ -78,6 +72,7 @@ public class ChartHelper {
         List<Overlay> overlays = params.overlays;
 
         //TODO, null function call just uses closing price
+        // TODO add function for this that just gets the closing price so we don't have to deal with null
         FloatArray base;
 
         if(functionCall == null) {
@@ -113,11 +108,6 @@ public class ChartHelper {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
-
-        ///-------- overlay start
-        //sets.add(getOverlay(base));
-        //TODO for bollingerbands 2 sets are added
-        //--------- end
 
         LineData lineData = new LineData(dates, sets);
         chart.setData(lineData);

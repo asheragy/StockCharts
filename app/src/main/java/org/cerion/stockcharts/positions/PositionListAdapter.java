@@ -1,4 +1,4 @@
-package org.cerion.stockcharts;
+package org.cerion.stockcharts.positions;
 
 
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.model.Position;
 

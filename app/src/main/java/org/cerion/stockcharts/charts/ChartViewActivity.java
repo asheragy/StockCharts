@@ -20,7 +20,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.database.DatabaseUpdater;
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Enums;
@@ -33,15 +33,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChartViewActivity extends AppCompatActivity implements IndicatorsDialogFragment.OnSelectListener, OverlaysDialogFragment.OnSelectListener {
+public class ChartViewActivity extends AppCompatActivity
+        implements IndicatorsDialogFragment.OnSelectListener, OverlaysDialogFragment.OnSelectListener, ChartHolder.OnDataRequestListener {
 
     private static final String TAG = ChartViewActivity.class.getSimpleName();
-    LinearLayout mCharts;
-    private PriceList mList;
     public static final String EXTRA_SYMBOL = "symbol";
+
+    private LinearLayout mCharts;
     private String mSymbol;
     private ChartHolder mLastActiveChart;
     private static final Enums.Interval INTERVAL = Enums.Interval.DAILY;
+    private StockDataManager mDataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
 
         mSymbol = getIntent().getStringExtra(EXTRA_SYMBOL);
         mCharts = (LinearLayout) findViewById(R.id.charts);
+        mDataManager = new StockDataManager(this);
 
         StockDB db = StockDB.getInstance(this);
         HistoricalDates dates = db.getHistoricalDates(mSymbol, INTERVAL);
@@ -58,7 +61,7 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
             GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
                 @Override
                 public void run() {
-                    DatabaseUpdater du = new DatabaseUpdater(ChartViewActivity.this);
+                    StockDataManager du = new StockDataManager(ChartViewActivity.this);
                     du.updatePrices(mSymbol, INTERVAL);
                 }
 
@@ -90,15 +93,10 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
 
     @Override
     public void select(FunctionId id) {
-        // TODO async
-        if(mList == null) {
-            mList = StockDB.getInstance(this).getPriceList(mSymbol, INTERVAL);
-        }
-
-        final ChartHolder holder = new ChartHolder(this, mList, id);
+        final ChartHolder holder = new ChartHolder(this, mSymbol, id);
 
         //params.overlays.add(Overlay.getBB(20,2.0f));
-        //Chart chart = ChartHelper.getLineChart(this, mList, call, null);
+        //Chart chart = ChartFactory.getLineChart(this, mList, call, null);
 
         holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +129,7 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
     public Chart getVolumeChart(PriceList list) {
 
         CombinedChart chart = new CombinedChart(this);
-        chart.setMinimumHeight(ChartHelper.CHART_HEIGHT);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
 
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -174,5 +172,24 @@ public class ChartViewActivity extends AppCompatActivity implements IndicatorsDi
             dates.add(mDateFormat.format(p.date));
 
         return dates;
+    }
+
+    @Override
+    public void onRequest(final ChartHolder holder, final String symbol, final Enums.Interval interval) {
+
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+            private PriceList result;
+            @Override
+            public void run() {
+                result = mDataManager.getLatestPrices(symbol, interval);
+            }
+
+            @Override
+            public void onFinish() {
+                holder.loadChart(result);
+            }
+        });
+        task.execute();
+
     }
 }

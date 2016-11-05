@@ -7,10 +7,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stocklist.Enums;
 import org.cerion.stocklist.Function;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.data.FloatArray;
@@ -18,22 +20,30 @@ import org.cerion.stocklist.model.FunctionCall;
 import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.FunctionId;
 
-class ChartHolder extends LinearLayout { //TODO I think this can just extend View
+class ChartHolder extends LinearLayout {
 
-    private final Context mContext;
     ChartParams mChartParams = new ChartParams();
     PriceList mList;
+    private String mSymbol;
+    private OnDataRequestListener mListener;
 
-    public ChartHolder(final Context context, PriceList list, FunctionId id) {
+    public interface OnDataRequestListener {
+        void onRequest(ChartHolder holder, String symbol, Enums.Interval interval);
+    }
+
+    public ChartHolder(Context context, String symbol, FunctionId id) {
         super(context);
 
-        mContext = context;
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mSymbol = symbol;
+        mListener = (OnDataRequestListener)getContext();
+
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.chart_holder, this, true);
+
 
         final FunctionDef def = (id != null ? Function.getDef(id) : null);
         final EditText[] fields = (def != null ? new EditText[def.param_count] : null);
-        mList = list;
+        //mList = list;
 
         if(id != null && def != null) {
             mChartParams.function = new FunctionCall(id, def.default_values);
@@ -60,14 +70,16 @@ class ChartHolder extends LinearLayout { //TODO I think this can just extend Vie
                             }
                         }
                         mChartParams.function = new FunctionCall(mChartParams.function.id, p);
-
-                        FrameLayout frame = (FrameLayout) findViewById(R.id.chart_frame);
-
-                        Chart chart = ChartHelper.getLineChart(context, mList, mChartParams);
-                        frame.removeAllViews();
-                        frame.addView(chart);
                     }
 
+                    Spinner spInterval = (Spinner)findViewById(R.id.interval);
+                    Enums.Interval interval = Enums.Interval.DAILY;
+                    if(spInterval.getSelectedItemPosition() == 1)
+                        interval = Enums.Interval.WEEKLY;
+                    if(spInterval.getSelectedItemPosition() == 2)
+                        interval = Enums.Interval.MONTHLY;
+
+                    mListener.onRequest(ChartHolder.this, mSymbol, interval);
                     button.setText("Edit");
                     controls.setVisibility(View.GONE);
                 } else { // EDIT
@@ -93,16 +105,18 @@ class ChartHolder extends LinearLayout { //TODO I think this can just extend Vie
         }
     }
 
+    public void loadChart(PriceList list) {
+        mList = list;
+        reload();
+    }
+
     public void addOverlay(Overlay overlay) {
         mChartParams.overlays.add(overlay);
-        FrameLayout frame = (FrameLayout)findViewById(R.id.chart_frame);
-        Chart chart = ChartHelper.getLineChart(mContext, mList, mChartParams);
-        frame.removeAllViews();
-        frame.addView(chart);
+        reload();
     }
 
     public EditText getInputField(Number n) {
-        final EditText input = new EditText(mContext);
+        final EditText input = new EditText(getContext());
         input.setText(n.toString());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -112,5 +126,11 @@ class ChartHolder extends LinearLayout { //TODO I think this can just extend Vie
         return input;
     }
 
+    private void reload() {
+        FrameLayout frame = (FrameLayout)findViewById(R.id.chart_frame);
+        Chart chart = ChartFactory.getLineChart(getContext(), mList, mChartParams);
+        frame.removeAllViews();
+        frame.addView(chart);
+    }
 
 }

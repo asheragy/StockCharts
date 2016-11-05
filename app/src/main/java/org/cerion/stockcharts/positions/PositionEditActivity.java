@@ -1,4 +1,4 @@
-package org.cerion.stockcharts;
+package org.cerion.stockcharts.positions;
 
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.DatePickerFragment;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;

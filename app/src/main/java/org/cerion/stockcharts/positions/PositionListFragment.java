@@ -1,4 +1,4 @@
-package org.cerion.stockcharts;
+package org.cerion.stockcharts.positions;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
