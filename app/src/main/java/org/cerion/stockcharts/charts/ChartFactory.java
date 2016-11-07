@@ -5,10 +5,14 @@ import android.graphics.Color;
 import android.text.TextUtils;
 
 import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -18,56 +22,36 @@ import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.data.FloatArray;
 import org.cerion.stocklist.data.ValueArray;
-import org.cerion.stocklist.data.VolumeArray;
 import org.cerion.stocklist.model.FunctionCall;
-import org.cerion.stocklist.model.FunctionDef;
+import org.cerion.stocklist.model.FunctionId;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChartFactory {
+class ChartFactory {
 
-    //TODO make this a non static class
-    //TODO make this class get the chart data, pass in symbol + params
+    private Context mContext;
+
     public static final int CHART_HEIGHT = 800;
 
-
-    /*
-    public static Chart getLineChart(Context context, FloatArray base, List<String> dates, String label, List<Overlay> overlays)
-    {
-        LineChart chart = new LineChart(context);
-        chart.setMinimumHeight(CHART_HEIGHT);
-
-        ArrayList<Entry> entries = new ArrayList<>();
-        for(int i = 0; i < base.size(); i++) {
-            entries.add(new Entry(base.get(i), i));
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, label);
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-
-        ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.add(dataSet);
-
-        for(Overlay overlay : overlays) {
-            sets.addAll(overlay.getDataSets(base));
-        }
-
-        LineData lineData = new LineData(dates, sets);
-        chart.setData(lineData);
-
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.setDescription("");
-
-        return chart;
+    public ChartFactory(Context context) {
+        mContext = context;
     }
-    */
 
-    public static Chart getLineChart(Context context, PriceList list, ChartParams params) {
+    public Chart getChart(PriceList list, ChartParams params) {
+
+        //TODO, this can probably evaluate pricelist and pass the base array + overlays
+
+        if(params.function != null && params.function.id == FunctionId.SMA_VOLUME) {
+            return getVolumeChart(list, params);
+        }
+
+        return getLineChart(list, params);
+    }
+
+    private Chart getLineChart(PriceList list, ChartParams params) {
         FunctionCall functionCall = params.function;
         List<Overlay> overlays = params.overlays;
 
@@ -87,7 +71,7 @@ public class ChartFactory {
         //FunctionDef def = Function.getDef(functionCall.id);
         //------------
 
-        LineChart chart = new LineChart(context);
+        LineChart chart = new LineChart(mContext);
         chart.setMinimumHeight(CHART_HEIGHT);
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -137,6 +121,83 @@ public class ChartFactory {
 
         return chart;
     }
+
+    private Chart getVolumeChart(PriceList list, ChartParams params) {
+
+
+        CombinedChart chart = new CombinedChart(mContext);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            barEntries.add(new BarEntry(list.volume(i), i));
+        }
+
+        BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
+        dataSet.setDrawValues(false);
+        BarData barData = new BarData(getDates(list),dataSet);
+
+        ArrayList<LineDataSet> sets = new ArrayList<>();
+        sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
+
+        LineData lineData = new LineData(getDates(list), sets);
+
+
+        CombinedData data = new CombinedData(getDates(list));
+        data.setData(barData);
+        data.setData(lineData);
+
+
+        //chart.setData(new BarData(getDates(list), dataSet));
+        chart.setData(data);
+        chart.setDescription("");
+
+        //Set Y axis
+        chart.getAxisLeft().setDrawLabels(false);
+        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        chart.getAxisRight().setLabelCount(3, false);
+
+        return chart;
+    }
+
+/*
+    public Chart getVolumeChart(PriceList list) {
+
+        CombinedChart chart = new CombinedChart(this);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            barEntries.add(new BarEntry(list.volume(i), i));
+        }
+
+        BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
+        dataSet.setDrawValues(false);
+        BarData barData = new BarData(getDates(list),dataSet);
+
+        ArrayList<LineDataSet> sets = new ArrayList<>();
+        sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
+
+        LineData lineData = new LineData(getDates(list), sets);
+
+
+        CombinedData data = new CombinedData(getDates(list));
+        data.setData(barData);
+        data.setData(lineData);
+
+
+        //chart.setData(new BarData(getDates(list), dataSet));
+        chart.setData(data);
+        chart.setDescription("");
+
+        //Set Y axis
+        chart.getAxisLeft().setDrawLabels(false);
+        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        chart.getAxisRight().setLabelCount(3, false);
+
+        return chart;
+    }
+*/
 
     private static String getLabel(FunctionCall call) {
         if(call == null)

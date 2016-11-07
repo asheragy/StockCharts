@@ -126,43 +126,6 @@ public class ChartViewActivity extends AppCompatActivity
         newFragment.show(getFragmentManager(),"dialog");
     }
 
-    public Chart getVolumeChart(PriceList list) {
-
-        CombinedChart chart = new CombinedChart(this);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
-
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            barEntries.add(new BarEntry(list.volume(i), i));
-        }
-
-        BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
-        dataSet.setDrawValues(false);
-        BarData barData = new BarData(getDates(list),dataSet);
-
-        ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
-
-        LineData lineData = new LineData(getDates(list), sets);
-
-
-        CombinedData data = new CombinedData(getDates(list));
-        data.setData(barData);
-        data.setData(lineData);
-
-
-        //chart.setData(new BarData(getDates(list), dataSet));
-        chart.setData(data);
-        chart.setDescription("");
-
-        //Set Y axis
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.getAxisRight().setLabelCount(3, false);
-
-        return chart;
-    }
-
     public List<String> getDates(PriceList list) {
 
         DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");

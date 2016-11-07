@@ -26,6 +26,7 @@ class ChartHolder extends LinearLayout {
     PriceList mList;
     private String mSymbol;
     private OnDataRequestListener mListener;
+    private ChartFactory mChartFactory;
 
     public interface OnDataRequestListener {
         void onRequest(ChartHolder holder, String symbol, Enums.Interval interval);
@@ -34,6 +35,7 @@ class ChartHolder extends LinearLayout {
     public ChartHolder(Context context, String symbol, FunctionId id) {
         super(context);
 
+        mChartFactory = new ChartFactory(context);
         mSymbol = symbol;
         mListener = (OnDataRequestListener)getContext();
 
@@ -128,7 +130,7 @@ class ChartHolder extends LinearLayout {
 
     private void reload() {
         FrameLayout frame = (FrameLayout)findViewById(R.id.chart_frame);
-        Chart chart = ChartFactory.getLineChart(getContext(), mList, mChartParams);
+        Chart chart = mChartFactory.getChart(mList, mChartParams);
         frame.removeAllViews();
         frame.addView(chart);
     }
