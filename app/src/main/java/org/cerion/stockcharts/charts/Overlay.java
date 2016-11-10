@@ -7,10 +7,10 @@ import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import org.cerion.stocklist.data.BandArray;
-import org.cerion.stocklist.data.FloatArray;
-import org.cerion.stocklist.data.ValueArray;
-import org.cerion.stocklist.data.VolumeArray;
+import org.cerion.stocklist.arrays.BandArray;
+import org.cerion.stocklist.arrays.FloatArray;
+import org.cerion.stocklist.arrays.ValueArray;
+import org.cerion.stocklist.arrays.VolumeArray;
 
 import java.util.ArrayList;
 import java.util.List;

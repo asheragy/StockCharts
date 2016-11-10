@@ -8,12 +8,12 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.model.Function;
 
 public class IndicatorsDialogFragment extends DialogFragment {
 
     public interface OnSelectListener {
-        void select(FunctionId id);
+        void select(Function id);
     }
 
     public static IndicatorsDialogFragment newInstance(int title) {
@@ -34,9 +34,9 @@ public class IndicatorsDialogFragment extends DialogFragment {
                 android.R.layout.select_dialog_item);
 
 
-        FunctionId[] ids = FunctionId.values();
+        Function[] ids = Function.values();
         arrayAdapter.add("Price");
-        for(FunctionId id : ids)
+        for(Function id : ids)
         {
             arrayAdapter.add(id.toString());
         }
@@ -52,7 +52,7 @@ public class IndicatorsDialogFragment extends DialogFragment {
                         if(which == 0) {
                             listener.select(null);
                         } else {
-                            FunctionId selected = FunctionId.values()[which - 1];
+                            Function selected = Function.values()[which - 1];
                             listener.select(selected);
                         }
                         dialog.dismiss();

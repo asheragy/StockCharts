@@ -17,13 +17,12 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import org.cerion.stocklist.Function;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.data.FloatArray;
-import org.cerion.stocklist.data.ValueArray;
-import org.cerion.stocklist.model.FunctionCall;
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.arrays.FloatArray;
+import org.cerion.stocklist.arrays.ValueArray;
+import org.cerion.stocklist.indicators.FunctionCall;
+import org.cerion.stocklist.model.Function;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,9 +43,9 @@ class ChartFactory {
 
         //TODO, this can probably evaluate pricelist and pass the base array + overlays
 
-        if(params.function != null && params.function.id == FunctionId.SMA_VOLUME) {
-            return getVolumeChart(list, params);
-        }
+        //if(params.function != null && params.function.id == FunctionId.SMA_VOLUME) {
+        //    return getVolumeChart(list, params);
+        //}
 
         return getLineChart(list, params);
     }
@@ -55,14 +54,13 @@ class ChartFactory {
         FunctionCall functionCall = params.function;
         List<Overlay> overlays = params.overlays;
 
-        //TODO, null function call just uses closing price
         // TODO add function for this that just gets the closing price so we don't have to deal with null
         FloatArray base;
 
         if(functionCall == null) {
             base = list.getClose();
         } else {
-            ValueArray arr = Function.eval(list, functionCall);
+            ValueArray arr = functionCall.eval(list);
             //FloatArray base = list.getClose();
             base = (FloatArray) arr;
         }

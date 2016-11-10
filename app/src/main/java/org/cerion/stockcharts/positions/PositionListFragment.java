@@ -19,8 +19,8 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
-import org.cerion.stocklist.Dividend;
 import org.cerion.stocklist.YahooFinance;
+import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Quote;
 
 import java.io.Serializable;

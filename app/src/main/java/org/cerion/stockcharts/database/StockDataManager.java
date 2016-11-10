@@ -6,7 +6,7 @@ import android.util.Log;
 import org.cerion.stockcharts.charts.ChartViewActivity;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.model.HistoricalDates;
-import org.cerion.stocklist.Enums.Interval;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.YahooFinance;
 

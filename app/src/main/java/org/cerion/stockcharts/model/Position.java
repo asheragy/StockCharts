@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.model;
 
-import org.cerion.stocklist.Dividend;
+import org.cerion.stocklist.model.Dividend;
 
 import java.io.Serializable;
 import java.util.Calendar;

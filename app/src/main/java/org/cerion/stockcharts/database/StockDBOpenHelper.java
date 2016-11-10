@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import org.cerion.stocklist.Enums;
+import org.cerion.stocklist.model.Interval;
 
 public class StockDBOpenHelper extends SQLiteOpenHelper {
 
@@ -79,16 +79,16 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
 
         static final String[] ALL_COLUMNS = { _SYMBOL, _UPDATED, _FIRST, _LAST };
 
-        static String getTableName(Enums.Interval interval) {
-            if(interval == Enums.Interval.WEEKLY)
+        static String getTableName(Interval interval) {
+            if(interval == Interval.WEEKLY)
                 return TABLE_HISTORICAL_DATES_WEEKLY;
-            if(interval == Enums.Interval.MONTHLY)
+            if(interval == Interval.MONTHLY)
                 return TABLE_HISTORICAL_DATES_MONTHLY;
 
             return TABLE_HISTORICAL_DATES_DAILY;
         }
 
-        public static String getCreate(Enums.Interval interval) {
+        public static String getCreate(Interval interval) {
 
             return "create table " + getTableName(interval) + "("
                     + _SYMBOL + " TEXT NOT NULL, "
@@ -114,16 +114,16 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         public static final String _VOLUME = "volume";
         public static final String[] ALL_COLUMNS = { _SYMBOL, _DATE, _OPEN, _HIGH, _LOW, _CLOSE, _VOLUME };
 
-        public static String getTableName(Enums.Interval interval) {
-            if(interval == Enums.Interval.WEEKLY)
+        public static String getTableName(Interval interval) {
+            if(interval == Interval.WEEKLY)
                 return TABLE_PRICES_WEEKLY;
-            if(interval == Enums.Interval.MONTHLY)
+            if(interval == Interval.MONTHLY)
                 return TABLE_PRICES_MONTHLY;
 
             return TABLE_PRICES_DAILY;
         }
 
-        public static String getCreate(Enums.Interval interval) {
+        public static String getCreate(Interval interval) {
 
             return "create table " + getTableName(interval) + "("
                     + _SYMBOL + " TEXT NOT NULL, "
@@ -161,14 +161,14 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
     {
         //db.execSQL("PRAGMA foreign_keys=ON;");
         db.execSQL(Symbols.SQL_CREATE);
-        db.execSQL(Prices.getCreate(Enums.Interval.DAILY));
-        db.execSQL(Prices.getCreate(Enums.Interval.WEEKLY));
-        db.execSQL(Prices.getCreate(Enums.Interval.MONTHLY));
+        db.execSQL(Prices.getCreate(Interval.DAILY));
+        db.execSQL(Prices.getCreate(Interval.WEEKLY));
+        db.execSQL(Prices.getCreate(Interval.MONTHLY));
         db.execSQL(Dividends.SQL_CREATE);
         db.execSQL(Positions.SQL_CREATE);
-        db.execSQL(HistoricalDates.getCreate(Enums.Interval.DAILY));
-        db.execSQL(HistoricalDates.getCreate(Enums.Interval.WEEKLY));
-        db.execSQL(HistoricalDates.getCreate(Enums.Interval.MONTHLY));
+        db.execSQL(HistoricalDates.getCreate(Interval.DAILY));
+        db.execSQL(HistoricalDates.getCreate(Interval.WEEKLY));
+        db.execSQL(HistoricalDates.getCreate(Interval.MONTHLY));
     }
 
     @Override

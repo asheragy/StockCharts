@@ -23,10 +23,10 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.HistoricalDates;
-import org.cerion.stocklist.Enums;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.model.Function;
+import org.cerion.stocklist.model.Interval;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +42,7 @@ public class ChartViewActivity extends AppCompatActivity
     private LinearLayout mCharts;
     private String mSymbol;
     private ChartHolder mLastActiveChart;
-    private static final Enums.Interval INTERVAL = Enums.Interval.DAILY;
+    private static final Interval INTERVAL = Interval.DAILY;
     private StockDataManager mDataManager;
 
     @Override
@@ -92,7 +92,7 @@ public class ChartViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void select(FunctionId id) {
+    public void select(Function id) {
         final ChartHolder holder = new ChartHolder(this, mSymbol, id);
 
         //params.overlays.add(Overlay.getBB(20,2.0f));
@@ -138,7 +138,7 @@ public class ChartViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequest(final ChartHolder holder, final String symbol, final Enums.Interval interval) {
+    public void onRequest(final ChartHolder holder, final String symbol, final Interval interval) {
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             private PriceList result;

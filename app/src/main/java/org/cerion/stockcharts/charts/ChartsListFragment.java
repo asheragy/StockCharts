@@ -14,7 +14,7 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataStore;
 import org.cerion.stockcharts.model.Position;
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.model.Function;
 
 import java.util.ArrayList;
 import java.util.HashMap;

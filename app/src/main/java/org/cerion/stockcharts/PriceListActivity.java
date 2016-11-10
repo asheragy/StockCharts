@@ -18,7 +18,7 @@ import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDBOpenHelper.Prices;
 import org.cerion.stockcharts.database.StockDataProvider;
-import org.cerion.stocklist.Enums;
+import org.cerion.stocklist.model.Interval;
 
 import java.util.Date;
 
@@ -75,7 +75,7 @@ public class PriceListActivity extends AppCompatActivity {
             @Override
             public void run() {
                 StockDataManager du = new StockDataManager(PriceListActivity.this);
-                du.updatePrices(mSymbol, Enums.Interval.MONTHLY);
+                du.updatePrices(mSymbol, Interval.MONTHLY);
             }
 
             @Override

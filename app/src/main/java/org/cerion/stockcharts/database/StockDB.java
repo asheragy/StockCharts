@@ -8,12 +8,11 @@ import android.util.Log;
 
 import org.cerion.stockcharts.model.*;
 import org.cerion.stockcharts.model.HistoricalDates;
-import org.cerion.stocklist.Dividend;
-import org.cerion.stocklist.Enums;
-import org.cerion.stocklist.Enums.Interval;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stockcharts.database.StockDBOpenHelper.*;
+import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.Interval;
 
 import java.util.ArrayList;
 import java.util.Date;

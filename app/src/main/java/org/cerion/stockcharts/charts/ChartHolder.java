@@ -12,13 +12,12 @@ import android.widget.Spinner;
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.Enums;
-import org.cerion.stocklist.Function;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.data.FloatArray;
-import org.cerion.stocklist.model.FunctionCall;
+import org.cerion.stocklist.arrays.FloatArray;
+import org.cerion.stocklist.indicators.FunctionCall;
 import org.cerion.stocklist.model.FunctionDef;
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.model.Function;
+import org.cerion.stocklist.model.Interval;
 
 class ChartHolder extends LinearLayout {
 
@@ -29,10 +28,10 @@ class ChartHolder extends LinearLayout {
     private ChartFactory mChartFactory;
 
     public interface OnDataRequestListener {
-        void onRequest(ChartHolder holder, String symbol, Enums.Interval interval);
+        void onRequest(ChartHolder holder, String symbol, Interval interval);
     }
 
-    public ChartHolder(Context context, String symbol, FunctionId id) {
+    public ChartHolder(Context context, String symbol, Function id) {
         super(context);
 
         mChartFactory = new ChartFactory(context);
@@ -43,7 +42,7 @@ class ChartHolder extends LinearLayout {
         inflater.inflate(R.layout.chart_holder, this, true);
 
 
-        final FunctionDef def = (id != null ? Function.getDef(id) : null);
+        final FunctionDef def = (id != null ? id.getDef() : null);
         final EditText[] fields = (def != null ? new EditText[def.param_count] : null);
         //mList = list;
 
@@ -75,11 +74,11 @@ class ChartHolder extends LinearLayout {
                     }
 
                     Spinner spInterval = (Spinner)findViewById(R.id.interval);
-                    Enums.Interval interval = Enums.Interval.DAILY;
+                    Interval interval = Interval.DAILY;
                     if(spInterval.getSelectedItemPosition() == 1)
-                        interval = Enums.Interval.WEEKLY;
+                        interval = Interval.WEEKLY;
                     if(spInterval.getSelectedItemPosition() == 2)
-                        interval = Enums.Interval.MONTHLY;
+                        interval = Interval.MONTHLY;
 
                     mListener.onRequest(ChartHolder.this, mSymbol, interval);
                     button.setText("Edit");

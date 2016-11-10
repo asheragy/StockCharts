@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
-import org.cerion.stocklist.model.FunctionId;
+import org.cerion.stocklist.model.Function;
 
 public class OverlaysDialogFragment extends DialogFragment {
 

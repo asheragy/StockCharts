@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter { // TODO use v13 support library with this so fragments don't have to be v4
 
         private FragmentManager mFragmentManager;
 

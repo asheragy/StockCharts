@@ -3,7 +3,7 @@ package org.cerion.stockcharts.database;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stockcharts.model.Position;
 import org.cerion.stockcharts.model.Symbol;
-import org.cerion.stocklist.Enums.Interval;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 

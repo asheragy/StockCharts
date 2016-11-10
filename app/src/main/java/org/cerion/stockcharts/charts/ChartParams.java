@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.charts;
 
-import org.cerion.stocklist.model.FunctionCall;
+import org.cerion.stocklist.indicators.FunctionCall;
+
 import java.util.ArrayList;
 import java.util.List;
 

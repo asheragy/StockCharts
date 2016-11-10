@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import org.cerion.stocklist.Enums;
+import org.cerion.stocklist.model.Interval;
 
 public class StockDataProvider extends ContentProvider {
 
@@ -22,7 +22,7 @@ public class StockDataProvider extends ContentProvider {
     // Codes
     private static final int PRICES = 1;
 
-    private static final String TABLE = StockDBOpenHelper.Prices.getTableName(Enums.Interval.MONTHLY); // TODO normally resolved by URI
+    private static final String TABLE = StockDBOpenHelper.Prices.getTableName(Interval.MONTHLY); // TODO normally resolved by URI
 
     static {
         sUriMatcher.addURI(AUTHORITY, PRICES_PATH + "/*", PRICES);
