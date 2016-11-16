@@ -19,8 +19,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
+import org.cerion.stocklist.arrays.MACDArray;
+import org.cerion.stocklist.arrays.PairArray;
 import org.cerion.stocklist.arrays.ValueArray;
+import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.indicators.FunctionCall;
 import org.cerion.stocklist.model.Function;
 
@@ -33,65 +37,114 @@ class ChartFactory {
 
     private Context mContext;
 
-    public static final int CHART_HEIGHT = 800;
+    private static final int CHART_HEIGHT = 800;
 
-    public ChartFactory(Context context) {
+    ChartFactory(Context context) {
         mContext = context;
     }
 
-    public Chart getChart(PriceList list, ChartParams params) {
+    Chart getChart(PriceList list, ChartParams params) {
+        if(params.function.id == Function.VOLUME) {
+            return getVolumeChart(list, params.overlays);
+        }
 
-        //TODO, this can probably evaluate pricelist and pass the base array + overlays
-
-        //if(params.function != null && params.function.id == FunctionId.SMA_VOLUME) {
-        //    return getVolumeChart(list, params);
-        //}
-
-        return getLineChart(list, params);
+        return getLineChart(list, params.function, params.overlays);
     }
 
-    private Chart getLineChart(PriceList list, ChartParams params) {
-        FunctionCall functionCall = params.function;
-        List<Overlay> overlays = params.overlays;
-
-        // TODO add function for this that just gets the closing price so we don't have to deal with null
-        FloatArray base;
-
-        if(functionCall == null) {
-            base = list.getClose();
-        } else {
-            ValueArray arr = functionCall.eval(list);
-            //FloatArray base = list.getClose();
-            base = (FloatArray) arr;
+    private class EntrySet {
+        public EntrySet() {}
+        public EntrySet(int color) {
+            this.color = color;
         }
 
-        List<String> dates = getDates(list);
-        //FunctionDef def = Function.getDef(functionCall.id);
-        //------------
+        List<Entry> entries = new ArrayList<>();
+        int color = Color.BLACK;
+    }
 
-        LineChart chart = new LineChart(mContext);
-        chart.setMinimumHeight(CHART_HEIGHT);
+    private LineData getLineData(List<String> dates, ValueArray base, List<Overlay> overlays) {
+        List<LineDataSet> sets = null;
 
-        ArrayList<Entry> entries = new ArrayList<>();
-        for(int i = 0; i < base.size(); i++) {
-            entries.add(new Entry(base.get(i), i));
+        if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
+            EntrySet macd = new EntrySet();
+            EntrySet signal = new EntrySet(Color.RED);
+            EntrySet hist = new EntrySet(Color.BLUE);
+
+            MACDArray arr = (MACDArray) base;
+            for (int i = 0; i < base.size(); i++) {
+                macd.entries.add(new Entry(arr.get(i), i));
+                signal.entries.add(new Entry(arr.signal(i), i));
+                hist.entries.add(new Entry(arr.hist(i), i));
+            }
+
+            sets = getLineDataSets(macd, signal, hist);
+        } else if(base instanceof PairArray) {
+            EntrySet pos = new EntrySet(Color.GREEN);
+            EntrySet neg = new EntrySet(Color.RED);
+
+            PairArray arr = (PairArray) base;
+            for (int i = 0; i < base.size(); i++) {
+                pos.entries.add(new Entry(arr.getPos(i), i));
+                neg.entries.add(new Entry(arr.getNeg(i), i));
+            }
+
+            sets = getLineDataSets(pos, neg);
+
+        } else if(base instanceof FloatArray) {
+            EntrySet es = new EntrySet();
+            FloatArray arr = (FloatArray)base;
+            for (int i = 0; i < base.size(); i++) {
+                es.entries.add(new Entry(arr.get(i), i));
+            }
+            sets = getLineDataSets(es);
+
+        } else if(base instanceof BandArray) {
+            EntrySet upper = new EntrySet(Color.RED);
+            EntrySet lower = new EntrySet(Color.RED);
+            EntrySet mid = new EntrySet();
+
+            BandArray arr = (BandArray) base;
+            for (int i = 0; i < base.size(); i++) {
+                upper.entries.add(new Entry(arr.upper(i), i));
+                lower.entries.add(new Entry(arr.lower(i), i));
+                mid.entries.add(new Entry(arr.source(i), i));
+            }
+
+            sets = getLineDataSets(upper, lower, mid);
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, getLabel(functionCall));
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-        dataSet.setColor(Color.BLACK);
-
-        ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.add(dataSet);
-
+        // Should only apply to FloatArray or VolumeArray
         if(overlays != null) {
             for (Overlay overlay : overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
 
-        LineData lineData = new LineData(dates, sets);
+        return new LineData(dates, sets);
+    }
+
+    private List<LineDataSet> getLineDataSets(EntrySet ...entrySets) {
+        List<LineDataSet> sets = new ArrayList<>();
+
+        for(EntrySet entrySet : entrySets) {
+            LineDataSet dataSet = new LineDataSet(entrySet.entries, ""); // Ignore label, its set later
+            dataSet.setDrawCircles(false);
+            dataSet.setDrawValues(false);
+            dataSet.setColor(entrySet.color);
+
+            sets.add(dataSet);
+        }
+
+        return sets;
+    }
+
+    private Chart getLineChart(PriceList list, FunctionCall functionCall, List<Overlay> overlays) {
+        ValueArray arr = functionCall.eval(list);
+
+        LineChart chart = new LineChart(mContext);
+        chart.setMinimumHeight(CHART_HEIGHT);
+
+        LineData lineData = getLineData(getDates(list), arr, overlays);
+
         chart.setData(lineData);
 
         chart.getAxisLeft().setDrawLabels(false);
@@ -120,8 +173,8 @@ class ChartFactory {
         return chart;
     }
 
-    private Chart getVolumeChart(PriceList list, ChartParams params) {
-
+    private Chart getVolumeChart(PriceList list, List<Overlay> overlays) {
+        VolumeArray base = list.getVolume();
 
         CombinedChart chart = new CombinedChart(mContext);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
@@ -136,53 +189,20 @@ class ChartFactory {
         BarData barData = new BarData(getDates(list),dataSet);
 
         ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
-
-        LineData lineData = new LineData(getDates(list), sets);
-
-
-        CombinedData data = new CombinedData(getDates(list));
-        data.setData(barData);
-        data.setData(lineData);
-
-
-        //chart.setData(new BarData(getDates(list), dataSet));
-        chart.setData(data);
-        chart.setDescription("");
-
-        //Set Y axis
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.getAxisRight().setLabelCount(3, false);
-
-        return chart;
-    }
-
-/*
-    public Chart getVolumeChart(PriceList list) {
-
-        CombinedChart chart = new CombinedChart(this);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
-
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            barEntries.add(new BarEntry(list.volume(i), i));
+        //sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
+        // Should only apply to FloatArray or VolumeArray
+        if(overlays != null) {
+            for (Overlay overlay : overlays) {
+                sets.addAll(overlay.getDataSets(base));
+            }
         }
 
-        BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
-        dataSet.setDrawValues(false);
-        BarData barData = new BarData(getDates(list),dataSet);
-
-        ArrayList<LineDataSet> sets = new ArrayList<>();
-        sets.addAll( Overlay.getSMA(20).getDataSets(list.getVolume()) );
-
         LineData lineData = new LineData(getDates(list), sets);
 
 
         CombinedData data = new CombinedData(getDates(list));
         data.setData(barData);
         data.setData(lineData);
-
 
         //chart.setData(new BarData(getDates(list), dataSet));
         chart.setData(data);
@@ -195,28 +215,10 @@ class ChartFactory {
 
         return chart;
     }
-*/
 
     private static String getLabel(FunctionCall call) {
-        if(call == null)
-            return "Price";
-
         return call.id.toString() + " " + TextUtils.join(",", call.params);
     }
-/*
-    public List<LineDataSet> getDataSets(ValueArray arr)
-    {
-        mValues = arr;
-        if(mType == TYPE_BB)
-            return getMultiDataSet();
-
-        List<LineDataSet> sets = new ArrayList<>();
-        sets.add( getSingleDataSet() );
-        return sets;
-    }
-
-
-    */
 
     public static List<String> getDates(PriceList list) {
 

@@ -8,24 +8,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDB;
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.model.Function;
+import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Interval;
 
 import java.text.DateFormat;
@@ -118,6 +110,16 @@ public class ChartViewActivity extends AppCompatActivity
 
     @Override
     public void select(Overlay overlay) {
+        FunctionDef def = mLastActiveChart.mChartParams.function.id.getDef();
+
+        if(def.result == VolumeArray.class)
+        {
+            if(overlay.getType() == Overlay.TYPE_BB || overlay.getType() == Overlay.TYPE_KAMA) {
+                Log.d(TAG,"unsupported overlay on Volume: " + overlay.getLabel());
+                return;
+            }
+        }
+
         mLastActiveChart.addOverlay(overlay);
     }
 

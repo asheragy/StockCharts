@@ -1,6 +1,7 @@
 package org.cerion.stockcharts;
 
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager.PageTransformer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -9,9 +10,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.View;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.charts.ChartsListFragment;
@@ -55,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
+        /*
+        mViewPager.setPageTransformer(true, new PageTransformer() {
+
+            @Override
+            public void transformPage(View page, float position) {
+                Log.d("main","position = " + position);
+            }
+        });
+        */
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mViewPager.setCurrentItem(1); //DEBUG

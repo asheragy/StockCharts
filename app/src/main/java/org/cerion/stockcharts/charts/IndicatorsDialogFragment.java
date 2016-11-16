@@ -33,9 +33,7 @@ public class IndicatorsDialogFragment extends DialogFragment {
                 getActivity(),
                 android.R.layout.select_dialog_item);
 
-
         Function[] ids = Function.values();
-        arrayAdapter.add("Price");
         for(Function id : ids)
         {
             arrayAdapter.add(id.toString());
@@ -44,17 +42,13 @@ public class IndicatorsDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 //.setIcon(R.drawable.alert_dialog_icon)
                 .setTitle(title)
-
                 .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        if(which == 0) {
-                            listener.select(null);
-                        } else {
-                            Function selected = Function.values()[which - 1];
-                            listener.select(selected);
-                        }
+                        Function selected = Function.values()[which];
+                        listener.select(selected);
+
                         dialog.dismiss();
                     }
                 })

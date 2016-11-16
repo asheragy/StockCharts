@@ -2,7 +2,6 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,8 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataStore;
 import org.cerion.stockcharts.model.Position;
-import org.cerion.stocklist.model.Function;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;

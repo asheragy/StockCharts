@@ -80,6 +80,10 @@ public class Overlay {
         return result;
     }
 
+    public int getType() {
+        return mType;
+    }
+
     public ValueArray eval()
     {
         if(isVolume())
@@ -89,7 +93,6 @@ public class Overlay {
                 case TYPE_SMA: return values.sma(p1);
                 case TYPE_EMA: return values.ema(p1);
             }
-
         } else {
 
             FloatArray values = (FloatArray) mValues;
@@ -120,8 +123,7 @@ public class Overlay {
         return mColor;
     }
 
-    public List<LineDataSet> getDataSets(ValueArray arr)
-    {
+    public List<LineDataSet> getDataSets(ValueArray arr) {
         mValues = arr;
         if(mType == TYPE_BB)
             return getMultiDataSet();
@@ -131,9 +133,7 @@ public class Overlay {
         return sets;
     }
 
-    private LineDataSet getSingleDataSet()
-    {
-        Log.d("TEMP", "getSingleDataSet");
+    private LineDataSet getSingleDataSet() {
         ArrayList<Entry> entries = new ArrayList<>();
         ValueArray values = eval();
 
