@@ -140,11 +140,11 @@ public class Overlay {
         if(!isVolume()) {
             FloatArray f_values = (FloatArray)values;
             for (int i = 0; i < values.size(); i++)
-                entries.add(new Entry(f_values.get(i), i));
+                entries.add(new Entry(i, f_values.get(i)));
         } else {
             VolumeArray L_values = (VolumeArray)values;
             for (int i = 0; i < values.size(); i++)
-                entries.add(new Entry(L_values.get(i), i));
+                entries.add(new Entry(i, L_values.get(i)));
         }
 
         LineDataSet set = new LineDataSet(entries, getLabel());
@@ -156,15 +156,14 @@ public class Overlay {
     }
 
     private List<LineDataSet> getMultiDataSet() {
-
         ArrayList<Entry> entries1 = new ArrayList<>();
         ArrayList<Entry> entries2 = new ArrayList<>();
 
         BandArray values = (BandArray)eval();
 
         for (int i = 0; i < values.size(); i++) {
-            entries1.add(new Entry(values.lower(i), i));
-            entries2.add(new Entry(values.upper(i), i));
+            entries1.add(new Entry(i, values.lower(i)));
+            entries2.add(new Entry(i, values.upper(i)));
         }
 
         List<LineDataSet> sets = new ArrayList<>();
@@ -176,7 +175,6 @@ public class Overlay {
             set.setDrawValues(false);
             set.setColor(mColor);
         }
-
 
         return sets;
     }
