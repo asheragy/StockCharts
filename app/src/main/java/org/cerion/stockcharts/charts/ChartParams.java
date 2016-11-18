@@ -7,5 +7,5 @@ import java.util.List;
 
 class ChartParams {
     FunctionCall function;
-    List<Overlay> overlays = new ArrayList<>();
+    List<OverlayDataSet> overlays = new ArrayList<>();
 }

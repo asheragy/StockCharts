@@ -11,4 +11,8 @@
         <item>Weekly</item>
         <item>Monthly</item>
     </string-array>
+
+    <string-array name="functions_toolsonly">
+        <item>Simple Moving Average</item>
+    </string-array>
 </resources>

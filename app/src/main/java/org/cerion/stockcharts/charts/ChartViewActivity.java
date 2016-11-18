@@ -19,6 +19,7 @@ import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.model.Function;
 import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.model.Overlay;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -87,7 +88,7 @@ public class ChartViewActivity extends AppCompatActivity
     public void select(Function id) {
         final ChartHolder holder = new ChartHolder(this, mSymbol, id);
 
-        //params.overlays.add(Overlay.getBB(20,2.0f));
+        //params.overlays.add(OverlayDataSet.getBB(20,2.0f));
         //Chart chart = ChartFactory.getLineChart(this, mList, call, null);
 
         holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
@@ -109,12 +110,12 @@ public class ChartViewActivity extends AppCompatActivity
     }
 
     @Override
-    public void select(Overlay overlay) {
+    public void select(OverlayDataSet overlay) {
         FunctionDef def = mLastActiveChart.mChartParams.function.id.getDef();
 
         if(def.result == VolumeArray.class)
         {
-            if(overlay.getType() == Overlay.TYPE_BB || overlay.getType() == Overlay.TYPE_KAMA) {
+            if(overlay.getType() == Overlay.BB || overlay.getType() == Overlay.KAMA) {
                 Log.d(TAG,"unsupported overlay on Volume: " + overlay.getLabel());
                 return;
             }

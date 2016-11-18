@@ -1,9 +1,5 @@
 package org.cerion.stockcharts.charts;
 
-
-import android.graphics.Color;
-import android.util.Log;
-
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 
@@ -11,27 +7,21 @@ import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.ValueArray;
 import org.cerion.stocklist.arrays.VolumeArray;
+import org.cerion.stocklist.model.Overlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Overlay {
-
-    public static final int TYPE_EMA = 0;
-    public static final int TYPE_SMA = 1;
-    public static final int TYPE_BB = 2;
-    public static final int TYPE_KAMA = 3;
+class OverlayDataSet {
 
     private ValueArray mValues;
-    private int mType;
-    private int p1;
-    private float f1;
-    private int p2;
-    private int p3;
+    private Overlay mType;
+    private Number p1;
+    private Number p2;
+    private Number p3;
     private int mColor;
 
-    private boolean isVolume()
-    {
+    private boolean isVolume() {
         if(mValues.getClass() == VolumeArray.class)
             return true;
 
@@ -39,68 +29,52 @@ public class Overlay {
     }
 
     private static int i = 0;
-    private Overlay(int type) {
+    private OverlayDataSet(Overlay type, Number ...params) {
         mType = type;
+        mColor = Colors.getOverlay(i++);
 
-        if(i % 3 == 0)
-            mColor = Color.RED;
-        else if(i % 3 == 1)
-            mColor = Color.BLUE;
-        else
-            mColor = Color.GREEN;
-
-        i++;
+        p1 = params[0];
+        p2 = params.length > 1 ? params[1] : null;
+        p3 = params.length > 2 ? params[2] : null;
     }
 
-    public static Overlay getEMA(int period) {
-        Overlay result = new Overlay(TYPE_EMA);
-        result.p1 = period;
-        return result;
+    static OverlayDataSet getEMA(int period) {
+        return new OverlayDataSet(Overlay.EMA, period);
     }
 
-    public static Overlay getSMA(int period) {
-        Overlay result = new Overlay(TYPE_SMA);
-        result.p1 = period;
-        return result;
+    static OverlayDataSet getSMA(int period) {
+        return new OverlayDataSet(Overlay.SMA, period);
     }
 
-    public static Overlay getBB(int period, float multiplier)
-    {
-        Overlay result = new Overlay(TYPE_BB);
-        result.p1 = period;
-        result.f1 = multiplier;
-        return result;
+    static OverlayDataSet getBB(int period, float multiplier) {
+        return new OverlayDataSet(Overlay.BB, period, multiplier);
     }
 
-    public static Overlay getKAMA(int p1, int p2, int p3) {
-        Overlay result = new Overlay(TYPE_KAMA);
-        result.p1 = p1;
-        result.p2 = p2;
-        result.p3 = p3;
-        return result;
+    static OverlayDataSet getKAMA(int p1, int p2, int p3) {
+        return new OverlayDataSet(Overlay.KAMA, p1, p2, p3);
     }
 
-    public int getType() {
+    public Overlay getType() {
         return mType;
     }
 
-    public ValueArray eval()
+    private ValueArray eval()
     {
         if(isVolume())
         {
             VolumeArray values = (VolumeArray) mValues;
             switch (mType) {
-                case TYPE_SMA: return values.sma(p1);
-                case TYPE_EMA: return values.ema(p1);
+                case SMA: return values.sma((int)p1);
+                case EMA: return values.ema((int)p1);
             }
         } else {
 
             FloatArray values = (FloatArray) mValues;
             switch (mType) {
-                case TYPE_SMA: return values.sma(p1);
-                case TYPE_EMA: return values.ema(p1);
-                case TYPE_BB: return values.bb(p1,f1);
-                case TYPE_KAMA: return values.kama(p1,p2,p3);
+                case SMA: return values.sma((int)p1);
+                case EMA: return values.ema((int)p1);
+                case BB: return values.bb((int)p1,(float)p2);
+                case KAMA: return values.kama((int)p1,(int)p2,(int)p3);
             }
         }
 
@@ -108,12 +82,11 @@ public class Overlay {
     }
 
     public String getLabel() {
-
         switch(mType) {
-            case TYPE_SMA: return "SMA " + p1;
-            case TYPE_EMA: return "EMA " + p1;
-            case TYPE_BB: return "BB " + p1 + "," + f1;
-            case TYPE_KAMA: return "KAMA " + p1 + "," + f1;
+            case SMA: return "SMA " + p1;
+            case EMA: return "EMA " + p1;
+            case BB: return "BB " + p1 + "," + p2;
+            case KAMA: return "KAMA " + p1 + "," + p2 + "," + p3;
         }
 
         return "";
@@ -125,7 +98,7 @@ public class Overlay {
 
     public List<LineDataSet> getDataSets(ValueArray arr) {
         mValues = arr;
-        if(mType == TYPE_BB)
+        if(mType == Overlay.BB)
             return getMultiDataSet();
 
         List<LineDataSet> sets = new ArrayList<>();

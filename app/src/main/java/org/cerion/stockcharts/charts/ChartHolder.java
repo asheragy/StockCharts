@@ -3,7 +3,7 @@ package org.cerion.stockcharts.charts;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -15,7 +15,6 @@ import com.github.mikephil.charting.charts.Chart;
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.arrays.FloatArray;
-import org.cerion.stocklist.arrays.ValueArray;
 import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.indicators.FunctionCall;
 import org.cerion.stocklist.model.FunctionDef;
@@ -46,17 +45,12 @@ class ChartHolder extends LinearLayout {
 
         final FunctionDef def = id.getDef();
         final EditText[] fields = new EditText[def.param_count];
-
-        // TODO when is this null?
-        if(def != null) {
-            mChartParams.function = new FunctionCall(id, def.default_values);
-        }
+        mChartParams.function = new FunctionCall(id, def.default_values);
 
         findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View controls = findViewById(R.id.edit_layout);
-                Button button = (Button)v;
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
                     //Get parameters and redraw chart
@@ -96,6 +90,18 @@ class ChartHolder extends LinearLayout {
             layout.addView(fields[i]);
         }
 
+        // Fill spinner
+        Spinner sp = (Spinner)findViewById(R.id.function);
+        String[] functions = new String[Function.values().length];
+        for(int i = 0; i < functions.length; i++) {
+            functions[i] = Function.values()[i].toString();
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp.setAdapter(adapter);
+
+        reload();
     }
 
     public void changeMode(boolean bEdit) {
@@ -139,7 +145,7 @@ class ChartHolder extends LinearLayout {
         reload();
     }
 
-    public void addOverlay(Overlay overlay) {
+    public void addOverlay(OverlayDataSet overlay) {
         mChartParams.overlays.add(overlay);
         reload();
     }
@@ -157,8 +163,14 @@ class ChartHolder extends LinearLayout {
 
     private void reload() {
         FrameLayout frame = (FrameLayout)findViewById(R.id.chart_frame);
-        Chart chart = mChartFactory.getChart(mList, mChartParams);
         frame.removeAllViews();
+
+        Chart chart;
+        if(mList != null)
+            chart = mChartFactory.getChart(mList, mChartParams);
+        else
+            chart = mChartFactory.getEmptyChart();
+
         frame.addView(chart);
     }
 

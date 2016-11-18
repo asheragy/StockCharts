@@ -7,10 +7,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
+import org.cerion.stocklist.model.Overlay;
+
 public class OverlaysDialogFragment extends DialogFragment {
 
     public interface OnSelectListener {
-        void select(Overlay overlay);
+        void select(OverlayDataSet overlay);
     }
 
     public static OverlaysDialogFragment newInstance(int title) {
@@ -30,10 +32,9 @@ public class OverlaysDialogFragment extends DialogFragment {
                 getActivity(),
                 android.R.layout.select_dialog_item);
 
-        arrayAdapter.add("EMA"); //TODO order by define values
-        arrayAdapter.add("SMA");
-        arrayAdapter.add("BB");
-        arrayAdapter.add("KAMA");
+        for(Overlay o : Overlay.values()) {
+            arrayAdapter.add(o.toString());
+        }
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
@@ -41,20 +42,21 @@ public class OverlaysDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Overlay result = null;
-                        switch(which)
+                        OverlayDataSet result = null;
+                        Overlay o = Overlay.values()[which];
+                        switch(o)
                         {
-                            case Overlay.TYPE_EMA:
-                                result = Overlay.getEMA(20);
+                            case EMA:
+                                result = OverlayDataSet.getEMA(20);
                                 break;
-                            case Overlay.TYPE_SMA:
-                                result = Overlay.getSMA(20);
+                            case SMA:
+                                result = OverlayDataSet.getSMA(20);
                                 break;
-                            case Overlay.TYPE_BB:
-                                result = Overlay.getBB(20, 2.0f);
+                            case BB:
+                                result = OverlayDataSet.getBB(20, 2.0f);
                                 break;
-                            case Overlay.TYPE_KAMA:
-                                result = Overlay.getKAMA(10, 2, 30);
+                            case KAMA:
+                                result = OverlayDataSet.getKAMA(10, 2, 30);
                         }
 
                         listener.select(result);

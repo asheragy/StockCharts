@@ -34,7 +34,15 @@
             android:id="@+id/interval"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:entries="@array/intervals" />
+
+        <Spinner
+            android:id="@+id/function"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            tools:entries="@array/functions_toolsonly"/>
 
         <LinearLayout
             android:id="@+id/parameters"

@@ -60,6 +60,13 @@ class ChartFactory {
         return getLineChart(list, params.function, params.overlays);
     }
 
+    public Chart getEmptyChart() {
+        Chart chart = new LineChart(mContext);
+        chart.setDescription(mDesc);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+        return chart;
+    }
+
     private class EntrySet {
         public EntrySet() {}
         public EntrySet(int color) {
@@ -70,7 +77,7 @@ class ChartFactory {
         int color = Color.BLACK;
     }
 
-    private Chart getLineChart(PriceList list, FunctionCall functionCall, List<Overlay> overlays) {
+    private Chart getLineChart(PriceList list, FunctionCall functionCall, List<OverlayDataSet> overlays) {
         ValueArray arr = functionCall.eval(list);
         LineData lineData = getLineData(arr, overlays);
 
@@ -91,7 +98,7 @@ class ChartFactory {
 
         if(overlays != null) {
             for (int i = 1; i <= overlays.size(); i++) {
-                Overlay o = overlays.get(i - 1);
+                OverlayDataSet o = overlays.get(i - 1);
                 le[i] = new LegendEntry(o.getLabel(), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, o.getColor());
             }
         }
@@ -101,7 +108,7 @@ class ChartFactory {
         return chart;
     }
 
-    private Chart getVolumeChart(PriceList list, List<Overlay> overlays) {
+    private Chart getVolumeChart(PriceList list, List<OverlayDataSet> overlays) {
         VolumeArray base = list.getVolume();
 
         CombinedChart chart = new CombinedChart(mContext);
@@ -121,7 +128,7 @@ class ChartFactory {
 
         // Should only apply to FloatArray or VolumeArray
         if(overlays != null) {
-            for (Overlay overlay : overlays) {
+            for (OverlayDataSet overlay : overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
@@ -143,7 +150,7 @@ class ChartFactory {
         return chart;
     }
 
-    private LineData getLineData(ValueArray base, List<Overlay> overlays) {
+    private LineData getLineData(ValueArray base, List<OverlayDataSet> overlays) {
         List<ILineDataSet> sets = null;
 
         if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
@@ -196,7 +203,7 @@ class ChartFactory {
 
         // Should only apply to FloatArray or VolumeArray
         if(overlays != null) {
-            for (Overlay overlay : overlays) {
+            for (OverlayDataSet overlay : overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
