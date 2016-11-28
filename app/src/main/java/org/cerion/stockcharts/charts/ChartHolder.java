@@ -1,8 +1,10 @@
 package org.cerion.stockcharts.charts;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,8 @@ import org.cerion.stocklist.model.Interval;
 
 class ChartHolder extends LinearLayout {
 
+    private static final String TAG = ChartHolder.class.getSimpleName();
+
     ChartParams mChartParams = new ChartParams();
     PriceList mList;
     private String mSymbol;
@@ -33,7 +37,7 @@ class ChartHolder extends LinearLayout {
         void onRequest(ChartHolder holder, String symbol, Interval interval);
     }
 
-    public ChartHolder(Context context, String symbol, Function id) {
+    public ChartHolder(Context context, String symbol) {
         super(context);
 
         mChartFactory = new ChartFactory(context);
@@ -43,9 +47,41 @@ class ChartHolder extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.chart_holder, this, true);
 
-        final FunctionDef def = id.getDef();
+        // Fill spinner
+        Spinner sp = (Spinner)findViewById(R.id.function);
+        final String[] functions = new String[Function.values().length];
+        for(int i = 0; i < functions.length; i++) {
+            functions[i] = Function.values()[i].toString();
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp.setAdapter(adapter);
+
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Function f = Function.values()[position];
+                Log.d(TAG, "onSelectFunction() " + f.toString());
+                onSelect(f);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        reload();
+    }
+
+    private void onSelect(Function function) {
+
+        // Reset selection
+        mChartParams = new ChartParams();
+        final FunctionDef def = function.getDef();
         final EditText[] fields = new EditText[def.param_count];
-        mChartParams.function = new FunctionCall(id, def.default_values);
+        mChartParams.function = new FunctionCall(function, def.default_values);
 
         findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,21 +94,26 @@ class ChartHolder extends LinearLayout {
 
                         Number p[] = def.default_values; // Use defaults in-case anything is invalid
                         for (int i = 0; i < def.param_count; i++) {
-                            String entered = fields[i].getText().toString();
-                            if (p[i] instanceof Integer) {
-                                p[i] = Integer.parseInt(entered);
-                            } else {
-                                p[i] = Double.parseDouble(entered);
+                            try {
+                                String entered = fields[i].getText().toString();
+                                if (p[i] instanceof Integer) {
+                                    p[i] = Integer.parseInt(entered);
+                                } else {
+                                    p[i] = Double.parseDouble(entered);
+                                }
+                            } catch(Exception e) {
+                                // Reset input field to default value
+                                fields[i].setText(p[i] + "");
                             }
+
                         }
                         mChartParams.function = new FunctionCall(mChartParams.function.id, p);
                     }
 
                     mListener.onRequest(ChartHolder.this, mSymbol, getInterval());
-
-                    changeMode(false);
-                } else { // EDIT
-                    changeMode(true);
+                    setInEditMode(false);
+                } else {
+                    setInEditMode(true);
                 }
             }
         });
@@ -84,27 +125,15 @@ class ChartHolder extends LinearLayout {
 
         // Add parameters
         LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
+        layout.removeAllViews();
         for(int i = 0; i < def.param_count; i++) {
             Number n = def.default_values[i];
             fields[i] = getInputField(n);
             layout.addView(fields[i]);
         }
-
-        // Fill spinner
-        Spinner sp = (Spinner)findViewById(R.id.function);
-        String[] functions = new String[Function.values().length];
-        for(int i = 0; i < functions.length; i++) {
-            functions[i] = Function.values()[i].toString();
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sp.setAdapter(adapter);
-
-        reload();
     }
 
-    public void changeMode(boolean bEdit) {
+    private void setInEditMode(boolean bEdit) {
         Button button = (Button)findViewById(R.id.save_edit_button);
         View controls = findViewById(R.id.edit_layout);
 
@@ -129,7 +158,7 @@ class ChartHolder extends LinearLayout {
 
     }
 
-    public Interval getInterval() {
+    private Interval getInterval() {
         Spinner spInterval = (Spinner)findViewById(R.id.interval);
         Interval interval = Interval.DAILY;
         if(spInterval.getSelectedItemPosition() == 1)
@@ -153,9 +182,7 @@ class ChartHolder extends LinearLayout {
     public EditText getInputField(Number n) {
         final EditText input = new EditText(getContext());
         input.setText(n.toString());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
 
         return input;

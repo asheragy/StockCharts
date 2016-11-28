@@ -13,21 +13,17 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.model.HistoricalDates;
-import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.arrays.VolumeArray;
-import org.cerion.stocklist.model.Function;
 import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Overlay;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ChartViewActivity extends AppCompatActivity
-        implements IndicatorsDialogFragment.OnSelectListener, OverlaysDialogFragment.OnSelectListener, ChartHolder.OnDataRequestListener {
+        implements
+        OverlaysDialogFragment.OnSelectListener, // TODO remove
+        ChartHolder.OnDataRequestListener
+{
 
     private static final String TAG = ChartViewActivity.class.getSimpleName();
     public static final String EXTRA_SYMBOL = "symbol";
@@ -67,10 +63,6 @@ public class ChartViewActivity extends AppCompatActivity
             task.execute();
         }
 
-        //mCharts.addView(getPriceChart(mList));
-        //mCharts.addView(getVolumeChart(list));
-        //mCharts.addView(getSMAChart(mList));
-
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,16 +72,10 @@ public class ChartViewActivity extends AppCompatActivity
     }
 
     private void onAddChart() {
-        DialogFragment newFragment = IndicatorsDialogFragment.newInstance(R.string.indicators);
-        newFragment.show(getFragmentManager(),"dialog");
-    }
+        //DialogFragment newFragment = IndicatorsDialogFragment.newInstance(R.string.indicators);
+        //newFragment.show(getFragmentManager(),"dialog");
 
-    @Override
-    public void select(Function id) {
-        final ChartHolder holder = new ChartHolder(this, mSymbol, id);
-
-        //params.overlays.add(OverlayDataSet.getBB(20,2.0f));
-        //Chart chart = ChartFactory.getLineChart(this, mList, call, null);
+        final ChartHolder holder = new ChartHolder(this, mSymbol);
 
         holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +84,7 @@ public class ChartViewActivity extends AppCompatActivity
             }
         });
 
+        // TODO do this inside holder
         holder.findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,17 +114,6 @@ public class ChartViewActivity extends AppCompatActivity
     private void onAddOverlay() {
         DialogFragment newFragment = OverlaysDialogFragment.newInstance(R.string.overlays);
         newFragment.show(getFragmentManager(),"dialog");
-    }
-
-    public List<String> getDates(PriceList list) {
-
-        DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
-
-        List<String> dates = new ArrayList<>();
-        for (Price p : list)
-            dates.add(mDateFormat.format(p.date));
-
-        return dates;
     }
 
     @Override

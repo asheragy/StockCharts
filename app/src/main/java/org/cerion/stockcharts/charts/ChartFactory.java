@@ -226,7 +226,7 @@ class ChartFactory {
     }
 
     private static String getLabel(FunctionCall call) {
-        return call.id.toString() + " " + TextUtils.join(",", call.params);
+        return call.id.name() + " " + TextUtils.join(",", call.params);
     }
 
     private IAxisValueFormatter getAxisFormatter(PriceList list) {

@@ -176,7 +176,7 @@ public class StockDB extends DBBase implements StockDataStore
         values.put(StockDBOpenHelper.HistoricalDates._FIRST, first.getTime());
         values.put(StockDBOpenHelper.HistoricalDates._LAST, last.getTime());
         values.put(StockDBOpenHelper.HistoricalDates._UPDATED, new Date().getTime());
-        insert(db, table, values);
+        db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -286,7 +286,7 @@ public class StockDB extends DBBase implements StockDataStore
 
         // History Dates
         for(Interval interval : Interval.values()) {
-            Log.d(TAG, interval.toString());
+            Log.d(TAG, "HISTORY " + interval.toString());
 
             c = db.rawQuery(String.format("SELECT %s,count(*) FROM %s GROUP BY %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates.getTableName(interval), StockDBOpenHelper.HistoricalDates._SYMBOL), null);
             if (c != null) {
