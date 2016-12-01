@@ -29,7 +29,13 @@ class OverlayDataSet {
     }
 
     private static int i = 0;
-    private OverlayDataSet(Overlay type, Number ...params) {
+
+    // TODO better way of doing this
+    public static void resetColors() {
+        i = 0;
+    }
+
+    OverlayDataSet(Overlay type, Number ...params) {
         mType = type;
         mColor = Colors.getOverlay(i++);
 

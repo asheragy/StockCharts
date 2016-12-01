@@ -85,6 +85,7 @@ public class ChartViewActivity extends AppCompatActivity
         });
 
         // TODO do this inside holder
+        /*
         holder.findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +93,7 @@ public class ChartViewActivity extends AppCompatActivity
                 onAddOverlay();
             }
         });
+        */
 
         mCharts.addView(holder);
     }

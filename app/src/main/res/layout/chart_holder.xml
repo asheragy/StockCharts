@@ -72,6 +72,21 @@
             android:layout_height="wrap_content"
             android:id="@+id/add_overlay" />
 
+        <LinearLayout
+            android:id="@+id/overlays"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                tools:text="Overlays go here"
+                tools:visibility="visible"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 
