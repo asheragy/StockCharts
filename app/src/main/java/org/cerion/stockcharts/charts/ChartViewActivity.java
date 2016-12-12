@@ -21,7 +21,6 @@ import org.cerion.stocklist.model.Overlay;
 
 public class ChartViewActivity extends AppCompatActivity
         implements
-        OverlaysDialogFragment.OnSelectListener, // TODO remove
         ChartHolder.OnDataRequestListener
 {
 
@@ -96,26 +95,6 @@ public class ChartViewActivity extends AppCompatActivity
         */
 
         mCharts.addView(holder);
-    }
-
-    @Override
-    public void select(OverlayDataSet overlay) {
-        FunctionDef def = mLastActiveChart.mChartParams.function.id.getDef();
-
-        if(def.result == VolumeArray.class)
-        {
-            if(overlay.getType() == Overlay.BB || overlay.getType() == Overlay.KAMA) {
-                Log.d(TAG,"unsupported overlay on Volume: " + overlay.getLabel());
-                return;
-            }
-        }
-
-        mLastActiveChart.addOverlay(overlay);
-    }
-
-    private void onAddOverlay() {
-        DialogFragment newFragment = OverlaysDialogFragment.newInstance(R.string.overlays);
-        newFragment.show(getFragmentManager(),"dialog");
     }
 
     @Override

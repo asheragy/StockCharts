@@ -2,8 +2,10 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.text.TextUtils;
 
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -16,6 +18,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -23,6 +28,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
@@ -53,6 +59,9 @@ class ChartFactory {
     }
 
     Chart getChart(PriceList list, ChartParams params) {
+        if(params.function.id == Function.PRICE) {
+            return getCandleChart(list, params.overlays);
+        }
         if(params.function.id == Function.VOLUME) {
             return getVolumeChart(list, params.overlays);
         }
@@ -60,7 +69,7 @@ class ChartFactory {
         return getLineChart(list, params.function, params.overlays);
     }
 
-    public Chart getEmptyChart() {
+    Chart getEmptyChart() {
         Chart chart = new LineChart(mContext);
         chart.setDescription(mDesc);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
@@ -77,19 +86,48 @@ class ChartFactory {
         int color = Color.BLACK;
     }
 
+    private Chart getCandleChart(PriceList list, List<OverlayDataSet> overlays) {
+        CombinedChart chart = new CombinedChart(mContext);
+        setChartDefaults(chart, list);
+
+        ArrayList<CandleEntry> entries = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Price p = list.get(i);
+            entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
+        }
+
+        CandleDataSet dataSet = new CandleDataSet(entries, "Price");
+        dataSet.setDrawValues(false);
+        dataSet.setDecreasingColor(Colors.CANDLE_DOWN);
+        dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+        dataSet.setIncreasingColor(Colors.CANDLE_UP);
+        dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+        CandleData candleData = new CandleData(dataSet);
+
+        List<ILineDataSet> sets = new ArrayList<>();
+        if(overlays != null) {
+            FloatArray base = list.getClose();
+            for (OverlayDataSet overlay : overlays) {
+                sets.addAll(overlay.getDataSets(base));
+            }
+        }
+
+        LineData lineData = new LineData(sets);
+        CombinedData data = new CombinedData();
+        data.setData(lineData);
+        data.setData(candleData);
+        chart.setData(data);
+
+        return chart;
+    }
+
     private Chart getLineChart(PriceList list, FunctionCall functionCall, List<OverlayDataSet> overlays) {
+        LineChart chart = new LineChart(mContext);
+        setChartDefaults(chart, list);
+
         ValueArray arr = functionCall.eval(list);
         LineData lineData = getLineData(arr, overlays);
-
-        LineChart chart = new LineChart(mContext);
-        chart.setMinimumHeight(CHART_HEIGHT);
         chart.setData(lineData);
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.setDescription(mDesc);
-
-        XAxis xaxis = chart.getXAxis();
-        xaxis.setValueFormatter(getAxisFormatter(list));
 
         // Set labels so multi-line sets are not duplicated on legend
         int size = (overlays != null ? overlays.size() + 1 : 1);
@@ -104,16 +142,12 @@ class ChartFactory {
         }
 
         chart.getLegend().setCustom(le);
-
         return chart;
     }
 
     private Chart getVolumeChart(PriceList list, List<OverlayDataSet> overlays) {
-        VolumeArray base = list.getVolume();
-
         CombinedChart chart = new CombinedChart(mContext);
-        chart.setDescription(mDesc);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+        setChartDefaults(chart, list);
 
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -128,6 +162,7 @@ class ChartFactory {
 
         // Should only apply to FloatArray or VolumeArray
         if(overlays != null) {
+            VolumeArray base = list.getVolume();
             for (OverlayDataSet overlay : overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
@@ -139,6 +174,13 @@ class ChartFactory {
         data.setData(lineData);
         chart.setData(data);
 
+        return chart;
+    }
+
+    private void setChartDefaults(BarLineChartBase chart, PriceList list) {
+        chart.setDescription(mDesc);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+
         //Set Y axis
         chart.getAxisLeft().setDrawLabels(false);
         chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
@@ -146,8 +188,6 @@ class ChartFactory {
 
         XAxis xaxis = chart.getXAxis();
         xaxis.setValueFormatter(getAxisFormatter(list));
-
-        return chart;
     }
 
     private LineData getLineData(ValueArray base, List<OverlayDataSet> overlays) {
@@ -245,18 +285,4 @@ class ChartFactory {
             }
         };
     }
-
-    /*
-    public static List<String> getDates(PriceList list) {
-
-        DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
-
-        List<String> dates = new ArrayList<>();
-        for (Price p : list)
-            dates.add(mDateFormat.format(p.date));
-
-        return dates;
-    }
-    */
-
 }

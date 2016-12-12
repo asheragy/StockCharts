@@ -2,7 +2,6 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,9 +21,8 @@ import org.cerion.stocklist.indicators.FunctionCall;
 import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Function;
 import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.model.Overlay;
 
-class ChartHolder extends LinearLayout {
+class ChartHolder extends ParametersEditControl {
 
     private static final String TAG = ChartHolder.class.getSimpleName();
 
@@ -40,14 +38,11 @@ class ChartHolder extends LinearLayout {
     }
 
     public ChartHolder(Context context, String symbol) {
-        super(context);
+        super(context, R.layout.chart_holder);
 
         mChartFactory = new ChartFactory(context);
         mSymbol = symbol;
         mListener = (OnDataRequestListener)getContext();
-
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.chart_holder, this, true);
 
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
@@ -88,49 +83,10 @@ class ChartHolder extends LinearLayout {
     }
 
     private void onAddOverlay() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View control = inflater.inflate(R.layout.overlay_parameters, null, false);
-
-        // Fill spinner
-        // TODO make these choices a member variable, they never change for the selected function
-        Spinner sp = (Spinner)control.findViewById(R.id.name);
-        final String[] overlays = new String[Overlay.values().length];
-        for(int i = 0; i < overlays.length; i++) {
-            overlays[i] = Overlay.values()[i].toString();
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, overlays);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sp.setAdapter(adapter);
-        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final OverlayEditControl control = new OverlayEditControl(getContext());
+        control.setOnDelete(new OverlayEditControl.OnDeleteListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Overlay o = Overlay.values()[position];
-                Log.d(TAG, "onSelectOverlay() " + o.toString());
-
-                FunctionDef def = o.getDef();
-                EditText[] fields = new EditText[def.param_count];
-
-                // Add parameters
-                LinearLayout layout = (LinearLayout)control.findViewById(R.id.parameters);
-                layout.removeAllViews();
-                for(int i = 0; i < def.param_count; i++) {
-                    Number n = def.default_values[i];
-                    fields[i] = getInputField(n);
-                    layout.addView(fields[i]);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        // Remove button
-        control.findViewById(R.id.remove).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            public void delete() {
                 mOverlays.removeView(control);
             }
         });
@@ -154,22 +110,7 @@ class ChartHolder extends LinearLayout {
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
                     //Get parameters and redraw chart
                     if (def.param_count > 0) {
-
-                        Number p[] = def.default_values; // Use defaults in-case anything is invalid
-                        for (int i = 0; i < def.param_count; i++) {
-                            try {
-                                String entered = fields[i].getText().toString();
-                                if (p[i] instanceof Integer) {
-                                    p[i] = Integer.parseInt(entered);
-                                } else {
-                                    p[i] = Double.parseDouble(entered); // TODO should be float?
-                                }
-                            } catch(Exception e) {
-                                // Reset input field to default value
-                                fields[i].setText(p[i] + "");
-                            }
-
-                        }
+                        Number p[] = getParameters(def.default_values);
                         mChartParams.function = new FunctionCall(mChartParams.function.id, p);
                     }
 
@@ -178,34 +119,8 @@ class ChartHolder extends LinearLayout {
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
-                        View o = mOverlays.getChildAt(i);
-                        //Log.d(TAG, "process overlay");
-
-                        Spinner name = (Spinner)o.findViewById(R.id.name);
-                        int index = name.getSelectedItemPosition();
-                        Overlay overlay = Overlay.values()[index];
-                        FunctionDef overlayDef = overlay.getDef();
-                        LinearLayout parameters = (LinearLayout)o.findViewById(R.id.parameters);
-
-                        Number p[] = overlayDef.default_values; // Use defaults in-case anything is invalid
-                        for (int j = 0; j < overlayDef.param_count; j++) {
-
-                            EditText field = (EditText)parameters.getChildAt(j);
-                            try {
-                                String entered = field.getText().toString();
-                                if (p[j] instanceof Integer) {
-                                    p[j] = Integer.parseInt(entered);
-                                } else {
-                                    p[j] = Float.parseFloat(entered);
-                                }
-                            } catch(Exception e) {
-                                // Reset input field to default value
-                                field.setText(p[j] + "");
-                            }
-                        }
-
-                        OverlayDataSet ods = new OverlayDataSet(overlay, p);
-                        mChartParams.overlays.add(ods);
+                        OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
+                        mChartParams.overlays.add(editControl.getDataSet());
                     }
 
                     mListener.onRequest(ChartHolder.this, mSymbol, getInterval());
@@ -275,15 +190,6 @@ class ChartHolder extends LinearLayout {
     public void addOverlay(OverlayDataSet overlay) {
         mChartParams.overlays.add(overlay);
         reload();
-    }
-
-    public EditText getInputField(Number n) {
-        final EditText input = new EditText(getContext());
-        input.setText(n.toString());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-
-        return input;
     }
 
     private void reload() {
