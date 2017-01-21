@@ -10,8 +10,8 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
-import org.cerion.stocklist.YahooFinance;
 import org.cerion.stocklist.model.Quote;
+import org.cerion.stocklist.web.YahooFinance;
 
 import java.text.DecimalFormat;
 

@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.arrays.BandArray;
@@ -35,9 +36,7 @@ import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.MACDArray;
 import org.cerion.stocklist.arrays.PairArray;
 import org.cerion.stocklist.arrays.ValueArray;
-import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.indicators.FunctionCall;
-import org.cerion.stocklist.model.Function;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,24 +48,30 @@ class ChartFactory {
 
     private Context mContext;
 
-    private static final int CHART_HEIGHT = 800;
+    private static final int CHART_HEIGHT_PRICE = 800;
+    private static final int CHART_HEIGHT = 400;
     private static DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
+    //private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM 'yy");
     private Description mDesc = new Description();
+    private boolean mLogScale = false;
+    private StockDataManager mDataManager;
 
     ChartFactory(Context context) {
         mContext = context;
         mDesc.setText("");
+        mDataManager = new StockDataManager(mContext);
     }
 
-    Chart getChart(PriceList list, ChartParams params) {
-        if(params.function.id == Function.PRICE) {
-            return getCandleChart(list, params.overlays);
-        }
-        if(params.function.id == Function.VOLUME) {
-            return getVolumeChart(list, params.overlays);
+    Chart getChart(ChartParams params) {
+        mLogScale = params.logscale;
+        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
+
+        switch(params.function.id) {
+            case PRICE:  return getCandleChart(list, params);
+            case VOLUME: return getVolumeChart(list, params);
         }
 
-        return getLineChart(list, params.function, params.overlays);
+        return getLineChart(list, params);
     }
 
     Chart getEmptyChart() {
@@ -77,8 +82,8 @@ class ChartFactory {
     }
 
     private class EntrySet {
-        public EntrySet() {}
-        public EntrySet(int color) {
+        EntrySet() {}
+        EntrySet(int color) {
             this.color = color;
         }
 
@@ -86,14 +91,18 @@ class ChartFactory {
         int color = Color.BLACK;
     }
 
-    private Chart getCandleChart(PriceList list, List<OverlayDataSet> overlays) {
+    private Chart getCandleChart(PriceList list, ChartParams params) {
         CombinedChart chart = new CombinedChart(mContext);
         setChartDefaults(chart, list);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
 
         ArrayList<CandleEntry> entries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             Price p = list.get(i);
-            entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
+            if(mLogScale)
+                entries.add(new CandleEntry(i, (float)Math.log(p.high+1), (float)Math.log(p.low+1), (float)Math.log(p.open+1), (float)Math.log(p.close+1))); // order is high, low, open, close
+            else
+                entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
         }
 
         CandleDataSet dataSet = new CandleDataSet(entries, "Price");
@@ -104,48 +113,44 @@ class ChartFactory {
         dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
         CandleData candleData = new CandleData(dataSet);
 
+        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list.getClose(), params.overlays);
+        /*
         List<ILineDataSet> sets = new ArrayList<>();
-        if(overlays != null) {
+        if(params.overlays != null) {
             FloatArray base = list.getClose();
-            for (OverlayDataSet overlay : overlays) {
+            for (OverlayDataSet overlay : params.overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
+        */
 
         LineData lineData = new LineData(sets);
         CombinedData data = new CombinedData();
-        data.setData(lineData);
         data.setData(candleData);
+        data.setData(lineData);
+        chart.setDrawOrder( new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
         chart.setData(data);
 
+        setLegend(chart, params);
+
         return chart;
     }
 
-    private Chart getLineChart(PriceList list, FunctionCall functionCall, List<OverlayDataSet> overlays) {
+    private Chart getLineChart(PriceList list, ChartParams params) {
         LineChart chart = new LineChart(mContext);
         setChartDefaults(chart, list);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE); // TODO this may be the smaller height
 
-        ValueArray arr = functionCall.eval(list);
-        LineData lineData = getLineData(arr, overlays);
+        ValueArray arr = params.function.eval(list);
+        LineData lineData = getLineData(arr, params.overlays);
         chart.setData(lineData);
 
-        // Set labels so multi-line sets are not duplicated on legend
-        int size = (overlays != null ? overlays.size() + 1 : 1);
-        LegendEntry[] le = new LegendEntry[size];
-        le[0] = new LegendEntry(getLabel(functionCall), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, Color.BLACK);
+        setLegend(chart, params);
 
-        if(overlays != null) {
-            for (int i = 1; i <= overlays.size(); i++) {
-                OverlayDataSet o = overlays.get(i - 1);
-                le[i] = new LegendEntry(o.getLabel(), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, o.getColor());
-            }
-        }
-
-        chart.getLegend().setCustom(le);
         return chart;
     }
 
-    private Chart getVolumeChart(PriceList list, List<OverlayDataSet> overlays) {
+    private Chart getVolumeChart(PriceList list, ChartParams params) {
         CombinedChart chart = new CombinedChart(mContext);
         setChartDefaults(chart, list);
 
@@ -158,21 +163,27 @@ class ChartFactory {
         dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
 
-        List<ILineDataSet> sets = new ArrayList<>();
 
         // Should only apply to FloatArray or VolumeArray
-        if(overlays != null) {
-            VolumeArray base = list.getVolume();
-            for (OverlayDataSet overlay : overlays) {
+        /*
+        List<ILineDataSet> sets = new ArrayList<>();
+        if(params.overlays != null) {
+            FloatArray base = list.getVolume();
+            for (OverlayDataSet overlay : params.overlays) {
                 sets.addAll(overlay.getDataSets(base));
             }
         }
+        */
+
+        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list.getVolume(), params.overlays);
 
         LineData lineData = new LineData(sets);
         CombinedData data = new CombinedData();
         data.setData(barData);
         data.setData(lineData);
         chart.setData(data);
+
+        setLegend(chart, params);
 
         return chart;
     }
@@ -190,8 +201,26 @@ class ChartFactory {
         xaxis.setValueFormatter(getAxisFormatter(list));
     }
 
+    private void setLegend(Chart chart, ChartParams params) {
+        List<OverlayDataSet> overlays = params.overlays;
+
+        // Set labels so multi-line sets are not duplicated on legend
+        int size = (overlays != null ? overlays.size() + 1 : 1);
+        LegendEntry[] le = new LegendEntry[size];
+        le[0] = new LegendEntry(getLabel(params.function), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, Color.BLACK);
+
+        if(overlays != null) {
+            for (int i = 1; i <= overlays.size(); i++) {
+                OverlayDataSet o = overlays.get(i - 1);
+                le[i] = new LegendEntry(o.getLabel(), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, o.getColor());
+            }
+        }
+
+        chart.getLegend().setCustom(le);
+    }
+
     private LineData getLineData(ValueArray base, List<OverlayDataSet> overlays) {
-        List<ILineDataSet> sets = null;
+        List<ILineDataSet> sets;
 
         if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
             EntrySet macd = new EntrySet();
@@ -218,14 +247,6 @@ class ChartFactory {
 
             sets = getLineDataSets(pos, neg);
 
-        } else if(base instanceof FloatArray) {
-            EntrySet es = new EntrySet();
-            FloatArray arr = (FloatArray)base;
-            for (int i = 0; i < base.size(); i++) {
-                es.entries.add(new Entry(i, arr.get(i)));
-            }
-            sets = getLineDataSets(es);
-
         } else if(base instanceof BandArray) {
             EntrySet upper = new EntrySet(Color.RED);
             EntrySet lower = new EntrySet(Color.RED);
@@ -239,13 +260,23 @@ class ChartFactory {
             }
 
             sets = getLineDataSets(upper, lower, mid);
-        }
-
-        // Should only apply to FloatArray or VolumeArray
-        if(overlays != null) {
-            for (OverlayDataSet overlay : overlays) {
-                sets.addAll(overlay.getDataSets(base));
+        } else { // FloatArray
+            EntrySet es = new EntrySet();
+            FloatArray arr = (FloatArray)base;
+            for (int i = 0; i < base.size(); i++) {
+                es.entries.add(new Entry(i, arr.get(i)));
             }
+            sets = getLineDataSets(es);
+
+            // Only FloatArray can have overlays
+            /*
+            if(overlays != null) {
+                for (OverlayDataSet overlay : overlays) {
+                    sets.addAll(overlay.getDataSets(base));
+                }
+            }
+            */
+            sets.addAll( OverlayDataSet.getLineDataSets(arr, overlays));
         }
 
         return new LineData(sets);
@@ -276,7 +307,7 @@ class ChartFactory {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 int v = (int)value;
-                return mDateFormat.format(dates[v]);
+                return mDateFormat.format(dates[v]); // TODO format based on interval
             }
 
             @Override

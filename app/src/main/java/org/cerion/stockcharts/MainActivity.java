@@ -20,8 +20,8 @@ import android.widget.Toast;
 import org.cerion.stockcharts.charts.ChartsListFragment;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.model.Symbol;
 import org.cerion.stockcharts.positions.PositionListFragment;
+import org.cerion.stocklist.model.Symbol;
 
 import java.util.ArrayList;
 import java.util.Arrays;

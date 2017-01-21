@@ -1,49 +1,47 @@
 package org.cerion.stockcharts.charts;
 
 import android.content.Context;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.PriceList;
+import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stocklist.arrays.FloatArray;
-import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.indicators.FunctionCall;
-import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Function;
+import org.cerion.stocklist.model.FunctionDef;
 import org.cerion.stocklist.model.Interval;
 
 class ChartHolder extends ParametersEditControl {
 
     private static final String TAG = ChartHolder.class.getSimpleName();
 
-    ChartParams mChartParams = new ChartParams();
-    PriceList mList;
+    ChartParams mChartParams;
+    //PriceList mList;
     private String mSymbol;
-    private OnDataRequestListener mListener;
     private ChartFactory mChartFactory;
     private LinearLayout mOverlays;
+    private CheckBox mCheckLogScale;
 
-    public interface OnDataRequestListener {
-        void onRequest(ChartHolder holder, String symbol, Interval interval);
-    }
-
-    public ChartHolder(Context context, String symbol) {
-        super(context, R.layout.chart_holder);
+    public ChartHolder(Context context, String symbol, Interval interval) {
+        super(context, R.layout.view_chart_holder);
 
         mChartFactory = new ChartFactory(context);
         mSymbol = symbol;
-        mListener = (OnDataRequestListener)getContext();
 
+        mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
 
@@ -79,6 +77,8 @@ class ChartHolder extends ParametersEditControl {
             }
         });
 
+        mChartParams = new ChartParams(mSymbol);
+        mChartParams.interval = interval;
         reload();
     }
 
@@ -97,7 +97,6 @@ class ChartHolder extends ParametersEditControl {
     private void onSelect(Function function) {
 
         // Reset selection
-        mChartParams = new ChartParams();
         final FunctionDef def = function.getDef();
         final EditText[] fields = new EditText[def.param_count];
         mChartParams.function = new FunctionCall(function, def.default_values);
@@ -123,7 +122,9 @@ class ChartHolder extends ParametersEditControl {
                         mChartParams.overlays.add(editControl.getDataSet());
                     }
 
-                    mListener.onRequest(ChartHolder.this, mSymbol, getInterval());
+                    mChartParams.logscale = mCheckLogScale.isChecked();
+                    //mListener.onRequest(ChartHolder.this, mSymbol);
+                    reload();
                     setInEditMode(false);
                 } else {
                     setInEditMode(true);
@@ -132,7 +133,7 @@ class ChartHolder extends ParametersEditControl {
         });
 
         // If overlay is not allowed then hide it
-        if(def.result != FloatArray.class && def.result != VolumeArray.class) {
+        if(def.result != FloatArray.class) {
             findViewById(R.id.add_overlay).setVisibility(View.GONE);
         }
 
@@ -171,6 +172,7 @@ class ChartHolder extends ParametersEditControl {
 
     }
 
+    /*
     private Interval getInterval() {
         Spinner spInterval = (Spinner)findViewById(R.id.interval);
         Interval interval = Interval.DAILY;
@@ -181,28 +183,65 @@ class ChartHolder extends ParametersEditControl {
 
         return interval;
     }
+    */
 
+    /*
     public void loadChart(PriceList list) {
         mList = list;
         reload();
     }
+    */
 
+    /*
     public void addOverlay(OverlayDataSet overlay) {
         mChartParams.overlays.add(overlay);
         reload();
     }
+    */
+
+    private void setChart(Chart chart) {
+        final FrameLayout frame = (FrameLayout) findViewById(R.id.chart_frame);
+        frame.removeAllViews();
+        frame.addView(chart);
+    }
+
+    public void reload(Interval interval) {
+        mChartParams.interval = interval;
+        reload();
+    }
 
     private void reload() {
-        FrameLayout frame = (FrameLayout)findViewById(R.id.chart_frame);
-        frame.removeAllViews();
-
-        Chart chart;
-        if(mList != null)
-            chart = mChartFactory.getChart(mList, mChartParams);
+        if(mChartParams != null && mChartParams.function != null)
+            reload_async();
         else
-            chart = mChartFactory.getEmptyChart();
+            setChart(mChartFactory.getEmptyChart());
+    }
 
-        frame.addView(chart);
+    private void reload_async() {
+        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+
+            Chart chart;
+            @Override
+            public void run() {
+                if (Looper.myLooper() == null)
+                    Looper.prepare(); // This is needed to create a new chart instance inside a different thread
+
+                chart = mChartFactory.getChart(mChartParams);
+                if( Looper.myLooper() != null)
+                    Looper.myLooper().quit();
+            }
+
+            @Override
+            public void onFinish() {
+                setChart(chart);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
+        task.execute();
     }
 
 }

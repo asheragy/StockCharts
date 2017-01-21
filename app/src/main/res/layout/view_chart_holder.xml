@@ -5,12 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/chart_frame">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/chart_frame">
+        </FrameLayout>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/loading_progressBar"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -29,6 +44,13 @@
             android:id="@+id/remove"
             android:layout_weight="1" />
 
+        <CheckBox
+            android:text="Log Scale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_logscale"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -36,13 +58,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <Spinner
-            android:id="@+id/interval"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:entries="@array/intervals" />
 
         <Spinner
             android:id="@+id/function"

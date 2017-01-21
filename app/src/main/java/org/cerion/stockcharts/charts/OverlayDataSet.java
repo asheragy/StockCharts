@@ -1,12 +1,14 @@
 package org.cerion.stockcharts.charts;
 
+import android.text.TextUtils;
+
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.ValueArray;
-import org.cerion.stocklist.arrays.VolumeArray;
 import org.cerion.stocklist.model.Overlay;
 
 import java.util.ArrayList;
@@ -20,13 +22,7 @@ class OverlayDataSet {
     private Number p2;
     private Number p3;
     private int mColor;
-
-    private boolean isVolume() {
-        if(mValues.getClass() == VolumeArray.class)
-            return true;
-
-        return false;
-    }
+    private Number[] mParams;
 
     private static int i = 0;
 
@@ -36,10 +32,11 @@ class OverlayDataSet {
     }
 
     OverlayDataSet(Overlay type, Number ...params) {
+        mParams = params;
         mType = type;
         mColor = Colors.getOverlay(i++);
 
-        p1 = params[0];
+        p1 = params.length > 0 ? params[0] : null;
         p2 = params.length > 1 ? params[1] : null;
         p3 = params.length > 2 ? params[2] : null;
     }
@@ -64,38 +61,44 @@ class OverlayDataSet {
         return mType;
     }
 
-    private ValueArray eval()
-    {
-        if(isVolume())
-        {
-            VolumeArray values = (VolumeArray) mValues;
-            switch (mType) {
-                case SMA: return values.sma((int)p1);
-                case EMA: return values.ema((int)p1);
+    public static List<ILineDataSet> getLineDataSets(FloatArray base, List<OverlayDataSet> overlays) {
+        List<ILineDataSet> sets = new ArrayList<>();
+        if(overlays != null) {
+            for (OverlayDataSet overlay : overlays) {
+                sets.addAll(overlay.getDataSets(base));
             }
-        } else {
+        }
 
-            FloatArray values = (FloatArray) mValues;
-            switch (mType) {
-                case SMA: return values.sma((int)p1);
-                case EMA: return values.ema((int)p1);
-                case BB: return values.bb((int)p1,(float)p2);
-                case KAMA: return values.kama((int)p1,(int)p2,(int)p3);
-            }
+        return sets;
+    }
+
+    private ValueArray eval() {
+        FloatArray values = (FloatArray) mValues;
+        switch (mType) {
+            case SMA: return values.sma((int)p1);
+            case EMA: return values.ema((int)p1);
+            case BB: return values.bb((int)p1,(float)p2);
+            case KAMA: return values.kama((int)p1,(int)p2,(int)p3);
+            case LINE: return values.line((float)p1);
+            case LINREG: return values.linearRegressionLine();
         }
 
         return null;
     }
 
     public String getLabel() {
+        return mType.name() + " " + TextUtils.join(",", mParams);
+        /*
         switch(mType) {
             case SMA: return "SMA " + p1;
             case EMA: return "EMA " + p1;
             case BB: return "BB " + p1 + "," + p2;
             case KAMA: return "KAMA " + p1 + "," + p2 + "," + p3;
+            case LINE: return "LINE " + p1;
         }
 
         return "";
+        */
     }
 
     public int getColor() {
@@ -112,19 +115,15 @@ class OverlayDataSet {
         return sets;
     }
 
+    // TODO allow band Array to get FloatArray for upper and lowers
+    // TODO add function to get LineDataSet based on this array
     private LineDataSet getSingleDataSet() {
         ArrayList<Entry> entries = new ArrayList<>();
         ValueArray values = eval();
 
-        if(!isVolume()) {
-            FloatArray f_values = (FloatArray)values;
-            for (int i = 0; i < values.size(); i++)
-                entries.add(new Entry(i, f_values.get(i)));
-        } else {
-            VolumeArray L_values = (VolumeArray)values;
-            for (int i = 0; i < values.size(); i++)
-                entries.add(new Entry(i, L_values.get(i)));
-        }
+        FloatArray f_values = (FloatArray)values;
+        for (int i = 0; i < values.size(); i++)
+            entries.add(new Entry(i, f_values.get(i)));
 
         LineDataSet set = new LineDataSet(entries, getLabel());
         set.setDrawCircles(false);

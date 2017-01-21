@@ -2,17 +2,17 @@ package org.cerion.stockcharts.database;
 
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stockcharts.model.Position;
-import org.cerion.stockcharts.model.Symbol;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.model.Symbol;
 
 import java.util.List;
 
 public interface StockDataStore {
 
     // Symbols
-    List<String> getSymbols();
+    List<Symbol> getSymbols();
     void addSymbol(Symbol symbol);
     void deleteAllSymbols();
 

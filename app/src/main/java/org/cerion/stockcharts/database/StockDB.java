@@ -13,11 +13,12 @@ import org.cerion.stocklist.PriceList;
 import org.cerion.stockcharts.database.StockDBOpenHelper.*;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.model.Symbol;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+// TODO rename to indicate its using SQLite, the interface is the only one that can have a generic nice name
 public class StockDB extends DBBase implements StockDataStore
 {
     private static final String TAG = StockDB.class.getSimpleName();
@@ -38,16 +39,18 @@ public class StockDB extends DBBase implements StockDataStore
     }
 
     @Override
-    public List<String> getSymbols() {
+    public List<Symbol> getSymbols() {
         SQLiteDatabase db = openReadOnly();
 
         Cursor c = db.query(Symbols.TABLE_NAME, null, null, null, null, null, Symbols._NAME); //order by name
-        List<String> result = new ArrayList<>();
+        List<Symbol> result = new ArrayList<>();
 
         if (c != null) {
             while (c.moveToNext()) {
-                String name = c.getString(c.getColumnIndexOrThrow(Symbols._SYMBOL));
-                result.add(name);
+                String symbol = c.getString(c.getColumnIndexOrThrow(Symbols._SYMBOL));
+                String name = c.getString(c.getColumnIndexOrThrow(Symbols._NAME));
+                String exchange = c.getString(c.getColumnIndexOrThrow(Symbols._EXCHANGE));
+                result.add(new Symbol(symbol, name, exchange));
             }
             c.close();
         }
@@ -58,12 +61,15 @@ public class StockDB extends DBBase implements StockDataStore
 
     @Override
     public void addSymbol(Symbol symbol) {
+        SQLiteDatabase db = open();
+
         ContentValues values = new ContentValues();
         values.put(Symbols._SYMBOL, symbol.getSymbol());
         values.put(Symbols._NAME, symbol.getName());
         values.put(Symbols._EXCHANGE, symbol.getExchange());
 
-        insert(Symbols.TABLE_NAME, values);
+        db.insertWithOnConflict(Symbols.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
     }
 
     @Override

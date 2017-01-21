@@ -4,24 +4,28 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.cerion.stockcharts.charts.ChartViewActivity;
-import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.YahooFinance;
+import org.cerion.stocklist.model.Symbol;
+import org.cerion.stocklist.web.IYahooFinance;
+import org.cerion.stocklist.web.YahooFinance;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class StockDataManager {
     private static final String TAG = StockDataManager.class.getSimpleName();
     private StockDataStore mDb;
+    private IYahooFinance mYahooFinance; // TODO yahooFinance class should only be used in this file
     private Context mContext;
 
     public StockDataManager(Context context) {
         mDb = StockDB.getInstance(context);
         mContext = context;
+        mYahooFinance = new YahooFinance();
     }
 
     public void updatePrices(String symbol, Interval interval) {
@@ -37,6 +41,7 @@ public class StockDataManager {
     }
 
     public PriceList getLatestPrices(String symbol, Interval interval) {
+
         HistoricalDates dates = mDb.getHistoricalDates(symbol, interval);
         boolean update = false;
 
@@ -61,6 +66,20 @@ public class StockDataManager {
             updatePrices(symbol, interval);
 
         return mDb.getPriceList(symbol, interval);
+    }
+
+    public boolean insertSymbol(String symbol) {
+        // TODO For now just always update, look into optimizing
+
+        List<String> arr = new ArrayList<>();
+        arr.add(symbol);
+        List<Symbol> s = mYahooFinance.getSymbols(arr);
+        if(s.size() > 0 && s.get(0) != null) {
+            mDb.addSymbol(s.get(0));
+            return true;
+        }
+
+        return false;
     }
 
 }
