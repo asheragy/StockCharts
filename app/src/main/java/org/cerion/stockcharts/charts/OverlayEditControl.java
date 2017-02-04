@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.model.FunctionDef;
-import org.cerion.stocklist.model.Overlay;
+import org.cerion.stocklist.functions.FunctionDef;
+import org.cerion.stocklist.functions.Overlay;
 
 public class OverlayEditControl extends ParametersEditControl {
 
@@ -44,12 +44,12 @@ public class OverlayEditControl extends ParametersEditControl {
                 Log.d(TAG, "onSelectOverlay() " + o.toString());
 
                 FunctionDef def = o.getDef();
-                EditText[] fields = new EditText[def.param_count];
+                EditText[] fields = new EditText[def.paramCount()];
 
                 // Add parameters
                 LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
                 layout.removeAllViews();
-                for(int i = 0; i < def.param_count; i++) {
+                for(int i = 0; i < def.paramCount(); i++) {
                     Number n = def.default_values[i];
                     fields[i] = getInputField(n);
                     layout.addView(fields[i]);

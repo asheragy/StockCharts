@@ -25,10 +25,24 @@ public class ChartViewActivity extends AppCompatActivity {
         mSymbol = getIntent().getStringExtra(EXTRA_SYMBOL);
         mCharts = (LinearLayout) findViewById(R.id.charts);
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.add_price).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAddChart();
+                onAddPriceChart();
+            }
+        });
+
+        findViewById(R.id.add_volume).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddVolumeChart();
+            }
+        });
+
+        findViewById(R.id.add_indicator).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddIndicatorChart();
             }
         });
 
@@ -53,21 +67,33 @@ public class ChartViewActivity extends AppCompatActivity {
             }
         });
 
+        //onAddPriceChart();
+        //onAddVolumeChart();
     }
 
     private void onSelectInterval(Interval interval) {
         mInterval = interval;
         for(int i = 0; i < mCharts.getChildCount(); i++) {
-            ChartHolder holder = (ChartHolder)mCharts.getChildAt(i);
+            ChartHolderBase holder = (ChartHolderBase)mCharts.getChildAt(i);
             //onRequest(holder, mSymbol);
             holder.reload(interval);
         }
     }
 
-    private void onAddChart() {
-        final ChartHolder holder = new ChartHolder(this, mSymbol, mInterval);
+    private void onAddPriceChart() {
+        addHolder(new ChartHolderPrice(this, mSymbol, mInterval));
+    }
 
-        holder.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+    private void onAddVolumeChart() {
+        addHolder(new ChartHolderVolume(this, mSymbol, mInterval));
+    }
+
+    private void onAddIndicatorChart() {
+        addHolder(new ChartHolderIndicator(this, mSymbol, mInterval));
+    }
+
+    private void addHolder(final ChartHolderBase holder) {
+        holder.setOnRemoveClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCharts.removeView(holder);

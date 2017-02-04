@@ -9,7 +9,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.ValueArray;
-import org.cerion.stocklist.model.Overlay;
+import org.cerion.stocklist.functions.Overlay;
 
 import java.util.ArrayList;
 import java.util.List;

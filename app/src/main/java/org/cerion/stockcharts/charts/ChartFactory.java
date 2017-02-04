@@ -36,7 +36,8 @@ import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.MACDArray;
 import org.cerion.stocklist.arrays.PairArray;
 import org.cerion.stocklist.arrays.ValueArray;
-import org.cerion.stocklist.indicators.FunctionCall;
+import org.cerion.stocklist.functions.FunctionCall;
+import org.cerion.stocklist.functions.Indicator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -62,16 +63,21 @@ class ChartFactory {
         mDataManager = new StockDataManager(mContext);
     }
 
-    Chart getChart(ChartParams params) {
+    Chart getPriceChart(ChartParams params) {
         mLogScale = params.logscale;
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
+        return getCandleChart(list, params);
+    }
 
-        switch(params.function.id) {
-            case PRICE:  return getCandleChart(list, params);
-            case VOLUME: return getVolumeChart(list, params);
-        }
-
+    Chart getIndicatorChart(ChartParams params) {
+        mLogScale = params.logscale;
+        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
         return getLineChart(list, params);
+    }
+
+    Chart getVolumeChart(ChartParams params) {
+        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
+        return getVolumeChart(list, params);
     }
 
     Chart getEmptyChart() {
@@ -131,7 +137,7 @@ class ChartFactory {
         chart.setDrawOrder( new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
         chart.setData(data);
 
-        setLegend(chart, params);
+        setLegend(chart, params, "Price");
 
         return chart;
     }
@@ -139,13 +145,13 @@ class ChartFactory {
     private Chart getLineChart(PriceList list, ChartParams params) {
         LineChart chart = new LineChart(mContext);
         setChartDefaults(chart, list);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE); // TODO this may be the smaller height
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
 
         ValueArray arr = params.function.eval(list);
         LineData lineData = getLineData(arr, params.overlays);
         chart.setData(lineData);
 
-        setLegend(chart, params);
+        setLegend(chart, params, getLabel(params.function));
 
         return chart;
     }
@@ -183,7 +189,7 @@ class ChartFactory {
         data.setData(lineData);
         chart.setData(data);
 
-        setLegend(chart, params);
+        setLegend(chart, params, "Volume");
 
         return chart;
     }
@@ -201,13 +207,14 @@ class ChartFactory {
         xaxis.setValueFormatter(getAxisFormatter(list));
     }
 
-    private void setLegend(Chart chart, ChartParams params) {
+    private void setLegend(Chart chart, ChartParams params, String label) {
         List<OverlayDataSet> overlays = params.overlays;
 
         // Set labels so multi-line sets are not duplicated on legend
         int size = (overlays != null ? overlays.size() + 1 : 1);
         LegendEntry[] le = new LegendEntry[size];
-        le[0] = new LegendEntry(getLabel(params.function), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, Color.BLACK);
+
+        le[0] = new LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, Color.BLACK);
 
         if(overlays != null) {
             for (int i = 1; i <= overlays.size(); i++) {
@@ -297,7 +304,7 @@ class ChartFactory {
     }
 
     private static String getLabel(FunctionCall call) {
-        return call.id.name() + " " + TextUtils.join(",", call.params);
+        return ((Indicator)call.id).name() + " " + TextUtils.join(",", call.params);
     }
 
     private IAxisValueFormatter getAxisFormatter(PriceList list) {
