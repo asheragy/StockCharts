@@ -12,21 +12,14 @@ import org.cerion.stocklist.model.Interval;
 class ChartHolderPrice extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
-    private CheckBox mCheckLogScale;
 
     public ChartHolderPrice(Context context, String symbol, Interval interval) {
         super(context, symbol, interval);
 
-        mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
+        mChartParams = mChartParams.toPrice();
 
         findViewById(R.id.function).setVisibility(View.GONE);
-
-        findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddOverlay();
-            }
-        });
+        findViewById(R.id.check_linechart).setVisibility(View.VISIBLE);
 
         init();
         reload();
@@ -51,7 +44,8 @@ class ChartHolderPrice extends ChartHolderBase {
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
-                    //mListener.onRequest(ChartHolder.this, mSymbol);
+                    params().lineChart = ((CheckBox)findViewById(R.id.check_linechart)).isChecked();
+
                     reload();
                     setInEditMode(false);
                 } else {
@@ -62,9 +56,13 @@ class ChartHolderPrice extends ChartHolderBase {
 
     }
 
+    private ChartParams.Price params() {
+        return (ChartParams.Price)mChartParams;
+    }
+
     @Override
     public Chart getChart() {
-        return mChartFactory.getPriceChart(mChartParams);
+        return mChartFactory.getPriceChart(params());
     }
 
 }

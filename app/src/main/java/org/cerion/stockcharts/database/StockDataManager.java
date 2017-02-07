@@ -12,9 +12,12 @@ import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StockDataManager {
     private static final String TAG = StockDataManager.class.getSimpleName();
@@ -71,8 +74,7 @@ public class StockDataManager {
     public boolean insertSymbol(String symbol) {
         // TODO For now just always update, look into optimizing
 
-        List<String> arr = new ArrayList<>();
-        arr.add(symbol);
+        Set<String> arr = new HashSet<>(Arrays.asList(symbol));
         List<Symbol> s = mYahooFinance.getSymbols(arr);
         if(s.size() > 0 && s.get(0) != null) {
             mDb.addSymbol(s.get(0));

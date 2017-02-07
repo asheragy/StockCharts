@@ -20,13 +20,6 @@ class ChartHolderVolume extends ChartHolderBase {
         Spinner sp = (Spinner)findViewById(R.id.function);
         sp.setVisibility(View.GONE);
 
-        findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddOverlay();
-            }
-        });
-
         init();
         reload();
     }
@@ -49,6 +42,7 @@ class ChartHolderVolume extends ChartHolderBase {
                         mChartParams.overlays.add(editControl.getDataSet());
                     }
 
+                    mChartParams.logscale = mCheckLogScale.isChecked();
                     reload();
                     setInEditMode(false);
                 } else {

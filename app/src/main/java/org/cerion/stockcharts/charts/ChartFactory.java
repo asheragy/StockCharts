@@ -54,8 +54,10 @@ class ChartFactory {
     private static DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
     //private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM 'yy");
     private Description mDesc = new Description();
-    private boolean mLogScale = false;
+    //private boolean mLogScale = false;
     private StockDataManager mDataManager;
+
+    // TODO cache lists here, if the same one is requested multiple times hold it
 
     ChartFactory(Context context) {
         mContext = context;
@@ -63,14 +65,18 @@ class ChartFactory {
         mDataManager = new StockDataManager(mContext);
     }
 
-    Chart getPriceChart(ChartParams params) {
-        mLogScale = params.logscale;
+    Chart getPriceChart(ChartParams.Price params) {
+        // TODO check logscale and convert here
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
+
+        if(params.lineChart)
+            return getPriceLineChart(list, params);
+
         return getCandleChart(list, params);
     }
 
-    Chart getIndicatorChart(ChartParams params) {
-        mLogScale = params.logscale;
+    Chart getIndicatorChart(ChartParams.Indicator params) {
+        //mLogScale = params.logscale;
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
         return getLineChart(list, params);
     }
@@ -105,7 +111,7 @@ class ChartFactory {
         ArrayList<CandleEntry> entries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             Price p = list.get(i);
-            if(mLogScale)
+            if(params.logscale)
                 entries.add(new CandleEntry(i, (float)Math.log(p.high+1), (float)Math.log(p.low+1), (float)Math.log(p.open+1), (float)Math.log(p.close+1))); // order is high, low, open, close
             else
                 entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
@@ -119,7 +125,7 @@ class ChartFactory {
         dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
         CandleData candleData = new CandleData(dataSet);
 
-        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list.getClose(), params.overlays);
+        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list, params.overlays);
         /*
         List<ILineDataSet> sets = new ArrayList<>();
         if(params.overlays != null) {
@@ -142,7 +148,19 @@ class ChartFactory {
         return chart;
     }
 
-    private Chart getLineChart(PriceList list, ChartParams params) {
+    private Chart getPriceLineChart(PriceList list, ChartParams.Price params) {
+        LineChart chart = new LineChart(mContext);
+        setChartDefaults(chart, list);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
+
+        LineData lineData = getLineData(list.getClose(), params.overlays);
+        chart.setData(lineData);
+
+        setLegend(chart, params, "Price");
+        return chart;
+    }
+
+    private Chart getLineChart(PriceList list, ChartParams.Indicator params) {
         LineChart chart = new LineChart(mContext);
         setChartDefaults(chart, list);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
@@ -162,7 +180,10 @@ class ChartFactory {
 
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            barEntries.add(new BarEntry(i, list.volume(i)));
+            if(params.logscale)
+                barEntries.add(new BarEntry(i, (float)Math.log(list.volume(i)) ));
+            else
+                barEntries.add(new BarEntry(i, list.volume(i)));
         }
 
         BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
@@ -243,6 +264,8 @@ class ChartFactory {
 
             sets = getLineDataSets(macd, signal, hist);
         } else if(base instanceof PairArray) {
+
+            /*
             EntrySet pos = new EntrySet(Color.GREEN);
             EntrySet neg = new EntrySet(Color.RED);
 
@@ -253,8 +276,13 @@ class ChartFactory {
             }
 
             sets = getLineDataSets(pos, neg);
+            */
 
-        } else if(base instanceof BandArray) {
+            sets = Tools.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
+
+        }
+        /* Top level chart won't be a band array
+        else if(base instanceof BandArray) {
             EntrySet upper = new EntrySet(Color.RED);
             EntrySet lower = new EntrySet(Color.RED);
             EntrySet mid = new EntrySet();
@@ -267,7 +295,8 @@ class ChartFactory {
             }
 
             sets = getLineDataSets(upper, lower, mid);
-        } else { // FloatArray
+        } */
+        else { // FloatArray
             EntrySet es = new EntrySet();
             FloatArray arr = (FloatArray)base;
             for (int i = 0; i < base.size(); i++) {

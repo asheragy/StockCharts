@@ -22,12 +22,13 @@ import org.cerion.stocklist.model.Interval;
 class ChartHolderIndicator extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
-    private CheckBox mCheckLogScale;
+
 
     public ChartHolderIndicator(Context context, String symbol, Interval interval) {
         super(context, symbol, interval);
 
-        mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
+        mChartParams = mChartParams.toIndicator();
+        mCheckLogScale.setVisibility(View.GONE);
 
         // Fill spinner
         Spinner sp = (Spinner)findViewById(R.id.function);
@@ -54,16 +55,12 @@ class ChartHolderIndicator extends ChartHolderBase {
             }
         });
 
-
-        findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddOverlay();
-            }
-        });
-
         setIndicator(Indicator.values()[0]);
         reload();
+    }
+
+    private ChartParams.Indicator params() {
+        return (ChartParams.Indicator)mChartParams;
     }
 
     private void setIndicator(Indicator indicator) {
@@ -71,7 +68,7 @@ class ChartHolderIndicator extends ChartHolderBase {
         // Reset selection
         final FunctionDef def = indicator.getDef();
         final EditText[] fields = new EditText[def.paramCount()];
-        mChartParams.function = new FunctionCall(indicator, def.default_values);
+        params().function = new FunctionCall(indicator, def.default_values);
 
         findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +79,7 @@ class ChartHolderIndicator extends ChartHolderBase {
                     //Get parameters and redraw chart
                     if (def.paramCount() > 0) {
                         Number p[] = getParameters(def.default_values);
-                        mChartParams.function = new FunctionCall(mChartParams.function.id, p);
+                        params().function = new FunctionCall(params().function.id, p);
                     }
 
                     OverlayDataSet.resetColors();
@@ -107,7 +104,10 @@ class ChartHolderIndicator extends ChartHolderBase {
         // If overlay is not allowed then hide it
         if(def.result != FloatArray.class) {
             findViewById(R.id.add_overlay).setVisibility(View.GONE);
+            mOverlays.removeAllViews();
         }
+        else
+            findViewById(R.id.add_overlay).setVisibility(View.VISIBLE);
 
         // Add parameters
         LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
@@ -121,10 +121,10 @@ class ChartHolderIndicator extends ChartHolderBase {
 
     @Override
     public Chart getChart() {
-        if(mChartParams == null || mChartParams.function == null)
+        if(mChartParams == null || params().function == null)
             return mChartFactory.getEmptyChart();
 
-        return mChartFactory.getIndicatorChart(mChartParams);
+        return mChartFactory.getIndicatorChart(params());
     }
     
 }

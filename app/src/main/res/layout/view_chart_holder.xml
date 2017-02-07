@@ -44,12 +44,6 @@
             android:id="@+id/remove"
             android:layout_weight="1" />
 
-        <CheckBox
-            android:text="Log Scale"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/check_logscale"
-            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -58,6 +52,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <CheckBox
+            android:text="Log Scale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_logscale" />
+
+        <CheckBox
+            android:text="Line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/check_linechart"
+            android:visibility="gone"/>
 
         <Spinner
             android:id="@+id/function"

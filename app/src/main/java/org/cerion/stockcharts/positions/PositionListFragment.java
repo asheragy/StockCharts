@@ -21,13 +21,16 @@ import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Quote;
+import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PositionListFragment extends ListFragment {
     private static final String TAG = PositionListFragment.class.getSimpleName();
@@ -179,7 +182,7 @@ public class PositionListFragment extends ListFragment {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                Map<String, String> downloaded = new HashMap<>();
+                Map<String, String> downloaded = new HashMap<>(); // TODO convert list to set instead of this
                 for(Position p : mPositions)
                 {
                     String symbol = p.getSymbol();
@@ -208,24 +211,23 @@ public class PositionListFragment extends ListFragment {
         mSwipeRefresh.setRefreshing(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+            private IYahooFinance api = new YahooFinance();
+
+            private Map<String,Quote> getQuotes(List<Position> positions) {
+                Set<String> symbols = new HashSet<>();
+                for(Position p : mPositions)
+                    symbols.add(p.getSymbol());
+
+                return api.getQuotes(symbols);
+            }
+
             @Override
             public void run() {
-                // Local cache
-                Map<String, Quote> cache = new HashMap<>();
+                Map<String,Quote> quotes = getQuotes(mPositions);
 
-                for(Position p : mPositions)
-                {
+                for(Position p : mPositions) {
                     String symbol = p.getSymbol();
-                    Quote q;
-                    if(cache.containsKey(symbol)) {
-                        Log.d(TAG,"Using cached quote");
-                        q = cache.get(symbol);
-                    }
-                    else {
-                        Log.d(TAG,"Getting quote for " + symbol);
-                        q = YahooFinance.getQuote(symbol);
-                        cache.put(symbol, q);
-                    }
+                    Quote q = quotes.get(symbol);
 
                     p.setCurrPrice(q.lastTrade);
 
@@ -244,14 +246,14 @@ public class PositionListFragment extends ListFragment {
                     if(refreshList) {
                         // TODO not sure its possible at the moment to get this so a manual menu option is added for now
                         if(q.dividendDate == null) {
-                            Log.d(TAG,"Unable to determine if dividends were updated, skipping for now");
+                            Log.d(TAG,symbol + ": Unable to determine if dividends were updated, skipping for now");
                         } else {
                             list = YahooFinance.getDividends(symbol);
                             Log.d(TAG, "downloaded new list, size = " + list.size());
                             mDb.addDividends(symbol, list);
                         }
                     } else {
-                        Log.d(TAG, "using previous list");
+                        //Log.d(TAG, "using previous list");
                     }
 
                     p.addDividends(list);

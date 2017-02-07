@@ -13,34 +13,46 @@ import android.widget.Spinner;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.functions.FunctionDef;
+import org.cerion.stocklist.functions.IFunction;
 import org.cerion.stocklist.functions.Overlay;
+import org.cerion.stocklist.functions.PriceOverlay;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OverlayEditControl extends ParametersEditControl {
 
     private static final String TAG = OverlayEditControl.class.getSimpleName();
     private OnDeleteListener onDeleteListener;
+    private Spinner spOverlays;
+    private List<IFunction> mOverlays = new ArrayList<>();
 
     public interface OnDeleteListener {
         void delete();
     }
 
-    public OverlayEditControl(Context context) {
+    public OverlayEditControl(Context context, boolean prices) {
         super(context, R.layout.overlay_parameters); // TODO rename layout to match class name
 
         // Fill spinner
-        Spinner sp = (Spinner)findViewById(R.id.name);
-        final String[] overlays = new String[Overlay.values().length];
-        for(int i = 0; i < overlays.length; i++) {
-            overlays[i] = Overlay.values()[i].toString();
+        spOverlays = (Spinner)findViewById(R.id.name);
+        for(int i = 0; i < Overlay.values().length; i++) {
+            mOverlays.add(Overlay.values()[i]);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, overlays);
+        if(prices) {
+            for(int i = 0; i < PriceOverlay.values().length; i++) {
+                mOverlays.add(PriceOverlay.values()[i]);
+            }
+        }
+
+        ArrayAdapter<IFunction> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mOverlays);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sp.setAdapter(adapter);
-        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spOverlays.setAdapter(adapter);
+        spOverlays.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Overlay o = Overlay.values()[position];
+                IFunction o = mOverlays.get(position);
                 Log.d(TAG, "onSelectOverlay() " + o.toString());
 
                 FunctionDef def = o.getDef();
@@ -77,11 +89,9 @@ public class OverlayEditControl extends ParametersEditControl {
     }
 
     public OverlayDataSet getDataSet() {
-        Spinner name = (Spinner)findViewById(R.id.name);
-        int index = name.getSelectedItemPosition();
-        Overlay overlay = Overlay.values()[index];
+        int index = spOverlays.getSelectedItemPosition();
+        IFunction overlay = mOverlays.get(index);
         FunctionDef overlayDef = overlay.getDef();
-
         Number p[] = getParameters(overlayDef.default_values);
 
         return new OverlayDataSet(overlay, p);

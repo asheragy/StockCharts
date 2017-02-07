@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,15 +20,24 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     protected LinearLayout mOverlays;
     protected ChartFactory mChartFactory;
     protected ChartParams mChartParams;
+    protected CheckBox mCheckLogScale;
 
     public ChartHolderBase(Context context, String symbol, Interval interval) {
         super(context, R.layout.view_chart_holder);
 
+        mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
 
         mChartFactory = new ChartFactory(context);
         mChartParams = new ChartParams(symbol, interval);
+
+        findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddOverlay();
+            }
+        });
 
         setInEditMode(false);
     }
@@ -58,8 +68,14 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
     }
 
-    protected void onAddOverlay() {
-        final OverlayEditControl control = new OverlayEditControl(getContext());
+    private void onAddOverlay() {
+
+        final OverlayEditControl control;
+        if(getClass() == ChartHolderPrice.class)
+            control = new OverlayEditControl(getContext(), true);
+        else
+            control = new OverlayEditControl(getContext(), false);
+
         control.setOnDelete(new OverlayEditControl.OnDeleteListener() {
             @Override
             public void delete() {
@@ -68,6 +84,7 @@ public abstract class ChartHolderBase extends ParametersEditControl {
         });
 
         mOverlays.addView(control);
+
     }
 
     public void reload(Interval interval) {
