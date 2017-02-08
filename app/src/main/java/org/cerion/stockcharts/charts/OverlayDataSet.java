@@ -3,10 +3,7 @@ package org.cerion.stockcharts.charts;
 import android.graphics.Color;
 import android.text.TextUtils;
 
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineRadarDataSet;
 
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.arrays.BandArray;
@@ -19,12 +16,10 @@ import org.cerion.stocklist.functions.Overlay;
 import org.cerion.stocklist.functions.PriceOverlay;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 class OverlayDataSet {
 
-    //private ValueArray mValues;
     private IFunction mType;
     private Number p1;
     private Number p2;
@@ -102,7 +97,7 @@ class OverlayDataSet {
         return null;
     }
 
-    public String getLabel() {
+    String getLabel() {
         if(mType.getClass() == Overlay.class)
             return ((Overlay)mType).name() + " " + TextUtils.join(",", mParams);
 
@@ -125,48 +120,12 @@ class OverlayDataSet {
 
     private List<ILineDataSet> getDataSets(ValueArray arr) {
         if(arr.getClass() == BandArray.class)
-            return getBandDataSet((BandArray)arr);
+            return DataSetConverter.getBandDataSet((BandArray)arr, mColor);
         if(arr.getClass() == PairArray.class)
-            return Tools.getPairDataSet((PairArray)arr, Color.GREEN, Color.RED);
+            return DataSetConverter.getPairDataSet((PairArray)arr, Color.GREEN, Color.RED);
 
-        return getSingleDataSet((FloatArray)arr);
+        return DataSetConverter.getSingleDataSet((FloatArray)arr, mColor);
     }
 
-    private List<ILineDataSet> getSingleDataSet(FloatArray values) {
-        ArrayList<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < values.size(); i++)
-            entries.add(new Entry(i, values.get(i)));
 
-        LineDataSet set = new LineDataSet(entries, getLabel());
-        set.setDrawCircles(false);
-        set.setDrawValues(false);
-        set.setColor(mColor);
-
-        List<ILineDataSet> result = new ArrayList<>();
-        result.add(set);
-        return result;
-    }
-
-    // TODO refactor to new class and share similar code in ChartFactory
-    private List<ILineDataSet> getBandDataSet(BandArray values) {
-        ArrayList<Entry> entries1 = new ArrayList<>();
-        ArrayList<Entry> entries2 = new ArrayList<>();
-
-        for (int i = 0; i < values.size(); i++) {
-            entries1.add(new Entry(i, values.lower(i)));
-            entries2.add(new Entry(i, values.upper(i)));
-        }
-
-        List<ILineDataSet> sets = new ArrayList<>();
-        sets.add(new LineDataSet(entries1, getLabel()));
-        sets.add(new LineDataSet(entries2, getLabel()));
-
-        for(ILineDataSet set : sets) {
-            ((LineDataSet)set).setDrawCircles(false);
-            set.setDrawValues(false);
-            ((LineDataSet)set).setColor(mColor);
-        }
-
-        return sets;
-    }
 }

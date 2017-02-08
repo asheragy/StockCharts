@@ -2,7 +2,6 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.text.TextUtils;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
@@ -19,19 +18,14 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.cerion.stockcharts.database.StockDataManager;
-import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.arrays.BandArray;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.MACDArray;
 import org.cerion.stocklist.arrays.PairArray;
@@ -68,11 +62,7 @@ class ChartFactory {
     Chart getPriceChart(ChartParams.Price params) {
         // TODO check logscale and convert here
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
-
-        if(params.lineChart)
-            return getPriceLineChart(list, params);
-
-        return getCandleChart(list, params);
+        return getPriceChart(list, params);
     }
 
     Chart getIndicatorChart(ChartParams.Indicator params) {
@@ -93,68 +83,31 @@ class ChartFactory {
         return chart;
     }
 
-    private class EntrySet {
-        EntrySet() {}
-        EntrySet(int color) {
-            this.color = color;
+    private Chart getPriceChart(PriceList list, ChartParams.Price params) {
+        BarLineChartBase chart;
+
+        if(params.lineChart) {
+            chart = new LineChart(mContext);
+            LineData lineData = getLineData(list.getClose(), params.overlays);
+            chart.setData(lineData);
+
+        } else {
+            chart = new CombinedChart(mContext);
+            CombinedData data = new CombinedData();
+            ICandleDataSet dataSet = DataSetConverter.getCandleDataSet(list, params.logscale);
+            CandleData candleData = new CandleData(dataSet);
+            data.setData(candleData);
+
+            List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list, params.overlays);
+            LineData lineData = new LineData(sets);
+            data.setData(lineData);
+
+            ((CombinedChart)chart).setDrawOrder(new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
+            chart.setData(data);
         }
 
-        List<Entry> entries = new ArrayList<>();
-        int color = Color.BLACK;
-    }
-
-    private Chart getCandleChart(PriceList list, ChartParams params) {
-        CombinedChart chart = new CombinedChart(mContext);
         setChartDefaults(chart, list);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
-
-        ArrayList<CandleEntry> entries = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            Price p = list.get(i);
-            if(params.logscale)
-                entries.add(new CandleEntry(i, (float)Math.log(p.high+1), (float)Math.log(p.low+1), (float)Math.log(p.open+1), (float)Math.log(p.close+1))); // order is high, low, open, close
-            else
-                entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
-        }
-
-        CandleDataSet dataSet = new CandleDataSet(entries, "Price");
-        dataSet.setDrawValues(false);
-        dataSet.setDecreasingColor(Colors.CANDLE_DOWN);
-        dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
-        dataSet.setIncreasingColor(Colors.CANDLE_UP);
-        dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
-        CandleData candleData = new CandleData(dataSet);
-
-        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list, params.overlays);
-        /*
-        List<ILineDataSet> sets = new ArrayList<>();
-        if(params.overlays != null) {
-            FloatArray base = list.getClose();
-            for (OverlayDataSet overlay : params.overlays) {
-                sets.addAll(overlay.getDataSets(base));
-            }
-        }
-        */
-
-        LineData lineData = new LineData(sets);
-        CombinedData data = new CombinedData();
-        data.setData(candleData);
-        data.setData(lineData);
-        chart.setDrawOrder( new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
-        chart.setData(data);
-
-        setLegend(chart, params, "Price");
-
-        return chart;
-    }
-
-    private Chart getPriceLineChart(PriceList list, ChartParams.Price params) {
-        LineChart chart = new LineChart(mContext);
-        setChartDefaults(chart, list);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
-
-        LineData lineData = getLineData(list.getClose(), params.overlays);
-        chart.setData(lineData);
 
         setLegend(chart, params, "Price");
         return chart;
@@ -251,85 +204,18 @@ class ChartFactory {
         List<ILineDataSet> sets;
 
         if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
-            EntrySet macd = new EntrySet();
-            EntrySet signal = new EntrySet(Color.RED);
-            EntrySet hist = new EntrySet(Color.BLUE);
-
-            MACDArray arr = (MACDArray) base;
-            for (int i = 0; i < base.size(); i++) {
-                macd.entries.add(  new Entry(i, arr.get(i)));
-                signal.entries.add(new Entry(i, arr.signal(i)));
-                hist.entries.add(  new Entry(i, arr.hist(i)));
-            }
-
-            sets = getLineDataSets(macd, signal, hist);
+            sets = DataSetConverter.getMACDDataSet((MACDArray)base, Color.BLACK, Color.RED, Color.BLUE);
         } else if(base instanceof PairArray) {
-
-            /*
-            EntrySet pos = new EntrySet(Color.GREEN);
-            EntrySet neg = new EntrySet(Color.RED);
-
-            PairArray arr = (PairArray) base;
-            for (int i = 0; i < base.size(); i++) {
-                pos.entries.add(new Entry(i, arr.getPos(i)));
-                neg.entries.add(new Entry(i, arr.getNeg(i)));
-            }
-
-            sets = getLineDataSets(pos, neg);
-            */
-
-            sets = Tools.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
-
-        }
-        /* Top level chart won't be a band array
-        else if(base instanceof BandArray) {
-            EntrySet upper = new EntrySet(Color.RED);
-            EntrySet lower = new EntrySet(Color.RED);
-            EntrySet mid = new EntrySet();
-
-            BandArray arr = (BandArray) base;
-            for (int i = 0; i < base.size(); i++) {
-                upper.entries.add(new Entry(i, arr.upper(i)));
-                lower.entries.add(new Entry(i, arr.lower(i)));
-                mid.entries.add(  new Entry(i, arr.source(i)));
-            }
-
-            sets = getLineDataSets(upper, lower, mid);
-        } */
-        else { // FloatArray
-            EntrySet es = new EntrySet();
+            sets = DataSetConverter.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
+        } else { // FloatArray
             FloatArray arr = (FloatArray)base;
-            for (int i = 0; i < base.size(); i++) {
-                es.entries.add(new Entry(i, arr.get(i)));
-            }
-            sets = getLineDataSets(es);
+            sets = DataSetConverter.getSingleDataSet(arr, Color.BLACK);
 
-            // Only FloatArray can have overlays
-            /*
-            if(overlays != null) {
-                for (OverlayDataSet overlay : overlays) {
-                    sets.addAll(overlay.getDataSets(base));
-                }
-            }
-            */
+            // Add overlays
             sets.addAll( OverlayDataSet.getLineDataSets(arr, overlays));
         }
 
         return new LineData(sets);
-    }
-
-    private List<ILineDataSet> getLineDataSets(EntrySet ...entrySets) {
-        List<ILineDataSet> sets = new ArrayList<>();
-
-        for(EntrySet entrySet : entrySets) {
-            LineDataSet dataSet = new LineDataSet(entrySet.entries, ""); // Ignore label, its set later
-            dataSet.setDrawCircles(false);
-            dataSet.setDrawValues(false);
-            dataSet.setColor(entrySet.color);
-            sets.add(dataSet);
-        }
-
-        return sets;
     }
 
     private static String getLabel(FunctionCall call) {
