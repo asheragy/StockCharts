@@ -11,17 +11,25 @@ import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.model.Position;
 import org.cerion.stocklist.model.Quote;
+import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 
 public class PositionViewActivity extends AppCompatActivity {
 
-    public static final String EXTRA_POSITION = "position";
+    //public static final String EXTRA_POSITION = "position";
+    public static final String EXTRA_POSITION_SYMBOL = "position_symbol";
+    public static final String EXTRA_POSITION_DATE = "position_date";
+    public static final String EXTRA_POSITION_COUNT = "position_count";
+    public static final String EXTRA_POSITION_PRICE = "position_price";
+
     private Position mPosition;
 
     private static DecimalFormat df = new DecimalFormat("0.00");
     private StockDB mDb;
+    private IYahooFinance mAPI = new YahooFinance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +38,13 @@ public class PositionViewActivity extends AppCompatActivity {
 
         mDb = StockDB.getInstance(this);
 
-        mPosition = (Position) getIntent().getSerializableExtra(EXTRA_POSITION);
+        String symbol = (String) getIntent().getSerializableExtra(EXTRA_POSITION_SYMBOL);
+        Date date = (Date) getIntent().getSerializableExtra(EXTRA_POSITION_DATE);
+        double count = (double) getIntent().getSerializableExtra(EXTRA_POSITION_COUNT);
+        double price = (double) getIntent().getSerializableExtra(EXTRA_POSITION_PRICE);
+
+        mPosition = new Position(symbol,count,price,date);
+
         update();
 
         new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
@@ -41,7 +55,7 @@ public class PositionViewActivity extends AppCompatActivity {
 
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {
-                    Quote q = YahooFinance.getQuote(mPosition.getSymbol());
+                    Quote q = mAPI.getQuote(mPosition.getSymbol());
                     mPosition.setCurrPrice(q.lastTrade);
                 }
             }

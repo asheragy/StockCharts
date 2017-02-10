@@ -48,27 +48,32 @@
 
         <TextView
             android:id="@+id/current_price"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="0.00"/>
+            android:paddingEnd="10dp"
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            tools:text="43.61"/>
+
+        <TextView
+            android:id="@+id/oneday_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="15dp"
+            tools:text="+1.42 (0.76%)"/>
+
+        <TextView
+            android:id="@+id/total_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10dp"
+            tools:text="+5.34 (8.23%)"/>
 
         <TextView
             android:id="@+id/profit"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            tools:text="$0.00"/>
-
-        <TextView
-            android:id="@+id/price_percent_change"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            tools:text="+%0"/>
-
-        <TextView
-            android:id="@+id/dividends_earned"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="$0"/>
+            tools:text="$0.00"/>
 
     </LinearLayout>
 

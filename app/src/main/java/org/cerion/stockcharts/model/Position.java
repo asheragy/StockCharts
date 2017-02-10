@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.model;
 
 import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.Quote;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -9,7 +10,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class Position implements Serializable {
+public class Position {
 
     // Required fields
     private final double count;
@@ -19,7 +20,10 @@ public class Position implements Serializable {
     private boolean dividendsReinvested;
 
     // Optional
+    @Deprecated
     private double currPrice;
+
+    private Quote quote;
     private float totalDividends;
     private Date nextDividendEstimate;
     //private Dividend lastDividend; // TODO make this serializable
@@ -56,12 +60,40 @@ public class Position implements Serializable {
 
     public void setCurrPrice(double price) { currPrice = price; }
 
+    public void setQuote(Quote quote) {
+        this.quote = quote;
+    }
+
     /**
-     * Gets percent difference between current and original price
+     * Gets percent difference between current and original/purchase price
      * @return percent difference
      */
     public double getPercentChanged() {
         return 100 * (currPrice - origPrice) / origPrice;
+    }
+
+    /**
+     * Gets the percent difference between current price and yesterdays price
+     * @return percent difference
+     */
+    public double getOneDayPercentChange() {
+        return quote.changePercent;
+    }
+
+    /**
+     * Gets the difference between current price and yesterdays price
+     * @return price difference
+     */
+    public double getOneDayChange() {
+        return quote.change;
+    }
+
+    /**
+     * Gets the difference between current price and purchase price
+     * @return price difference
+     */
+    public double getChange() {
+        return quote.getCurrentPrice() - origPrice;
     }
 
     /**

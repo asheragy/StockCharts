@@ -34,9 +34,10 @@ public class PositionListAdapter extends ArrayAdapter<Position> {
 
         //With quote data
         TextView current_price;
-        TextView price_percent_change;
+        TextView oneday_change;
+        TextView total_change;
+
         TextView profit;
-        TextView dividends_earned;
     }
 
     public PositionListAdapter(Context context, int resource, List<Position> objects) {
@@ -61,9 +62,10 @@ public class PositionListAdapter extends ArrayAdapter<Position> {
             viewHolder.purchase_lot = (TextView) convertView.findViewById(R.id.purchase_lot);
             viewHolder.purchase_date = (TextView) convertView.findViewById(R.id.purchase_date);
             viewHolder.current_price = (TextView) convertView.findViewById(R.id.current_price);
-            viewHolder.price_percent_change = (TextView) convertView.findViewById(R.id.price_percent_change);
+            viewHolder.oneday_change = (TextView) convertView.findViewById(R.id.oneday_change);
+            viewHolder.total_change = (TextView) convertView.findViewById(R.id.total_change);
+
             viewHolder.profit = (TextView) convertView.findViewById(R.id.profit);
-            viewHolder.dividends_earned = (TextView) convertView.findViewById(R.id.dividends_earned);
 
             convertView.setTag(viewHolder);
         } else {
@@ -75,27 +77,35 @@ public class PositionListAdapter extends ArrayAdapter<Position> {
         viewHolder.purchase_lot.setText(Utils.getDecimalFormat3(p.getCount()) + " @ " + df.format(p.getOrigPrice()));
 
         if(p.getCurrPrice() > 0) {
-            double profit = p.getProfit();
 
+            // Current price
             viewHolder.current_price.setText( df.format(p.getCurrPrice()) );
-            viewHolder.price_percent_change.setText( df.format(p.getPercentChanged()) + "%");
-            viewHolder.profit.setText( df.format(p.getProfit()) );
+
+            // Change since previous day
+            String sign = (p.getOneDayChange() > 0 ? "+" : "");
+            viewHolder.oneday_change.setText( sign + df.format(p.getOneDayChange()) + " (" + df.format(p.getOneDayPercentChange()) + "%)");
+
+            // Total Change since purchsae
+            sign = (p.getPercentChanged() > 0 ? "+" : "");
+            viewHolder.total_change.setText( sign + df.format(p.getChange()) + " (" + df.format(p.getPercentChanged()) + "%)");
+
+            // Profit
+            double profit = p.getProfit();
+            double dividendProfit = p.getDividendProfit();
+            String profit_str = "$" + df.format(profit);
+            if(dividendProfit > 0)
+                profit_str += " (+" + df.format(dividendProfit) + ")";
+            viewHolder.profit.setText( profit_str );
 
             //Color
-            setColor(viewHolder.current_price, p.getPercentChanged());
-            setColor(viewHolder.profit, profit);
-            setColor(viewHolder.price_percent_change, profit);
+            setColor(viewHolder.oneday_change, p.getOneDayChange());
+            setColor(viewHolder.total_change, p.getPercentChanged());
+            //setColor(viewHolder.profit, profit);
         } else {
             viewHolder.current_price.setText("...");
-            viewHolder.price_percent_change.setText("");
-            viewHolder.profit.setText("");
+            viewHolder.oneday_change.setText("");
+            //viewHolder.profit.setText("");
         }
-
-        double dividendProfit = p.getDividendProfit();
-        if(dividendProfit > 0)
-            viewHolder.dividends_earned.setText("$" + df.format(p.getDividendProfit()));
-        else
-            viewHolder.dividends_earned.setText("");
 
         return convertView;
     }

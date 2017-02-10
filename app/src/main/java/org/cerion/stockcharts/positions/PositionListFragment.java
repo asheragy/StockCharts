@@ -87,17 +87,24 @@ public class PositionListFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Position p = mAdapter.getItem(position);
                 Intent intent = new Intent(getContext(), PositionViewActivity.class);
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION, p);
+
+                intent.putExtra(PositionViewActivity.EXTRA_POSITION_COUNT, p.getCount());
+                intent.putExtra(PositionViewActivity.EXTRA_POSITION_DATE, p.getDate());
+                intent.putExtra(PositionViewActivity.EXTRA_POSITION_SYMBOL, p.getSymbol());
+                intent.putExtra(PositionViewActivity.EXTRA_POSITION_PRICE, p.getOrigPrice());
+
                 startActivity(intent);
             }
         });
     }
 
+    /*
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_POSITION_ITEMS, new PositionItems(mPositions));
     }
+    */
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -230,6 +237,7 @@ public class PositionListFragment extends ListFragment {
                     Quote q = quotes.get(symbol);
 
                     p.setCurrPrice(q.lastTrade);
+                    p.setQuote(q);
 
                     // Check for cached copy of dividends
                     List<Dividend> list = mDb.getDividends(symbol);
