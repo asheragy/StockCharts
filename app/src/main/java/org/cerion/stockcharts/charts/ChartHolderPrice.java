@@ -7,6 +7,8 @@ import android.widget.CheckBox;
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stocklist.charts.PriceChart;
+import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.model.Interval;
 
 class ChartHolderPrice extends ChartHolderBase {
@@ -36,11 +38,13 @@ class ChartHolderPrice extends ChartHolderBase {
 
                     OverlayDataSet.resetColors();
                     mChartParams.overlays.clear();
+                    mChartParams.overlaysNEW.clear();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
                         mChartParams.overlays.add(editControl.getDataSet());
+                        mChartParams.overlaysNEW.add(editControl.getOverlayFunction());
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
@@ -62,7 +66,16 @@ class ChartHolderPrice extends ChartHolderBase {
 
     @Override
     public Chart getChart() {
-        return mChartFactory.getPriceChart(params());
+        PriceChart chart = new PriceChart();
+        chart.candleData = false;
+        ChartParams.Price params = params();
+
+        for(IPriceOverlay ol : params.overlaysNEW) {
+            chart.addOverlay(ol);
+        }
+
+        //return mChartFactory.getPriceChart(params());
+        return mChartFactory.getPriceChart(chart, params.symbol);
     }
 
 }

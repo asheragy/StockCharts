@@ -14,8 +14,10 @@ import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.arrays.FloatArray;
+import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.functions.FunctionCall;
 import org.cerion.stocklist.functions.FunctionDef;
+import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
@@ -89,6 +91,7 @@ class ChartHolderIndicator extends ChartHolderBase {
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
                         mChartParams.overlays.add(editControl.getDataSet());
+                        mChartParams.overlaysNEW.add(editControl.getOverlayFunction());
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
@@ -126,5 +129,7 @@ class ChartHolderIndicator extends ChartHolderBase {
 
         return mChartFactory.getIndicatorChart(params());
     }
+
+
     
 }

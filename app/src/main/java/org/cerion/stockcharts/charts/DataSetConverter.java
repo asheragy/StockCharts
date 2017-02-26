@@ -32,14 +32,11 @@ class DataSetConverter {
         int color = Color.BLACK;
     }
 
-    static ICandleDataSet getCandleDataSet(PriceList list, boolean logscale) {
+    static ICandleDataSet getCandleDataSet(PriceList list) {
         ArrayList<CandleEntry> entries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             Price p = list.get(i);
-            if(logscale)
-                entries.add(new CandleEntry(i, (float)Math.log(p.high+1), (float)Math.log(p.low+1), (float)Math.log(p.open+1), (float)Math.log(p.close+1))); // order is high, low, open, close
-            else
-                entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
+            entries.add(new CandleEntry(i, p.high, p.low, p.open, p.close)); // order is high, low, open, close
         }
 
         CandleDataSet dataSet = new CandleDataSet(entries, "");

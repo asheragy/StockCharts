@@ -19,8 +19,11 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
@@ -30,9 +33,15 @@ import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.arrays.MACDArray;
 import org.cerion.stocklist.arrays.PairArray;
 import org.cerion.stocklist.arrays.ValueArray;
+import org.cerion.stocklist.charts.DataSet;
+import org.cerion.stocklist.charts.PriceChart;
+import org.cerion.stocklist.charts.StockChart;
+import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.functions.FunctionCall;
 import org.cerion.stocklist.functions.Indicator;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,7 +57,6 @@ class ChartFactory {
     private static DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
     //private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM 'yy");
     private Description mDesc = new Description();
-    //private boolean mLogScale = false;
     private StockDataManager mDataManager;
 
     // TODO cache lists here, if the same one is requested multiple times hold it
@@ -59,21 +67,33 @@ class ChartFactory {
         mDataManager = new StockDataManager(mContext);
     }
 
+    /*
     Chart getPriceChart(ChartParams.Price params) {
-        // TODO check logscale and convert here
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
+        if(params.logscale)
+            list = list.toLogScale();
+
         return getPriceChart(list, params);
+    }
+    */
+
+    Chart getPriceChart(PriceChart chart, String symbol) {
+        PriceList list = mDataManager.getLatestPrices(symbol, chart.interval);
+        chart.setPriceList(list);
+
+        return getPriceChart(chart);
     }
 
     Chart getIndicatorChart(ChartParams.Indicator params) {
-        //mLogScale = params.logscale;
         PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
         return getLineChart(list, params);
     }
 
-    Chart getVolumeChart(ChartParams params) {
-        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
-        return getVolumeChart(list, params);
+    Chart getVolumeChart(VolumeChart chart, String symbol) {
+        PriceList list = mDataManager.getLatestPrices(symbol, chart.interval);
+        chart.setPriceList(list);
+
+        return getVolumeChart(chart);
     }
 
     Chart getEmptyChart() {
@@ -83,18 +103,19 @@ class ChartFactory {
         return chart;
     }
 
-    private Chart getPriceChart(PriceList list, ChartParams.Price params) {
+    private Chart getPriceChart(PriceChart pchart) {
         BarLineChartBase chart;
 
-        if(params.lineChart) {
+        if(true)//!pchart.candleData)
+        {
             chart = new LineChart(mContext);
-            LineData lineData = getLineData(list.getClose(), params.overlays);
+            LineData lineData = getLineData( getDataSets(pchart) );
             chart.setData(lineData);
 
-        } else {
+        } /*else {
             chart = new CombinedChart(mContext);
             CombinedData data = new CombinedData();
-            ICandleDataSet dataSet = DataSetConverter.getCandleDataSet(list, params.logscale);
+            ICandleDataSet dataSet = DataSetConverter.getCandleDataSet(list);
             CandleData candleData = new CandleData(dataSet);
             data.setData(candleData);
 
@@ -105,11 +126,16 @@ class ChartFactory {
             ((CombinedChart)chart).setDrawOrder(new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
             chart.setData(data);
         }
-
-        setChartDefaults(chart, list);
+*/
+        setChartDefaults(chart, pchart);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
 
-        setLegend(chart, params, "Price");
+        if(pchart.logScale) {
+            YAxis axis = chart.getAxisRight();
+            axis.setValueFormatter(getLogScaleYAxis());
+        }
+
+        //setLegend(chart, params, "Price");
         return chart;
     }
 
@@ -127,47 +153,41 @@ class ChartFactory {
         return chart;
     }
 
-    private Chart getVolumeChart(PriceList list, ChartParams params) {
+    private Chart getVolumeChart(VolumeChart vchart) {
         CombinedChart chart = new CombinedChart(mContext);
-        setChartDefaults(chart, list);
+        setChartDefaults(chart, vchart);
 
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            if(params.logscale)
-                barEntries.add(new BarEntry(i, (float)Math.log(list.volume(i)) ));
-            else
-                barEntries.add(new BarEntry(i, list.volume(i)));
+        if(false) { // TODO volume needs logscale paramter
+            YAxis axis = chart.getAxisRight();
+            axis.setValueFormatter(getLogScaleYAxis());
         }
 
-        BarDataSet dataSet = new BarDataSet(barEntries, "Volume");
-        dataSet.setDrawValues(false);
-        BarData barData = new BarData(dataSet);
-
-
-        // Should only apply to FloatArray or VolumeArray
-        /*
-        List<ILineDataSet> sets = new ArrayList<>();
-        if(params.overlays != null) {
-            FloatArray base = list.getVolume();
-            for (OverlayDataSet overlay : params.overlays) {
-                sets.addAll(overlay.getDataSets(base));
-            }
-        }
-        */
-
-        List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list.getVolume(), params.overlays);
-
-        LineData lineData = new LineData(sets);
+        List<DataSet> dataSets = getDataSets(vchart);
         CombinedData data = new CombinedData();
-        data.setData(barData);
-        data.setData(lineData);
+        data.setData(getBarData(dataSets));
+        data.setData(getLineData(dataSets));
         chart.setData(data);
 
-        setLegend(chart, params, "Volume");
-
+        //setLegend(chart, params, "Volume");
         return chart;
     }
 
+    private void setChartDefaults(BarLineChartBase chart, StockChart stockchart) {
+        chart.setDescription(mDesc);
+        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+
+        //Set Y axis
+        chart.getAxisLeft().setDrawLabels(false);
+        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        chart.getAxisRight().setLabelCount(3, false);
+
+        XAxis xaxis = chart.getXAxis();
+        xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates()));
+
+        // TODO set custom legend here
+    }
+
+    @Deprecated
     private void setChartDefaults(BarLineChartBase chart, PriceList list) {
         chart.setDescription(mDesc);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
@@ -218,11 +238,78 @@ class ChartFactory {
         return new LineData(sets);
     }
 
+    private List<DataSet> getDataSets(StockChart chart) {
+        chart.setPrimaryColors(new int[] { Color.BLACK });
+        chart.setSecondaryColors(new int[] { Color.RED, Color.BLUE, Color.GREEN });
+
+        return chart.getDataSets();
+    }
+
+    private BarData getBarData(List<DataSet> sets) {
+        List<IBarDataSet> result = new ArrayList<>();
+
+        for(DataSet set : sets) {
+
+            if(set.getLineType() == DataSet.LineType.BAR) {
+                ArrayList<BarEntry> entries = new ArrayList<>();
+                for (int i = 0; i < set.size(); i++)
+                    entries.add(new BarEntry(i, set.get(i)));
+
+                BarDataSet dataSet = new BarDataSet(entries, set.getLabel());
+                dataSet.setDrawValues(false);
+
+                result.add(dataSet);
+            }
+        }
+
+        return new BarData(result);
+    }
+
+    private LineData getLineData(List<DataSet> sets) {
+        List<ILineDataSet> result = new ArrayList<>();
+
+        for(DataSet set : sets) {
+            if(set.getLineType() == DataSet.LineType.LINE || set.getLineType() == DataSet.LineType.DOTTED) {
+                ArrayList<Entry> entries = new ArrayList<>();
+                for (int i = 0; i < set.size(); i++)
+                    entries.add(new Entry(i, set.get(i)));
+
+                LineDataSet lineDataSet = new LineDataSet(entries, set.getLabel());
+                lineDataSet.setDrawCircles(false);
+                lineDataSet.setDrawValues(false);
+                lineDataSet.setColor(set.getColor());
+
+                result.add(lineDataSet);
+            }
+        }
+
+        return new LineData(result);
+
+        /*
+        List<ILineDataSet> sets;
+
+        if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
+            sets = DataSetConverter.getMACDDataSet((MACDArray)base, Color.BLACK, Color.RED, Color.BLUE);
+        } else if(base instanceof PairArray) {
+            sets = DataSetConverter.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
+        } else { // FloatArray
+            FloatArray arr = (FloatArray)base;
+            sets = DataSetConverter.getSingleDataSet(arr, Color.BLACK);
+
+            // Add overlays
+            sets.addAll( OverlayDataSet.getLineDataSets(arr, overlays));
+        }
+
+        return new LineData(sets);
+        */
+    }
+
     private static String getLabel(FunctionCall call) {
         return ((Indicator)call.id).name() + " " + TextUtils.join(",", call.params);
     }
 
     private IAxisValueFormatter getAxisFormatter(PriceList list) {
+        /*
         final Date[] dates = list.getDates();
 
         return new IAxisValueFormatter() {
@@ -230,6 +317,43 @@ class ChartFactory {
             public String getFormattedValue(float value, AxisBase axis) {
                 int v = (int)value;
                 return mDateFormat.format(dates[v]); // TODO format based on interval
+            }
+
+            @Override
+            public int getDecimalDigits() {
+                return 0;
+            }
+        };
+        */
+
+        return getAxisFormatter(list.getDates());
+    }
+
+    private IAxisValueFormatter getAxisFormatter(final Date[] dates) {
+        return new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int v = (int)value;
+                return mDateFormat.format(dates[v]); // TODO format based on interval
+            }
+
+            @Override
+            public int getDecimalDigits() {
+                return 0;
+            }
+        };
+    }
+
+    private IAxisValueFormatter getLogScaleYAxis() {
+
+        return new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                // Round to 2 significant figures
+                double actual = Math.exp(value);
+                BigDecimal bd = new BigDecimal(actual);
+                bd = bd.round(new MathContext(2));
+                return bd.toPlainString();
             }
 
             @Override

@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.charts;
 
 import org.cerion.stocklist.functions.FunctionCall;
+import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
@@ -11,7 +12,10 @@ class ChartParams {
 
     String symbol;
     Interval interval;
+
     List<OverlayDataSet> overlays = new ArrayList<>();
+    List<IPriceOverlay> overlaysNEW = new ArrayList<>();
+
     boolean logscale = false;
 
     ChartParams(String symbol, Interval interval) {

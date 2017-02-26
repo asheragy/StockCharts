@@ -14,6 +14,9 @@ import android.widget.Spinner;
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.functions.FunctionDef;
 import org.cerion.stocklist.functions.IFunction;
+import org.cerion.stocklist.functions.IFunctionEnum;
+import org.cerion.stocklist.functions.IOverlay;
+import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Overlay;
 import org.cerion.stocklist.functions.PriceOverlay;
 
@@ -88,6 +91,7 @@ public class OverlayEditControl extends ParametersEditControl {
         onDeleteListener = listener;
     }
 
+    @Deprecated
     public OverlayDataSet getDataSet() {
         int index = spOverlays.getSelectedItemPosition();
         IFunction overlay = mOverlays.get(index);
@@ -96,4 +100,25 @@ public class OverlayEditControl extends ParametersEditControl {
 
         return new OverlayDataSet(overlay, p);
     }
+
+    public IPriceOverlay getOverlayFunction() {
+        int index = spOverlays.getSelectedItemPosition();
+        IFunction overlay = mOverlays.get(index);
+        FunctionDef overlayDef = overlay.getDef();
+        Number p[] = getParameters(overlayDef.default_values);
+
+        IPriceOverlay instance = getInstance(overlay);
+        instance.setParams(p);
+        return instance;
+    }
+
+    private IPriceOverlay getInstance(IFunction f) {
+        if(f.getClass() == PriceOverlay.class) {
+            return ((PriceOverlay)f).getInstance();
+        }
+
+        return ((Overlay)f).getInstance();
+    }
+
+
 }
