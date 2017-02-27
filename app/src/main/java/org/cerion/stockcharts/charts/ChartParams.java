@@ -13,8 +13,7 @@ class ChartParams {
     String symbol;
     Interval interval;
 
-    List<OverlayDataSet> overlays = new ArrayList<>();
-    List<IPriceOverlay> overlaysNEW = new ArrayList<>();
+    List<IPriceOverlay> overlays = new ArrayList<>();
 
     boolean logscale = false;
 

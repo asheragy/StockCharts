@@ -36,15 +36,12 @@ class ChartHolderPrice extends ChartHolderBase {
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
 
-                    OverlayDataSet.resetColors();
                     mChartParams.overlays.clear();
-                    mChartParams.overlaysNEW.clear();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        mChartParams.overlays.add(editControl.getDataSet());
-                        mChartParams.overlaysNEW.add(editControl.getOverlayFunction());
+                        mChartParams.overlays.add(editControl.getOverlayFunction());
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
@@ -67,15 +64,17 @@ class ChartHolderPrice extends ChartHolderBase {
     @Override
     public Chart getChart() {
         PriceChart chart = new PriceChart();
-        chart.candleData = false;
         ChartParams.Price params = params();
+        chart.logScale = params.logscale;
+        chart.candleData = !params.lineChart;
+        chart.interval = params.interval;
 
-        for(IPriceOverlay ol : params.overlaysNEW) {
+        for(IPriceOverlay ol : params.overlays) {
             chart.addOverlay(ol);
         }
 
         //return mChartFactory.getPriceChart(params());
-        return mChartFactory.getPriceChart(chart, params.symbol);
+        return mChartFactory.getChart(chart, params.symbol);
     }
 
 }

@@ -2,9 +2,7 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -14,8 +12,6 @@ import android.widget.Spinner;
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.functions.FunctionDef;
 import org.cerion.stocklist.functions.IFunction;
-import org.cerion.stocklist.functions.IFunctionEnum;
-import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Overlay;
 import org.cerion.stocklist.functions.PriceOverlay;

@@ -2,7 +2,7 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.TextUtils;
+import android.graphics.Paint;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
@@ -18,27 +18,24 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.arrays.FloatArray;
-import org.cerion.stocklist.arrays.MACDArray;
-import org.cerion.stocklist.arrays.PairArray;
-import org.cerion.stocklist.arrays.ValueArray;
 import org.cerion.stocklist.charts.DataSet;
+import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.functions.FunctionCall;
-import org.cerion.stocklist.functions.Indicator;
+import org.cerion.stocklist.model.Interval;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -54,8 +51,8 @@ class ChartFactory {
 
     private static final int CHART_HEIGHT_PRICE = 800;
     private static final int CHART_HEIGHT = 400;
-    private static DateFormat mDateFormat = new SimpleDateFormat("MMM d, yy");
-    //private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM 'yy");
+    private static DateFormat mDateFormat        = new SimpleDateFormat("MMM d, yy");
+    private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM ''yy");
     private Description mDesc = new Description();
     private StockDataManager mDataManager;
 
@@ -67,33 +64,17 @@ class ChartFactory {
         mDataManager = new StockDataManager(mContext);
     }
 
-    /*
-    Chart getPriceChart(ChartParams.Price params) {
-        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
-        if(params.logscale)
-            list = list.toLogScale();
-
-        return getPriceChart(list, params);
-    }
-    */
-
-    Chart getPriceChart(PriceChart chart, String symbol) {
+    Chart getChart(StockChart chart, String symbol) {
         PriceList list = mDataManager.getLatestPrices(symbol, chart.interval);
         chart.setPriceList(list);
 
-        return getPriceChart(chart);
-    }
+        if(chart instanceof PriceChart)
+            return getPriceChart((PriceChart)chart);
 
-    Chart getIndicatorChart(ChartParams.Indicator params) {
-        PriceList list = mDataManager.getLatestPrices(params.symbol, params.interval);
-        return getLineChart(list, params);
-    }
+        if(chart instanceof IndicatorChart)
+            return getLineChart((IndicatorChart)chart);
 
-    Chart getVolumeChart(VolumeChart chart, String symbol) {
-        PriceList list = mDataManager.getLatestPrices(symbol, chart.interval);
-        chart.setPriceList(list);
-
-        return getVolumeChart(chart);
+        return getVolumeChart((VolumeChart)chart);
     }
 
     Chart getEmptyChart() {
@@ -103,30 +84,28 @@ class ChartFactory {
         return chart;
     }
 
+    @SuppressWarnings("unchecked")
     private Chart getPriceChart(PriceChart pchart) {
         BarLineChartBase chart;
 
-        if(true)//!pchart.candleData)
-        {
-            chart = new LineChart(mContext);
-            LineData lineData = getLineData( getDataSets(pchart) );
-            chart.setData(lineData);
+        List<DataSet> sets = getDataSets(pchart);
 
-        } /*else {
+        if(pchart.candleData) {
             chart = new CombinedChart(mContext);
             CombinedData data = new CombinedData();
-            ICandleDataSet dataSet = DataSetConverter.getCandleDataSet(list);
-            CandleData candleData = new CandleData(dataSet);
+            CandleData candleData = getCandleData(sets);
             data.setData(candleData);
 
-            List<ILineDataSet> sets = OverlayDataSet.getLineDataSets(list, params.overlays);
-            LineData lineData = new LineData(sets);
+            LineData lineData = getLineData(sets);
             data.setData(lineData);
-
             ((CombinedChart)chart).setDrawOrder(new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE});
             chart.setData(data);
+        } else {
+            chart = new LineChart(mContext);
+            LineData lineData = getLineData(sets);
+            chart.setData(lineData);
         }
-*/
+
         setChartDefaults(chart, pchart);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
 
@@ -135,21 +114,19 @@ class ChartFactory {
             axis.setValueFormatter(getLogScaleYAxis());
         }
 
-        //setLegend(chart, params, "Price");
+        setLegend(chart, sets);
         return chart;
     }
 
-    private Chart getLineChart(PriceList list, ChartParams.Indicator params) {
+    private Chart getLineChart(IndicatorChart ichart) {
         LineChart chart = new LineChart(mContext);
-        setChartDefaults(chart, list);
+        setChartDefaults(chart, ichart);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
 
-        ValueArray arr = params.function.eval(list);
-        LineData lineData = getLineData(arr, params.overlays);
-        chart.setData(lineData);
+        List<DataSet> sets = getDataSets(ichart);
+        chart.setData(getLineData(sets));
 
-        setLegend(chart, params, getLabel(params.function));
-
+        setLegend(chart, sets);
         return chart;
     }
 
@@ -157,7 +134,7 @@ class ChartFactory {
         CombinedChart chart = new CombinedChart(mContext);
         setChartDefaults(chart, vchart);
 
-        if(false) { // TODO volume needs logscale paramter
+        if(vchart.logScale) {
             YAxis axis = chart.getAxisRight();
             axis.setValueFormatter(getLogScaleYAxis());
         }
@@ -168,7 +145,7 @@ class ChartFactory {
         data.setData(getLineData(dataSets));
         chart.setData(data);
 
-        //setLegend(chart, params, "Volume");
+        setLegend(chart, dataSets);
         return chart;
     }
 
@@ -182,66 +159,41 @@ class ChartFactory {
         chart.getAxisRight().setLabelCount(3, false);
 
         XAxis xaxis = chart.getXAxis();
-        xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates()));
-
-        // TODO set custom legend here
+        xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates(), stockchart.interval));
     }
 
-    @Deprecated
-    private void setChartDefaults(BarLineChartBase chart, PriceList list) {
-        chart.setDescription(mDesc);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+    private void setLegend(Chart chart, List<DataSet> sets) {
+        List<LegendEntry> entries = new ArrayList<>();
 
-        //Set Y axis
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisRight().setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        chart.getAxisRight().setLabelCount(3, false);
+        String lastLabel = "";
+        int lastColor = -1;
+        for(DataSet set : sets) {
+            String label = set.getLabel();
+            int color = set.getColor();
+            LegendEntry entry = null;
 
-        XAxis xaxis = chart.getXAxis();
-        xaxis.setValueFormatter(getAxisFormatter(list));
-    }
-
-    private void setLegend(Chart chart, ChartParams params, String label) {
-        List<OverlayDataSet> overlays = params.overlays;
-
-        // Set labels so multi-line sets are not duplicated on legend
-        int size = (overlays != null ? overlays.size() + 1 : 1);
-        LegendEntry[] le = new LegendEntry[size];
-
-        le[0] = new LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, Color.BLACK);
-
-        if(overlays != null) {
-            for (int i = 1; i <= overlays.size(); i++) {
-                OverlayDataSet o = overlays.get(i - 1);
-                le[i] = new LegendEntry(o.getLabel(), Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, o.getColor());
+            if(lastLabel.contentEquals(label)) {
+                if(lastColor != color) {
+                    entry = new LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color);
+                    entries.get(entries.size() - 1).label = null; // label needs to go on the last one added
+                }
+            } else {
+                entry = new LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color);
             }
+
+            if(entry != null)
+                entries.add(entry);
+
+            lastLabel = label;
+            lastColor = color;
         }
 
-        chart.getLegend().setCustom(le);
-    }
-
-    private LineData getLineData(ValueArray base, List<OverlayDataSet> overlays) {
-        List<ILineDataSet> sets;
-
-        if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
-            sets = DataSetConverter.getMACDDataSet((MACDArray)base, Color.BLACK, Color.RED, Color.BLUE);
-        } else if(base instanceof PairArray) {
-            sets = DataSetConverter.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
-        } else { // FloatArray
-            FloatArray arr = (FloatArray)base;
-            sets = DataSetConverter.getSingleDataSet(arr, Color.BLACK);
-
-            // Add overlays
-            sets.addAll( OverlayDataSet.getLineDataSets(arr, overlays));
-        }
-
-        return new LineData(sets);
+        chart.getLegend().setCustom(entries);
     }
 
     private List<DataSet> getDataSets(StockChart chart) {
-        chart.setPrimaryColors(new int[] { Color.BLACK });
+        chart.setPrimaryColors(new int[] { Color.BLACK, Color.RED, Color.BLUE, Color.GREEN });
         chart.setSecondaryColors(new int[] { Color.RED, Color.BLUE, Color.GREEN });
-
         return chart.getDataSets();
     }
 
@@ -249,7 +201,6 @@ class ChartFactory {
         List<IBarDataSet> result = new ArrayList<>();
 
         for(DataSet set : sets) {
-
             if(set.getLineType() == DataSet.LineType.BAR) {
                 ArrayList<BarEntry> entries = new ArrayList<>();
                 for (int i = 0; i < set.size(); i++)
@@ -257,7 +208,6 @@ class ChartFactory {
 
                 BarDataSet dataSet = new BarDataSet(entries, set.getLabel());
                 dataSet.setDrawValues(false);
-
                 result.add(dataSet);
             }
         }
@@ -271,8 +221,9 @@ class ChartFactory {
         for(DataSet set : sets) {
             if(set.getLineType() == DataSet.LineType.LINE || set.getLineType() == DataSet.LineType.DOTTED) {
                 ArrayList<Entry> entries = new ArrayList<>();
-                for (int i = 0; i < set.size(); i++)
+                for (int i = 0; i < set.size(); i++) {
                     entries.add(new Entry(i, set.get(i)));
+                }
 
                 LineDataSet lineDataSet = new LineDataSet(entries, set.getLabel());
                 lineDataSet.setDrawCircles(false);
@@ -284,57 +235,41 @@ class ChartFactory {
         }
 
         return new LineData(result);
+    }
 
-        /*
-        List<ILineDataSet> sets;
+    private CandleData getCandleData(List<DataSet> sets) {
+        for(DataSet set : sets) {
+            if(set.getLineType() == DataSet.LineType.CANDLE) {
+                ArrayList<CandleEntry> entries = new ArrayList<>();
+                org.cerion.stocklist.charts.CandleDataSet cds = (org.cerion.stocklist.charts.CandleDataSet)set;
 
-        if(base instanceof MACDArray) { // Extends FloatArray so it needs to go above that
-            sets = DataSetConverter.getMACDDataSet((MACDArray)base, Color.BLACK, Color.RED, Color.BLUE);
-        } else if(base instanceof PairArray) {
-            sets = DataSetConverter.getPairDataSet((PairArray)base, Color.GREEN, Color.RED);
-        } else { // FloatArray
-            FloatArray arr = (FloatArray)base;
-            sets = DataSetConverter.getSingleDataSet(arr, Color.BLACK);
+                for (int i = 0; i < set.size(); i++) {
+                    entries.add(new CandleEntry(i, cds.getHigh(i), cds.getLow(i), cds.getOpen(i), cds.getClose(i))); // order is high, low, open, close
+                }
 
-            // Add overlays
-            sets.addAll( OverlayDataSet.getLineDataSets(arr, overlays));
+                CandleDataSet dataSet = new CandleDataSet(entries, set.getLabel());
+                dataSet.setDrawValues(false);
+                dataSet.setDecreasingColor(Colors.CANDLE_DOWN);
+                dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+                dataSet.setIncreasingColor(Colors.CANDLE_UP);
+                dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+
+                return new CandleData((dataSet));
+            }
         }
 
-        return new LineData(sets);
-        */
+        return null;
     }
 
-    private static String getLabel(FunctionCall call) {
-        return ((Indicator)call.id).name() + " " + TextUtils.join(",", call.params);
-    }
-
-    private IAxisValueFormatter getAxisFormatter(PriceList list) {
-        /*
-        final Date[] dates = list.getDates();
-
+    private IAxisValueFormatter getAxisFormatter(final Date[] dates, final Interval interval) {
         return new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 int v = (int)value;
-                return mDateFormat.format(dates[v]); // TODO format based on interval
-            }
+                if(interval == Interval.MONTHLY)
+                    return mDateFormatMonthly.format(dates[v]);
 
-            @Override
-            public int getDecimalDigits() {
-                return 0;
-            }
-        };
-        */
-
-        return getAxisFormatter(list.getDates());
-    }
-
-    private IAxisValueFormatter getAxisFormatter(final Date[] dates) {
-        return new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                int v = (int)value;
-                return mDateFormat.format(dates[v]); // TODO format based on interval
+                return mDateFormat.format(dates[v]);
             }
 
             @Override

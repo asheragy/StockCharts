@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -14,9 +13,10 @@ import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.arrays.FloatArray;
-import org.cerion.stocklist.charts.PriceChart;
+import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.functions.FunctionCall;
 import org.cerion.stocklist.functions.FunctionDef;
+import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
@@ -84,14 +84,12 @@ class ChartHolderIndicator extends ChartHolderBase {
                         params().function = new FunctionCall(params().function.id, p);
                     }
 
-                    OverlayDataSet.resetColors();
                     mChartParams.overlays.clear();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        mChartParams.overlays.add(editControl.getDataSet());
-                        mChartParams.overlaysNEW.add(editControl.getOverlayFunction());
+                        mChartParams.overlays.add(editControl.getOverlayFunction());
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
@@ -127,7 +125,15 @@ class ChartHolderIndicator extends ChartHolderBase {
         if(mChartParams == null || params().function == null)
             return mChartFactory.getEmptyChart();
 
-        return mChartFactory.getIndicatorChart(params());
+        //return mChartFactory.getIndicatorChart(params());
+
+        IndicatorChart chart = new IndicatorChart(params().function);
+        for(IPriceOverlay ol : mChartParams.overlays) {
+            IOverlay overlay = (IOverlay)ol;
+            chart.addOverlay(overlay);
+        }
+
+        return mChartFactory.getChart(chart, mChartParams.symbol);
     }
 
 

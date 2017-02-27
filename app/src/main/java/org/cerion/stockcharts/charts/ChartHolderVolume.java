@@ -7,7 +7,6 @@ import android.widget.Spinner;
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.IPriceOverlay;
@@ -37,15 +36,12 @@ class ChartHolderVolume extends ChartHolderBase {
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
 
-                    OverlayDataSet.resetColors();
                     mChartParams.overlays.clear();
-                    mChartParams.overlaysNEW.clear();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        //mChartParams.overlays.add(editControl.getDataSet());
-                        mChartParams.overlaysNEW.add(editControl.getOverlayFunction());
+                        mChartParams.overlays.add(editControl.getOverlayFunction());
                     }
 
                     mChartParams.logscale = mCheckLogScale.isChecked();
@@ -68,15 +64,14 @@ class ChartHolderVolume extends ChartHolderBase {
     @Override
     public Chart getChart() {
         VolumeChart chart = new VolumeChart();
-        // TODO log scale
-        //ChartParams params = mChartParams
+        chart.logScale = mChartParams.logscale;
 
-        for(IPriceOverlay ol : mChartParams.overlaysNEW) {
+        for(IPriceOverlay ol : mChartParams.overlays) {
             IOverlay overlay = (IOverlay)ol;
             chart.addOverlay(overlay);
         }
 
-        return mChartFactory.getVolumeChart(chart, mChartParams.symbol);
+        return mChartFactory.getChart(chart, mChartParams.symbol);
     }
 
 }
