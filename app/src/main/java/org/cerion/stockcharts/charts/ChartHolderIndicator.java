@@ -14,6 +14,7 @@ import com.github.mikephil.charting.charts.Chart;
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.charts.IndicatorChart;
+import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.functions.FunctionCall;
 import org.cerion.stocklist.functions.FunctionDef;
 import org.cerion.stocklist.functions.IOverlay;
@@ -21,32 +22,37 @@ import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 class ChartHolderIndicator extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
 
-
     public ChartHolderIndicator(Context context, String symbol, Interval interval) {
         super(context, symbol, interval);
 
-        mChartParams = mChartParams.toIndicator();
+        mStockChart = new IndicatorChart(null);
         mCheckLogScale.setVisibility(View.GONE);
+
+        final Indicator[] indicators = Indicator.values();
+        Arrays.sort(indicators, new Comparator<Indicator>() {
+            @Override
+            public int compare(Indicator o1, Indicator o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
 
         // Fill spinner
         Spinner sp = (Spinner)findViewById(R.id.function);
-        final String[] functions = new String[Indicator.values().length];
-        for(int i = 0; i < functions.length; i++) {
-            functions[i] = Indicator.values()[i].toString();
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functions);
+        ArrayAdapter<Indicator> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, indicators);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp.setAdapter(adapter);
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Indicator f = Indicator.values()[position];
+                Indicator f = indicators[position];
                 Log.d(TAG, "onSelectFunction() " + f.toString());
                 setIndicator(f);
             }
@@ -57,12 +63,12 @@ class ChartHolderIndicator extends ChartHolderBase {
             }
         });
 
-        setIndicator(Indicator.values()[0]);
+        setIndicator(indicators[0]);
         reload();
     }
 
-    private ChartParams.Indicator params() {
-        return (ChartParams.Indicator)mChartParams;
+    private IndicatorChart indicatorChart() {
+        return (IndicatorChart)mStockChart;
     }
 
     private void setIndicator(Indicator indicator) {
@@ -70,7 +76,8 @@ class ChartHolderIndicator extends ChartHolderBase {
         // Reset selection
         final FunctionDef def = indicator.getDef();
         final EditText[] fields = new EditText[def.paramCount()];
-        params().function = new FunctionCall(indicator, def.default_values);
+        //params().function = new FunctionCall(indicator, def.default_values);
+        indicatorChart().setIndicator(new FunctionCall(indicator, def.default_values));
 
         findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,19 +88,17 @@ class ChartHolderIndicator extends ChartHolderBase {
                     //Get parameters and redraw chart
                     if (def.paramCount() > 0) {
                         Number p[] = getParameters(def.default_values);
-                        params().function = new FunctionCall(params().function.id, p);
+                        indicatorChart().setIndicator( new FunctionCall( indicatorChart().getId(), p) );
                     }
 
-                    mChartParams.overlays.clear();
+                    mStockChart.clearOverlays();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        mChartParams.overlays.add(editControl.getOverlayFunction());
+                        indicatorChart().addOverlay((IOverlay)editControl.getOverlayFunction());
                     }
 
-                    mChartParams.logscale = mCheckLogScale.isChecked();
-                    //mListener.onRequest(ChartHolder.this, mSymbol);
                     reload();
                     setInEditMode(false);
                 } else {
@@ -119,23 +124,4 @@ class ChartHolderIndicator extends ChartHolderBase {
             layout.addView(fields[i]);
         }
     }
-
-    @Override
-    public Chart getChart() {
-        if(mChartParams == null || params().function == null)
-            return mChartFactory.getEmptyChart();
-
-        //return mChartFactory.getIndicatorChart(params());
-
-        IndicatorChart chart = new IndicatorChart(params().function);
-        for(IPriceOverlay ol : mChartParams.overlays) {
-            IOverlay overlay = (IOverlay)ol;
-            chart.addOverlay(overlay);
-        }
-
-        return mChartFactory.getChart(chart, mChartParams.symbol);
-    }
-
-
-    
 }

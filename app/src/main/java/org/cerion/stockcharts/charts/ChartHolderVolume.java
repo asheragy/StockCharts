@@ -19,12 +19,18 @@ class ChartHolderVolume extends ChartHolderBase {
     public ChartHolderVolume(Context context, String symbol, Interval interval) {
         super(context, symbol, interval);
 
+        mStockChart = new VolumeChart();
+        mStockChart.interval = interval;
         // Fill spinner
         Spinner sp = (Spinner)findViewById(R.id.function);
         sp.setVisibility(View.GONE);
 
         init();
         reload();
+    }
+
+    private VolumeChart volumeChart() {
+        return (VolumeChart)mStockChart;
     }
 
     private void init() {
@@ -36,15 +42,17 @@ class ChartHolderVolume extends ChartHolderBase {
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
 
-                    mChartParams.overlays.clear();
+                    mStockChart.clearOverlays();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        mChartParams.overlays.add(editControl.getOverlayFunction());
+
+                        // TODO see if there is a way to avoid this cast
+                        volumeChart().addOverlay((IOverlay)editControl.getOverlayFunction());
                     }
 
-                    mChartParams.logscale = mCheckLogScale.isChecked();
+                    volumeChart().logScale = mCheckLogScale.isChecked();
                     reload();
                     setInEditMode(false);
                 } else {
@@ -52,26 +60,6 @@ class ChartHolderVolume extends ChartHolderBase {
                 }
             }
         });
-    }
-
-    /*
-    @Override
-    public Chart getChart() {
-        return mChartFactory.getVolumeChart(mChartParams);
-    }
-    */
-
-    @Override
-    public Chart getChart() {
-        VolumeChart chart = new VolumeChart();
-        chart.logScale = mChartParams.logscale;
-
-        for(IPriceOverlay ol : mChartParams.overlays) {
-            IOverlay overlay = (IOverlay)ol;
-            chart.addOverlay(overlay);
-        }
-
-        return mChartFactory.getChart(chart, mChartParams.symbol);
     }
 
 }

@@ -18,13 +18,18 @@ class ChartHolderPrice extends ChartHolderBase {
     public ChartHolderPrice(Context context, String symbol, Interval interval) {
         super(context, symbol, interval);
 
-        mChartParams = mChartParams.toPrice();
+        mStockChart = new PriceChart();
+        mStockChart.interval = interval;
 
         findViewById(R.id.function).setVisibility(View.GONE);
         findViewById(R.id.check_linechart).setVisibility(View.VISIBLE);
 
         init();
         reload();
+    }
+
+    private PriceChart priceChart() {
+        return (PriceChart)mStockChart;
     }
 
     private void init() {
@@ -35,17 +40,16 @@ class ChartHolderPrice extends ChartHolderBase {
                 View controls = findViewById(R.id.edit_layout);
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
-
-                    mChartParams.overlays.clear();
+                    mStockChart.clearOverlays();
 
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        mChartParams.overlays.add(editControl.getOverlayFunction());
+                        priceChart().addOverlay(editControl.getOverlayFunction());
                     }
 
-                    mChartParams.logscale = mCheckLogScale.isChecked();
-                    params().lineChart = ((CheckBox)findViewById(R.id.check_linechart)).isChecked();
+                    priceChart().logScale = mCheckLogScale.isChecked();
+                    priceChart().candleData = !((CheckBox)findViewById(R.id.check_linechart)).isChecked();
 
                     reload();
                     setInEditMode(false);
@@ -55,26 +59,6 @@ class ChartHolderPrice extends ChartHolderBase {
             }
         });
 
-    }
-
-    private ChartParams.Price params() {
-        return (ChartParams.Price)mChartParams;
-    }
-
-    @Override
-    public Chart getChart() {
-        PriceChart chart = new PriceChart();
-        ChartParams.Price params = params();
-        chart.logScale = params.logscale;
-        chart.candleData = !params.lineChart;
-        chart.interval = params.interval;
-
-        for(IPriceOverlay ol : params.overlays) {
-            chart.addOverlay(ol);
-        }
-
-        //return mChartFactory.getPriceChart(params());
-        return mChartFactory.getChart(chart, params.symbol);
     }
 
 }

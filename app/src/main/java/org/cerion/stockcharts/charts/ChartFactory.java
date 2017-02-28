@@ -192,8 +192,8 @@ class ChartFactory {
     }
 
     private List<DataSet> getDataSets(StockChart chart) {
-        chart.setPrimaryColors(new int[] { Color.BLACK, Color.RED, Color.BLUE, Color.GREEN });
-        chart.setSecondaryColors(new int[] { Color.RED, Color.BLUE, Color.GREEN });
+        chart.setPrimaryColors(Colors.CHART_PRIMARY);
+        chart.setSecondaryColors(Colors.CHART_SECONDARY);
         return chart.getDataSets();
     }
 

@@ -13,24 +13,26 @@ import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.model.Interval;
 
 public abstract class ChartHolderBase extends ParametersEditControl {
 
     protected LinearLayout mOverlays;
     protected ChartFactory mChartFactory;
-    protected ChartParams mChartParams;
+    protected StockChart mStockChart;
+    protected String mSymbol;
     protected CheckBox mCheckLogScale;
 
     public ChartHolderBase(Context context, String symbol, Interval interval) {
         super(context, R.layout.view_chart_holder);
 
+        mSymbol = symbol;
         mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
 
         mChartFactory = new ChartFactory(context);
-        mChartParams = new ChartParams(symbol, interval);
 
         findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,8 +43,6 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
         setInEditMode(false);
     }
-
-    public abstract Chart getChart();
 
     public void setOnRemoveClickListener(OnClickListener listener) {
         findViewById(R.id.remove).setOnClickListener(listener);
@@ -87,12 +87,18 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
     }
 
+    private Chart getChart() {
+        return mChartFactory.getChart(mStockChart, mSymbol);
+    }
+
     public void reload(Interval interval) {
-        mChartParams.interval = interval;
+        mStockChart.interval = interval;
         reload();
     }
 
     protected void reload() {
+        // TODO see if interval can be set ONLY when this function is called
+
         final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
