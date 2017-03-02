@@ -230,6 +230,15 @@ class ChartFactory {
                 lineDataSet.setDrawValues(false);
                 lineDataSet.setColor(set.getColor());
 
+                if(set.getLineType() == DataSet.LineType.DOTTED) {
+                    // https://github.com/PhilJay/MPAndroidChart/pull/2622
+                    // This should be Transparent but using White because of bug
+                    lineDataSet.setColor(Color.rgb(250,250,250));
+                    lineDataSet.setDrawCircles(true);
+                    lineDataSet.setCircleRadius(1f);
+                    lineDataSet.setCircleColor(set.getColor());
+                }
+
                 result.add(lineDataSet);
             }
         }

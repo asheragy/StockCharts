@@ -72,9 +72,9 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
         final OverlayEditControl control;
         if(getClass() == ChartHolderPrice.class)
-            control = new OverlayEditControl(getContext(), true);
+            control = new OverlayEditControl(getContext(), mStockChart.getOverlays());
         else
-            control = new OverlayEditControl(getContext(), false);
+            control = new OverlayEditControl(getContext(), mStockChart.getOverlays());
 
         control.setOnDelete(new OverlayEditControl.OnDeleteListener() {
             @Override

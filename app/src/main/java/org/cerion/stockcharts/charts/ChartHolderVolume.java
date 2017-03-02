@@ -10,6 +10,7 @@ import org.cerion.stockcharts.R;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.IPriceOverlay;
+import org.cerion.stocklist.functions.ISimpleOverlay;
 import org.cerion.stocklist.model.Interval;
 
 class ChartHolderVolume extends ChartHolderBase {
@@ -49,7 +50,7 @@ class ChartHolderVolume extends ChartHolderBase {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
 
                         // TODO see if there is a way to avoid this cast
-                        volumeChart().addOverlay((IOverlay)editControl.getOverlayFunction());
+                        volumeChart().addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
                     }
 
                     volumeChart().logScale = mCheckLogScale.isChecked();

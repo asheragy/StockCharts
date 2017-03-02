@@ -19,6 +19,7 @@ import org.cerion.stocklist.functions.FunctionCall;
 import org.cerion.stocklist.functions.FunctionDef;
 import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.IPriceOverlay;
+import org.cerion.stocklist.functions.ISimpleOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
@@ -96,7 +97,7 @@ class ChartHolderIndicator extends ChartHolderBase {
                     // Get overlay parameters
                     for(int i = 0; i < mOverlays.getChildCount(); i++) {
                         OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        indicatorChart().addOverlay((IOverlay)editControl.getOverlayFunction());
+                        indicatorChart().addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
                     }
 
                     reload();
