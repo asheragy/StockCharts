@@ -28,13 +28,7 @@
             android:label="Charts Editor" />
         <activity
             android:name=".charts.ChartViewActivity"
-            android:label="@string/title_activity_chart_test"
-            android:theme="@style/AppTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:label="@string/title_activity_chart_test">
         </activity>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for

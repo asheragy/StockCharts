@@ -9,7 +9,9 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.model.Position;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
@@ -24,12 +26,14 @@ public class PositionViewActivity extends AppCompatActivity {
     public static final String EXTRA_POSITION_DATE = "position_date";
     public static final String EXTRA_POSITION_COUNT = "position_count";
     public static final String EXTRA_POSITION_PRICE = "position_price";
+    public static final String EXTRA_POSITION_DIV = "position_dividends_reinvested";
 
     private Position mPosition;
 
     private static DecimalFormat df = new DecimalFormat("0.00");
     private StockDB mDb;
     private IYahooFinance mAPI = new YahooFinance();
+    private StockDataManager mDataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,25 +41,31 @@ public class PositionViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_position_view);
 
         mDb = StockDB.getInstance(this);
+        mDataManager = new StockDataManager(this);
 
         String symbol = (String) getIntent().getSerializableExtra(EXTRA_POSITION_SYMBOL);
         Date date = (Date) getIntent().getSerializableExtra(EXTRA_POSITION_DATE);
         double count = (double) getIntent().getSerializableExtra(EXTRA_POSITION_COUNT);
         double price = (double) getIntent().getSerializableExtra(EXTRA_POSITION_PRICE);
+        boolean div = (boolean) getIntent().getSerializableExtra(EXTRA_POSITION_DIV);
 
-        mPosition = new Position(symbol,count,price,date);
+        mPosition = new Position(symbol,count,price,date, div);
 
         update();
 
         new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
+                final String symbol = mPosition.getSymbol();
+
                 // Add dividends to position
-                mPosition.addDividends(mDb.getDividends(mPosition.getSymbol()));
+                mPosition.addDividends(mDb.getDividends(symbol));
+                if(mPosition.IsDividendsReinvested())
+                    mPosition.setPriceHistory(mDataManager.getLatestPrices(symbol, Interval.DAILY));
 
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {
-                    Quote q = mAPI.getQuote(mPosition.getSymbol());
+                    Quote q = mAPI.getQuote(symbol);
                     mPosition.setCurrPrice(q.lastTrade);
                 }
             }
@@ -97,22 +107,27 @@ public class PositionViewActivity extends AppCompatActivity {
         setText(R.id.profit, df.format(mPosition.getProfit()));
         setText(R.id.price_percent_change, df.format(mPosition.getPercentChanged()) + "%");
 
-        setText(R.id.total_percent_change, df.format(mPosition.getPercentChangedWithDividends()) + "%");
-        setText(R.id.profit_with_dividends, df.format(mPosition.getProfit() + mPosition.getDividendProfit()));
+        if(mPosition.getDividendProfit() != 0) {
+            setText(R.id.total_percent_change, df.format(mPosition.getPercentChangedWithDividends()) + "%");
+            setText(R.id.profit_with_dividends, df.format(mPosition.getProfit() + mPosition.getDividendProfit()));
+        }
 
-        // TODO, hide if non-combined position, only useful there
+
         setText(R.id.break_even_price, df.format(mPosition.getOrigPrice()));
         // Calculate based on dividends earned X = (original*count - dividends) / count
         double value = mPosition.getOrigValue() - mPosition.getDividendProfit();
         setText(R.id.break_even_dividends, df.format(value / mPosition.getCount()));
 
         //Dividends
-        setText(R.id.last_dividend, df.format(mPosition.getLastDividendPaid()));
-        if(mPosition.getLastDividendDate() != null) {
-            setText(R.id.last_dividend_date, Utils.dateFormatLong.format(mPosition.getLastDividendDate()));
-            setText(R.id.next_dividend, Utils.dateFormatLong.format(mPosition.getNextDividendEstimate()));
+        if(!mPosition.IsDividendsReinvested()) {
+            setText(R.id.last_dividend, df.format(mPosition.getLastDividendPaid()));
+            if (mPosition.getLastDividendDate() != null) {
+                setText(R.id.last_dividend_date, Utils.dateFormatLong.format(mPosition.getLastDividendDate()));
+                setText(R.id.next_dividend, Utils.dateFormatLong.format(mPosition.getNextDividendEstimate()));
+            }
         }
 
+        // TODO if dividends-Reinvested add new field for share count since that will have increased
     }
 
     private void setText(int id, String text) {

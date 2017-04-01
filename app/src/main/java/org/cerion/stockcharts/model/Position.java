@@ -1,9 +1,12 @@
 package org.cerion.stockcharts.model;
 
+import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Quote;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +21,7 @@ public class Position {
     private double origPrice;
     private Date date;
     private boolean dividendsReinvested;
+    private double origPriceAdjusted;
 
     // Optional
     @Deprecated
@@ -29,6 +33,8 @@ public class Position {
     //private Dividend lastDividend; // TODO make this serializable
     private Date lastDividendDate;
     private double lastDividendAmount;
+
+    private static SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");
 
     public Position(String symbol, double count, double price, Date date)
     {
@@ -42,6 +48,7 @@ public class Position {
         this.origPrice = price;
         this.date = date;
         this.dividendsReinvested = dividendsReinvested;
+        this.origPriceAdjusted = price;
     }
 
     public String getSymbol() { return symbol; }
@@ -64,11 +71,31 @@ public class Position {
         this.quote = quote;
     }
 
+    public void setPriceHistory(PriceList list) {
+        if(list.getInterval() == Interval.DAILY) {
+
+            if(IsDividendsReinvested()) {
+                for(int i = 0; i < list.size(); i++) {
+                    Date date = list.mDate[i];
+                    if(dateEquals(date,this.date)) {
+                        origPriceAdjusted = list.close(i);
+                    }
+                }
+            }
+
+        } else {
+            throw new IllegalArgumentException("daily prices required");
+        }
+    }
+
     /**
      * Gets percent difference between current and original/purchase price
      * @return percent difference
      */
     public double getPercentChanged() {
+        if(IsDividendsReinvested())
+            return 100 * (currPrice - origPriceAdjusted) / origPriceAdjusted;
+
         return 100 * (currPrice - origPrice) / origPrice;
     }
 
@@ -93,6 +120,11 @@ public class Position {
      * @return price difference
      */
     public double getChange() {
+        if(IsDividendsReinvested()) {
+            double percent = getPercentChanged();
+            return origPrice * (percent / 100);
+        }
+
         return quote.getCurrentPrice() - origPrice;
     }
 
@@ -111,6 +143,9 @@ public class Position {
      * @return amount earned
      */
     public double getDividendProfit() {
+        if(IsDividendsReinvested())
+            return 0;
+
         return totalDividends * count;
     }
 
@@ -119,6 +154,9 @@ public class Position {
      * @return profit in dollars
      */
     public double getProfit() {
+        if(IsDividendsReinvested()) {
+            return getOrigValue() * (getPercentChanged() / 100);
+        }
         return getCurrValue() - getOrigValue();
     }
 
@@ -135,6 +173,10 @@ public class Position {
      * @return cost of current lot
      */
     public double getCurrValue() {
+        if(IsDividendsReinvested()) {
+            return getOrigValue() + getProfit();
+        }
+
         return currPrice * count;
     }
 
@@ -211,5 +253,9 @@ public class Position {
     public String toString()
     {
         return symbol + " " + count + "@" + origPrice;
+    }
+
+    private boolean dateEquals(Date d1, Date d2) {
+        return dayFormat.format(d1).equals(dayFormat.format(d2));
     }
 }

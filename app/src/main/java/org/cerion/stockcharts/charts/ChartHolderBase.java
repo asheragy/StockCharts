@@ -24,7 +24,7 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     protected String mSymbol;
     protected CheckBox mCheckLogScale;
 
-    public ChartHolderBase(Context context, String symbol, Interval interval) {
+    public ChartHolderBase(Context context, String symbol) {
         super(context, R.layout.view_chart_holder);
 
         mSymbol = symbol;

@@ -18,14 +18,19 @@ import android.widget.AdapterView;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.model.Position;
+import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +45,7 @@ public class PositionListFragment extends ListFragment {
     private List<Position> mPositions = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefresh;
     private StockDB mDb;
+    private StockDataManager mDataManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +54,7 @@ public class PositionListFragment extends ListFragment {
         // Non-view related initialization
         mDb = StockDB.getInstance(getContext());
 
+        mDataManager = new StockDataManager(getContext());
     }
 
     @Override
@@ -88,10 +95,12 @@ public class PositionListFragment extends ListFragment {
                 Position p = mAdapter.getItem(position);
                 Intent intent = new Intent(getContext(), PositionViewActivity.class);
 
+                // TODO add a string constructor for position so it can be passed with 1 field
                 intent.putExtra(PositionViewActivity.EXTRA_POSITION_COUNT, p.getCount());
                 intent.putExtra(PositionViewActivity.EXTRA_POSITION_DATE, p.getDate());
                 intent.putExtra(PositionViewActivity.EXTRA_POSITION_SYMBOL, p.getSymbol());
                 intent.putExtra(PositionViewActivity.EXTRA_POSITION_PRICE, p.getOrigPrice());
+                intent.putExtra(PositionViewActivity.EXTRA_POSITION_DIV, p.IsDividendsReinvested());
 
                 startActivity(intent);
             }
@@ -235,6 +244,11 @@ public class PositionListFragment extends ListFragment {
                 for(Position p : mPositions) {
                     String symbol = p.getSymbol();
                     Quote q = quotes.get(symbol);
+
+                    if(p.IsDividendsReinvested()) {
+                        PriceList list = mDataManager.getLatestPrices(symbol, Interval.DAILY);
+                        p.setPriceHistory(list);
+                    }
 
                     p.setCurrPrice(q.lastTrade);
                     p.setQuote(q);

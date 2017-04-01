@@ -10,12 +10,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stocklist.functions.IFunctionEnum;
 import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.Overlay;
-import org.cerion.stocklist.overlays.ExpMovingAverage;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class OverlayEditControl extends ParametersEditControl {
@@ -23,24 +21,20 @@ public class OverlayEditControl extends ParametersEditControl {
     private static final String TAG = OverlayEditControl.class.getSimpleName();
     private OnDeleteListener onDeleteListener;
     private Spinner spOverlays;
-    private List<OverlayHolder> mOverlays;
+    private List<FunctionAdapterItem> mOverlays;
+    private EditText[] mFields;
 
     public interface OnDeleteListener {
         void delete();
     }
 
-    public OverlayEditControl(Context context, List<IOverlay> overlays) {
+    public OverlayEditControl(Context context, IFunctionEnum[] overlays) {
         super(context, R.layout.overlay_parameters); // TODO rename layout to match class name
 
-        mOverlays = OverlayHolder.getList(overlays);
-        Collections.sort(mOverlays);
-        int index = 0;
-        for(int i = 0; i < mOverlays.size(); i++) {
-            if(mOverlays.get(i).overlay instanceof ExpMovingAverage)
-                index = i;
-        }
+        mOverlays = FunctionAdapterItem.getList(overlays);
+        //Collections.sort(mOverlays);
 
-        ArrayAdapter<OverlayHolder> adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mOverlays);
+        ArrayAdapter<FunctionAdapterItem> adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mOverlays);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spOverlays = (Spinner)findViewById(R.id.name);
@@ -48,7 +42,7 @@ public class OverlayEditControl extends ParametersEditControl {
         spOverlays.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                IOverlay o = mOverlays.get(position).overlay;
+                IOverlay o = (IOverlay)mOverlays.get(position).function;
                 Log.d(TAG, "onSelectOverlay() " + o.toString());
                 EditText[] fields = new EditText[o.params().length];
 
@@ -77,7 +71,7 @@ public class OverlayEditControl extends ParametersEditControl {
             }
         });
 
-        spOverlays.setSelection(index);
+        spOverlays.setSelection(FunctionAdapterItem.indexOf(mOverlays, Overlay.EMA));
     }
 
     public void setOnDelete(OnDeleteListener listener) {
@@ -86,32 +80,11 @@ public class OverlayEditControl extends ParametersEditControl {
 
     public IOverlay getOverlayFunction() {
         int index = spOverlays.getSelectedItemPosition();
-        return mOverlays.get(index).overlay;
-    }
+        IOverlay function = (IOverlay)mOverlays.get(index).function;
 
-    private static class OverlayHolder implements Comparable<OverlayHolder>
-    {
-        IOverlay overlay;
-        OverlayHolder(IOverlay o) {
-            overlay = o;
-        }
+        Number[] params = getParameters(function.params());
+        function.setParams(params);
 
-        static List<OverlayHolder> getList(List<IOverlay> overlays) {
-            List<OverlayHolder> result = new ArrayList<>();
-            for(IOverlay o : overlays)
-                result.add(new OverlayHolder(o));
-
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return overlay.getName();
-        }
-
-        @Override
-        public int compareTo(OverlayHolder o) {
-            return this.toString().compareTo(o.toString());
-        }
+        return function;
     }
 }

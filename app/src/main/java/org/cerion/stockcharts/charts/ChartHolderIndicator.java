@@ -9,53 +9,46 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.github.mikephil.charting.charts.Chart;
-
 import org.cerion.stockcharts.R;
 import org.cerion.stocklist.arrays.FloatArray;
 import org.cerion.stocklist.charts.IndicatorChart;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.functions.FunctionCall;
-import org.cerion.stocklist.functions.FunctionDef;
+import org.cerion.stocklist.functions.IFunction;
+import org.cerion.stocklist.functions.IIndicator;
 import org.cerion.stocklist.functions.IOverlay;
-import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.ISimpleOverlay;
 import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 class ChartHolderIndicator extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
 
     public ChartHolderIndicator(Context context, String symbol, Interval interval) {
-        super(context, symbol, interval);
+        super(context, symbol);
 
         mStockChart = new IndicatorChart(null);
+        mStockChart.interval = interval;
         mCheckLogScale.setVisibility(View.GONE);
 
-        final Indicator[] indicators = Indicator.values();
-        Arrays.sort(indicators, new Comparator<Indicator>() {
-            @Override
-            public int compare(Indicator o1, Indicator o2) {
-                return o1.toString().compareTo(o2.toString());
-            }
-        });
+        final List<FunctionAdapterItem> items = FunctionAdapterItem.getList(Indicator.values());
 
         // Fill spinner
         Spinner sp = (Spinner)findViewById(R.id.function);
-        ArrayAdapter<Indicator> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, indicators);
+        ArrayAdapter<FunctionAdapterItem> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp.setAdapter(adapter);
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Indicator f = indicators[position];
+                IIndicator f = (IIndicator)items.get(position).function;
                 Log.d(TAG, "onSelectFunction() " + f.toString());
-                setIndicator(f);
+                setIndicator(f.getId());
             }
 
             @Override
@@ -64,8 +57,7 @@ class ChartHolderIndicator extends ChartHolderBase {
             }
         });
 
-        setIndicator(indicators[0]);
-        reload();
+        sp.setSelection(FunctionAdapterItem.indexOf(items, Indicator.MACD) ,true);
     }
 
     private IndicatorChart indicatorChart() {
@@ -75,10 +67,11 @@ class ChartHolderIndicator extends ChartHolderBase {
     private void setIndicator(Indicator indicator) {
 
         // Reset selection
-        final FunctionDef def = indicator.getDef();
-        final EditText[] fields = new EditText[def.paramCount()];
-        //params().function = new FunctionCall(indicator, def.default_values);
-        indicatorChart().setIndicator(new FunctionCall(indicator, def.default_values));
+        final IIndicator instance = indicator.getInstance();
+        final Number[] params = instance.params();
+        final EditText[] fields = new EditText[params.length];
+
+        indicatorChart().setIndicator(instance);
 
         findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,9 +80,10 @@ class ChartHolderIndicator extends ChartHolderBase {
 
                 if(controls.getVisibility() == View.VISIBLE) { // SAVE
                     //Get parameters and redraw chart
-                    if (def.paramCount() > 0) {
-                        Number p[] = getParameters(def.default_values);
-                        indicatorChart().setIndicator( new FunctionCall( indicatorChart().getId(), p) );
+                    if (params.length > 0) {
+                        Number p[] = getParameters(params);
+                        instance.setParams(p);
+                        indicatorChart().setIndicator( instance );
                     }
 
                     mStockChart.clearOverlays();
@@ -109,7 +103,7 @@ class ChartHolderIndicator extends ChartHolderBase {
         });
 
         // If overlay is not allowed then hide it
-        if(def.result != FloatArray.class) {
+        if(instance.getResultType() != FloatArray.class) {
             findViewById(R.id.add_overlay).setVisibility(View.GONE);
             mOverlays.removeAllViews();
         }
@@ -119,10 +113,12 @@ class ChartHolderIndicator extends ChartHolderBase {
         // Add parameters
         LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
         layout.removeAllViews();
-        for(int i = 0; i < def.paramCount(); i++) {
-            Number n = def.default_values[i];
+        for(int i = 0; i < params.length; i++) {
+            Number n = params[i];
             fields[i] = getInputField(n);
             layout.addView(fields[i]);
         }
+
+        reload();
     }
 }

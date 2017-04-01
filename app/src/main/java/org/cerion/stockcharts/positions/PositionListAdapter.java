@@ -76,6 +76,10 @@ public class PositionListAdapter extends ArrayAdapter<Position> {
         viewHolder.purchase_date.setText( Utils.dateFormatShort.format(p.getDate()) );
         viewHolder.purchase_lot.setText(Utils.getDecimalFormat3(p.getCount()) + " @ " + df.format(p.getOrigPrice()));
 
+        // TODO add dividends re-invested
+        // 1. Calculate percent gain (current_close - purchase_date_close) / purchase_Date_close
+        // 2. Apply percent increase to purchase cost
+
         if(p.getCurrPrice() > 0) {
 
             // Current price

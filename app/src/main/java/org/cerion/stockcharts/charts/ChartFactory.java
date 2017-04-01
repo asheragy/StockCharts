@@ -160,6 +160,9 @@ class ChartFactory {
 
         XAxis xaxis = chart.getXAxis();
         xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates(), stockchart.interval));
+
+        // Always start at position 0 even if data set starts after that
+        xaxis.setAxisMinimum(0);
     }
 
     private void setLegend(Chart chart, List<DataSet> sets) {
@@ -222,7 +225,11 @@ class ChartFactory {
             if(set.getLineType() == DataSet.LineType.LINE || set.getLineType() == DataSet.LineType.DOTTED) {
                 ArrayList<Entry> entries = new ArrayList<>();
                 for (int i = 0; i < set.size(); i++) {
-                    entries.add(new Entry(i, set.get(i)));
+                    float point = set.get(i);
+                    if(!Float.isNaN(point))
+                        entries.add(new Entry(i, point));
+                    //else if(i == 0)
+                    //    entries.add(new Entry(0, 0));
                 }
 
                 LineDataSet lineDataSet = new LineDataSet(entries, set.getLabel());

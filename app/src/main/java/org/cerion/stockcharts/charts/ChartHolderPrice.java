@@ -16,7 +16,7 @@ class ChartHolderPrice extends ChartHolderBase {
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
 
     public ChartHolderPrice(Context context, String symbol, Interval interval) {
-        super(context, symbol, interval);
+        super(context, symbol);
 
         mStockChart = new PriceChart();
         mStockChart.interval = interval;
