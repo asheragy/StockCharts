@@ -13,6 +13,7 @@ import org.cerion.stocklist.PriceList;
 import org.cerion.stockcharts.database.StockDBOpenHelper.*;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
 import java.util.ArrayList;

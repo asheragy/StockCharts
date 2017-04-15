@@ -26,12 +26,15 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.DataSet;
+import org.cerion.stocklist.charts.IDataSet;
 import org.cerion.stocklist.charts.IndicatorChart;
+import org.cerion.stocklist.charts.LineType;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
@@ -87,10 +90,9 @@ class ChartFactory {
     @SuppressWarnings("unchecked")
     private Chart getPriceChart(PriceChart pchart) {
         BarLineChartBase chart;
+        List<IDataSet> sets = getDataSets(pchart);
 
-        List<DataSet> sets = getDataSets(pchart);
-
-        if(pchart.candleData) {
+        if(pchart.candleData && pchart.canShowCandleData()) {
             chart = new CombinedChart(mContext);
             CombinedData data = new CombinedData();
             CandleData candleData = getCandleData(sets);
@@ -123,7 +125,7 @@ class ChartFactory {
         setChartDefaults(chart, ichart);
         chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
 
-        List<DataSet> sets = getDataSets(ichart);
+        List<IDataSet> sets = getDataSets(ichart);
         chart.setData(getLineData(sets));
 
         setLegend(chart, sets);
@@ -139,7 +141,7 @@ class ChartFactory {
             axis.setValueFormatter(getLogScaleYAxis());
         }
 
-        List<DataSet> dataSets = getDataSets(vchart);
+        List<IDataSet> dataSets = getDataSets(vchart);
         CombinedData data = new CombinedData();
         data.setData(getBarData(dataSets));
         data.setData(getLineData(dataSets));
@@ -165,12 +167,12 @@ class ChartFactory {
         xaxis.setAxisMinimum(0);
     }
 
-    private void setLegend(Chart chart, List<DataSet> sets) {
+    private void setLegend(Chart chart, List<IDataSet> sets) {
         List<LegendEntry> entries = new ArrayList<>();
 
         String lastLabel = "";
         int lastColor = -1;
-        for(DataSet set : sets) {
+        for(IDataSet set : sets) {
             String label = set.getLabel();
             int color = set.getColor();
             LegendEntry entry = null;
@@ -194,17 +196,18 @@ class ChartFactory {
         chart.getLegend().setCustom(entries);
     }
 
-    private List<DataSet> getDataSets(StockChart chart) {
+    private List<IDataSet> getDataSets(StockChart chart) {
         chart.setPrimaryColors(Colors.CHART_PRIMARY);
         chart.setSecondaryColors(Colors.CHART_SECONDARY);
         return chart.getDataSets();
     }
 
-    private BarData getBarData(List<DataSet> sets) {
+    private BarData getBarData(List<IDataSet> sets) {
         List<IBarDataSet> result = new ArrayList<>();
 
-        for(DataSet set : sets) {
-            if(set.getLineType() == DataSet.LineType.BAR) {
+        for(IDataSet curr : sets) {
+            if(curr.getLineType() == LineType.BAR) {
+                DataSet set = (DataSet)curr;
                 ArrayList<BarEntry> entries = new ArrayList<>();
                 for (int i = 0; i < set.size(); i++)
                     entries.add(new BarEntry(i, set.get(i)));
@@ -218,11 +221,12 @@ class ChartFactory {
         return new BarData(result);
     }
 
-    private LineData getLineData(List<DataSet> sets) {
+    private LineData getLineData(List<IDataSet> sets) {
         List<ILineDataSet> result = new ArrayList<>();
 
-        for(DataSet set : sets) {
-            if(set.getLineType() == DataSet.LineType.LINE || set.getLineType() == DataSet.LineType.DOTTED) {
+        for(IDataSet curr : sets) {
+            if(curr.getLineType() == LineType.LINE || curr.getLineType() == LineType.DOTTED) {
+                DataSet set = (DataSet)curr;
                 ArrayList<Entry> entries = new ArrayList<>();
                 for (int i = 0; i < set.size(); i++) {
                     float point = set.get(i);
@@ -237,7 +241,7 @@ class ChartFactory {
                 lineDataSet.setDrawValues(false);
                 lineDataSet.setColor(set.getColor());
 
-                if(set.getLineType() == DataSet.LineType.DOTTED) {
+                if(set.getLineType() == LineType.DOTTED) {
                     // https://github.com/PhilJay/MPAndroidChart/pull/2622
                     // This should be Transparent but using White because of bug
                     lineDataSet.setColor(Color.rgb(250,250,250));
@@ -253,9 +257,9 @@ class ChartFactory {
         return new LineData(result);
     }
 
-    private CandleData getCandleData(List<DataSet> sets) {
-        for(DataSet set : sets) {
-            if(set.getLineType() == DataSet.LineType.CANDLE) {
+    private CandleData getCandleData(List<IDataSet> sets) {
+        for(IDataSet set : sets) {
+            if(set.getLineType() == LineType.CANDLE) {
                 ArrayList<CandleEntry> entries = new ArrayList<>();
                 org.cerion.stocklist.charts.CandleDataSet cds = (org.cerion.stocklist.charts.CandleDataSet)set;
 
@@ -287,11 +291,6 @@ class ChartFactory {
 
                 return mDateFormat.format(dates[v]);
             }
-
-            @Override
-            public int getDecimalDigits() {
-                return 0;
-            }
         };
     }
 
@@ -305,11 +304,6 @@ class ChartFactory {
                 BigDecimal bd = new BigDecimal(actual);
                 bd = bd.round(new MathContext(2));
                 return bd.toPlainString();
-            }
-
-            @Override
-            public int getDecimalDigits() {
-                return 0;
             }
         };
     }

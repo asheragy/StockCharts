@@ -8,18 +8,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:columnCount="2"
+    android:verticalSpacing="10dp"
     tools:context="org.cerion.stockcharts.positions.PositionViewActivity">
 
-    <TextView android:text="Symbol" style="@style/TextAppearance.GridLabel"/>
-
+    <TextView android:text="Symbol" style="@style/TextAppearance.GridLabel" />
     <TextView
         android:id="@+id/symbol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_column="1"
         tools:text="X"/>
 
     <TextView android:text="Count" style="@style/TextAppearance.GridLabel"/>
-
     <TextView
         android:id="@+id/count"
         android:layout_width="wrap_content"
@@ -48,12 +48,19 @@
         android:layout_height="wrap_content"
         tools:text="$0.00" />
 
-    <TextView android:text="Dividends Reinvested" style="@style/TextAppearance.GridLabel" android:paddingBottom="20dp"/>
+    <TextView android:text="Dividends Reinvested" style="@style/TextAppearance.GridLabel" android:paddingBottom="20dp" android:paddingEnd="10dp"/>
     <TextView
         android:id="@+id/dividends_reinvested"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="No" />
+
+    <TextView android:text="Current Quantity" style="@style/TextAppearance.GridLabel" />
+    <TextView
+        android:id="@+id/current_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="0" />
 
     <TextView android:text="Current Price" style="@style/TextAppearance.GridLabel"/>
     <TextView
@@ -124,19 +131,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="1/1/2000" />
-
-    <TextView android:text="Break Even Price" style="@style/TextAppearance.GridLabel"/>
-    <TextView
-        android:id="@+id/break_even_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="$0.00" />
-
-    <TextView android:text="Break Even w/Dividends" style="@style/TextAppearance.GridLabel" android:paddingEnd="10dp"/>
-    <TextView
-        android:id="@+id/break_even_dividends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="$0.00" />
 
 </GridLayout>

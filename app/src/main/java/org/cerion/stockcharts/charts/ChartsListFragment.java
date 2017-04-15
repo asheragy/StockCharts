@@ -12,7 +12,7 @@ import android.widget.ListView;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataStore;
-import org.cerion.stockcharts.model.Position;
+import org.cerion.stocklist.model.Position;
 
 import java.util.ArrayList;
 import java.util.List;

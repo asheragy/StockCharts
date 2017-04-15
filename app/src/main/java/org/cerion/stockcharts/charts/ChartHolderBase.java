@@ -24,10 +24,12 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     protected String mSymbol;
     protected CheckBox mCheckLogScale;
 
-    public ChartHolderBase(Context context, String symbol) {
+    public ChartHolderBase(Context context, String symbol, StockChart chart) {
         super(context, R.layout.view_chart_holder);
 
         mSymbol = symbol;
+        mStockChart = chart;
+
         mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
@@ -46,6 +48,10 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
     public void setOnRemoveClickListener(OnClickListener listener) {
         findViewById(R.id.remove).setOnClickListener(listener);
+    }
+
+    public StockChart getStockChart() {
+        return mStockChart;
     }
 
     protected void setChart(Chart chart) {

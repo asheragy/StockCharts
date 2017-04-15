@@ -15,11 +15,8 @@ class ChartHolderPrice extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
 
-    public ChartHolderPrice(Context context, String symbol, Interval interval) {
-        super(context, symbol);
-
-        mStockChart = new PriceChart();
-        mStockChart.interval = interval;
+    public ChartHolderPrice(Context context, String symbol, PriceChart chart) {
+        super(context, symbol, chart);
 
         findViewById(R.id.function).setVisibility(View.GONE);
         findViewById(R.id.check_linechart).setVisibility(View.VISIBLE);

@@ -17,11 +17,9 @@ class ChartHolderVolume extends ChartHolderBase {
 
     private static final String TAG = ChartHolderIndicator.class.getSimpleName();
 
-    public ChartHolderVolume(Context context, String symbol, Interval interval) {
-        super(context, symbol);
+    public ChartHolderVolume(Context context, String symbol, VolumeChart chart) {
+        super(context, symbol, chart);
 
-        mStockChart = new VolumeChart();
-        mStockChart.interval = interval;
         // Fill spinner
         Spinner sp = (Spinner)findViewById(R.id.function);
         sp.setVisibility(View.GONE);

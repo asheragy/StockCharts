@@ -19,10 +19,10 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
-import org.cerion.stockcharts.model.Position;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
@@ -250,7 +250,6 @@ public class PositionListFragment extends ListFragment {
                         p.setPriceHistory(list);
                     }
 
-                    p.setCurrPrice(q.lastTrade);
                     p.setQuote(q);
 
                     // Check for cached copy of dividends

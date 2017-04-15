@@ -3,6 +3,7 @@ package org.cerion.stockcharts.positions;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.cerion.stockcharts.R;
@@ -10,8 +11,8 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
-import org.cerion.stockcharts.model.Position;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
@@ -66,7 +67,7 @@ public class PositionViewActivity extends AppCompatActivity {
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {
                     Quote q = mAPI.getQuote(symbol);
-                    mPosition.setCurrPrice(q.lastTrade);
+                    mPosition.setQuote(q);
                 }
             }
 
@@ -97,6 +98,12 @@ public class PositionViewActivity extends AppCompatActivity {
             hideField(R.id.last_dividend_label);
             hideField(R.id.next_dividend_label);
             hideField(R.id.last_dividend_date_label);
+
+            hideRow(R.id.total_percent_change);
+            hideRow(R.id.profit_with_dividends);
+            hideRow(R.id.dividends_earned);
+        } else {
+            hideRow(R.id.current_count);
         }
     }
 
@@ -104,7 +111,7 @@ public class PositionViewActivity extends AppCompatActivity {
         setText(R.id.current_price, df.format(mPosition.getCurrPrice()));
         setText(R.id.current_value, "$" + df.format(mPosition.getCurrValue()));
 
-        setText(R.id.profit, df.format(mPosition.getProfit()));
+        setText(R.id.profit, "$" + df.format(mPosition.getProfit()));
         setText(R.id.price_percent_change, df.format(mPosition.getPercentChanged()) + "%");
 
         if(mPosition.getDividendProfit() != 0) {
@@ -112,14 +119,12 @@ public class PositionViewActivity extends AppCompatActivity {
             setText(R.id.profit_with_dividends, df.format(mPosition.getProfit() + mPosition.getDividendProfit()));
         }
 
-
-        setText(R.id.break_even_price, df.format(mPosition.getOrigPrice()));
-        // Calculate based on dividends earned X = (original*count - dividends) / count
-        double value = mPosition.getOrigValue() - mPosition.getDividendProfit();
-        setText(R.id.break_even_dividends, df.format(value / mPosition.getCount()));
-
         //Dividends
-        if(!mPosition.IsDividendsReinvested()) {
+        if(mPosition.IsDividendsReinvested()) {
+            // TODO if dividends-Reinvested add new field for share count since that will have increased
+            setText(R.id.current_count, Utils.getDecimalFormat3(mPosition.getCurrCount()));
+        }
+        else {
             setText(R.id.last_dividend, df.format(mPosition.getLastDividendPaid()));
             if (mPosition.getLastDividendDate() != null) {
                 setText(R.id.last_dividend_date, Utils.dateFormatLong.format(mPosition.getLastDividendDate()));
@@ -127,7 +132,7 @@ public class PositionViewActivity extends AppCompatActivity {
             }
         }
 
-        // TODO if dividends-Reinvested add new field for share count since that will have increased
+
     }
 
     private void setText(int id, String text) {
@@ -136,6 +141,16 @@ public class PositionViewActivity extends AppCompatActivity {
 
     private void hideField(int id) {
         findViewById(id).setVisibility(View.GONE);
+    }
+
+    private void hideRow(int id) {
+        View v = findViewById(id);
+        ViewGroup parent = (ViewGroup)v.getParent();
+        int index = parent.indexOfChild(v);
+        int labelIndex = index - 1;
+
+        v.setVisibility(View.GONE);
+        parent.getChildAt(labelIndex).setVisibility(View.GONE);
     }
 
 }

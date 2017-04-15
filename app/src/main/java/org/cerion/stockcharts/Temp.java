@@ -4,7 +4,7 @@ package org.cerion.stockcharts;
 import android.content.Context;
 
 import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.model.Position;
+import org.cerion.stocklist.model.Position;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;

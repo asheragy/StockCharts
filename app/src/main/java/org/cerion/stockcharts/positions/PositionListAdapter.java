@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.model.Position;
+import org.cerion.stocklist.model.Position;
 
 import java.text.DecimalFormat;
 import java.util.List;
