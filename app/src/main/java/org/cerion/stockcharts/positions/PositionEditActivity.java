@@ -11,14 +11,20 @@ import android.widget.EditText;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.DatePickerFragment;
+import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
+import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.model.Position;
+import org.cerion.stocklist.model.Symbol;
 
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class PositionEditActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSetListener {
@@ -50,25 +56,13 @@ public class PositionEditActivity extends AppCompatActivity
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String symbol = mSymbol.getText().toString();
+                float count = Float.parseFloat(mCount.getText().toString());
+                float price = Float.parseFloat(mPrice.getText().toString());
+                boolean dr = ((CheckBox)findViewById(R.id.dividends_reinvested)).isChecked();
 
-                try {
-                    String symbol = mSymbol.getText().toString();
-                    float count = Float.parseFloat(mCount.getText().toString());
-                    float price = Float.parseFloat(mPrice.getText().toString());
-                    boolean dr = ((CheckBox)findViewById(R.id.dividends_reinvested)).isChecked();
-
-                    Position p = new Position(symbol, count, price, mDate, dr);
-
-                    Log.d(TAG, "Saving " + p + " " + Utils.dateFormatShort.format(p.getDate()));
-
-                    StockDB db = StockDB.getInstance(PositionEditActivity.this);
-                    db.addPosition(p);
-                    finish();
-                }
-                catch(Exception e) {
-                    Log.d(TAG, "Failed to parse value");
-                }
-
+                Position p = new Position(symbol, count, price, mDate, dr);
+                onAddPosition(p);
             }
         });
 
@@ -85,5 +79,26 @@ public class PositionEditActivity extends AppCompatActivity
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         mDate = date;
         ((Button)findViewById(R.id.date)).setText( sdf.format(date) );
+    }
+
+    private void onAddPosition(final Position p) {
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Saving " + p + " " + Utils.dateFormatShort.format(p.getDate()));
+
+                StockDataManager dataManager = new StockDataManager(PositionEditActivity.this);
+                dataManager.insertSymbol(p.getSymbol());
+                StockDB db = StockDB.getInstance(PositionEditActivity.this);
+                db.addPosition(p);
+            }
+
+            @Override
+            public void onFinish() {
+                finish();
+            }
+        });
+
+        task.execute();
     }
 }

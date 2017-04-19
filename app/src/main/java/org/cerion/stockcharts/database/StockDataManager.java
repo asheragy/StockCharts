@@ -38,9 +38,11 @@ public class StockDataManager {
         //TODO limit for now
         PriceList list = YahooFinance.getPrices(symbol, interval, 500);
 
-        mDb.addPriceList(list);
-        Log.d(TAG,"Updated prices for " + symbol);
-        mDb.log();
+        if (list.size() > 0) {
+            mDb.addPriceList(list);
+            Log.d(TAG, "Updated prices for " + symbol);
+            mDb.log();
+        }
     }
 
     public PriceList getLatestPrices(String symbol, Interval interval) {

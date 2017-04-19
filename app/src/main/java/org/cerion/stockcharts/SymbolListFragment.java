@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,10 +27,13 @@ import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDataStore;
 import org.cerion.stockcharts.positions.PositionListAdapter;
+import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class SymbolListFragment extends ListFragment implements SymbolLookupDialogFragment.OnSymbolListener {
@@ -96,6 +100,10 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
             case R.id.add_symbol:
                 onAddSymbol();
                 break;
+
+            case R.id.sync_symbols:
+                onSyncSymbols();
+                break;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -119,6 +127,36 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
         DialogFragment dialog = new SymbolLookupDialogFragment();
         dialog.setTargetFragment(this, DIALOG_FRAGMENT);
         dialog.show(getFragmentManager().beginTransaction(), "dialog");
+    }
+
+    private void onSyncSymbols() {
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+            @Override
+            public void run() {
+                StockDB db = StockDB.getInstance(getContext());
+                StockDataManager dataManager = new StockDataManager(getContext());
+
+                List<Symbol> sList = db.getSymbols();
+                Set<String> symbols = new HashSet<>();
+                for(Symbol s : sList)
+                    symbols.add(s.getSymbol());
+
+                List<Position> positions = db.getPositions();
+                for(Position p : positions) {
+                    if (!symbols.contains(p.getSymbol())) {
+                        dataManager.insertSymbol(p.getSymbol());
+                        symbols.add(p.getSymbol());
+                    }
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                refresh();
+            }
+        });
+
+        task.execute();
     }
 
     @Override
