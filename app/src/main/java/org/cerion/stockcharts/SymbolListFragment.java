@@ -4,11 +4,10 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,13 +19,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.cerion.stockcharts.charts.ChartViewActivity;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
-import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDataStore;
-import org.cerion.stockcharts.positions.PositionListAdapter;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
@@ -41,7 +39,12 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     private static final String TAG = SymbolListFragment.class.getSimpleName();
     //private ArrayAdapter<String> mAdapter;
     private SymbolListAdapter mAdapter;
-    private List<Symbol> mSymbols = new ArrayList<>();
+    private List<SymbolItem> mSymbols = new ArrayList<>();
+
+    private class SymbolItem {
+        public Symbol symbol;
+        public boolean position;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,24 +69,38 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        //String s = mSymbols.get(position); TODO Add back
+        String s = mSymbols.get(position).symbol.getSymbol();
+        Intent intent = ChartViewActivity.newIntent(getContext(), s);
 
-        Intent intent = new Intent(getActivity(),PriceListActivity.class);
+        //Intent intent = new Intent(getActivity(),PriceListActivity.class);
         //intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
-
         //Intent intent = new Intent(getActivity(),ChartViewActivity.class);
         //intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
-
         startActivity(intent);
     }
 
-    public void refresh()
-    {
+    public void refresh() {
         StockDataStore db = StockDB.getInstance(this.getContext());
-        //db.log();
         mSymbols.clear();
-        mSymbols.addAll( db.getSymbols() );
 
+        List<Symbol> symbols = db.getSymbols();
+        List<Position> positions = db.getPositions();
+
+        List<SymbolItem> items = new ArrayList<>();
+
+        for(Symbol s : symbols) {
+            SymbolItem item = new SymbolItem();
+            item.symbol = s;
+
+            for(Position p : positions) {
+                if (p.getSymbol().contentEquals(s.getSymbol()))
+                    item.position = true;
+            }
+
+            items.add(item);
+        }
+
+        mSymbols.addAll(items);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -186,20 +203,22 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
         TextView symbol;
         TextView name;
         TextView exchange;
+        TextView lists;
     }
 
-    private class SymbolListAdapter extends ArrayAdapter<Symbol> {
+    private class SymbolListAdapter extends ArrayAdapter<SymbolItem> {
 
         private static final int LAYOUT_ID = R.layout.list_item_symbol;
 
-        public SymbolListAdapter(Context context, List<Symbol> items) {
+        public SymbolListAdapter(Context context, List<SymbolItem> items) {
             super(context, LAYOUT_ID, items);
         }
 
         @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Symbol symbol = getItem(position);
+            SymbolItem item = getItem(position);
+            Symbol symbol = item.symbol;
             ViewHolder viewHolder;
 
             if (convertView == null) {
@@ -210,6 +229,7 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
                 viewHolder.symbol = (TextView) convertView.findViewById(R.id.symbol);
                 viewHolder.name = (TextView) convertView.findViewById(R.id.name);
                 viewHolder.exchange = (TextView) convertView.findViewById(R.id.exchange);
+                viewHolder.lists = (TextView) convertView.findViewById(R.id.lists);
 
                 convertView.setTag(viewHolder);
             } else {
@@ -219,6 +239,11 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
             viewHolder.symbol.setText(symbol.getSymbol());
             viewHolder.name.setText(symbol.getName());
             viewHolder.exchange.setText(symbol.getExchange());
+
+            if(item.position)
+                viewHolder.lists.setText("P");
+            else
+                viewHolder.lists.setText("");
 
             return convertView;
         }

@@ -1,7 +1,6 @@
 package org.cerion.stockcharts;
 
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager.PageTransformer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -10,14 +9,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.view.View;
 import android.widget.Toast;
 
-import org.cerion.stockcharts.charts.ChartsListFragment;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.positions.PositionListFragment;
@@ -69,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         */
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        mViewPager.setCurrentItem(1); //DEBUG
+        mViewPager.setCurrentItem(0);
 
 
         // Give the TabLayout the ViewPager
@@ -163,8 +159,6 @@ public class MainActivity extends AppCompatActivity {
             if(position == 0)
                 return new SymbolListFragment();
             else if(position == 1)
-                return new ChartsListFragment();
-            else if(position == 2)
                 return new PositionListFragment();
 
             return null;
@@ -172,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -181,8 +175,6 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     return "Symbols";
                 case 1:
-                    return "ChartFactory";
-                case 2:
                     return "Positions";
             }
             return null;

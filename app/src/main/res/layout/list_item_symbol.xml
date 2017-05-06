@@ -33,7 +33,7 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="8dp">
 
@@ -43,6 +43,14 @@
             android:layout_height="wrap_content"
             tools:text="Name"/>
 
+        <TextView
+            android:id="@+id/lists"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="WP"
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+            android:textAlignment="viewEnd" />
 
     </LinearLayout>
 

@@ -1,6 +1,8 @@
 package org.cerion.stockcharts.charts;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,14 +23,19 @@ import java.util.List;
 
 public class ChartViewActivity extends AppCompatActivity {
     private static final String TAG = ChartViewActivity.class.getSimpleName();
-    public static final String EXTRA_SYMBOL = "symbol";
-
+    private static final String EXTRA_SYMBOL = "symbol";
     private static final String STATE_CHARTS = "charts";
     private static final String STATE_INTERVAL = "interval";
 
     private LinearLayout mCharts;
     private String mSymbol;
     private Interval mInterval;
+
+    public static Intent newIntent(Context context, String symbol) {
+        Intent intent = new Intent(context,ChartViewActivity.class);
+        intent.putExtra(ChartViewActivity.EXTRA_SYMBOL, symbol);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
