@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.positions;
 
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,7 +48,7 @@ public class PositionEditActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new DatePickerFragment();
-                newFragment.show(getSupportFragmentManager(), "datePicker");
+                newFragment.show(getFragmentManager(), "datePicker");
 
             }
         });
