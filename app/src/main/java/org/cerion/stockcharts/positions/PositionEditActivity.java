@@ -1,8 +1,8 @@
 package org.cerion.stockcharts.positions;
 
 import android.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,25 +12,21 @@ import android.widget.EditText;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.DatePickerFragment;
 import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stockcharts.common.SymbolAutoCompleteTextView;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.Symbol;
 
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class PositionEditActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSetListener {
 
     public static final String TAG = PositionEditActivity.class.getSimpleName();
-    private EditText mSymbol;
+    private SymbolAutoCompleteTextView mSymbol;
     private EditText mCount;
     private EditText mPrice;
     private Date mDate;
@@ -40,7 +36,7 @@ public class PositionEditActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position_edit);
 
-        mSymbol = (EditText)findViewById(R.id.symbol);
+        mSymbol = (SymbolAutoCompleteTextView)findViewById(R.id.symbol);
         mCount = (EditText)findViewById(R.id.count);
         mPrice = (EditText)findViewById(R.id.price);
 

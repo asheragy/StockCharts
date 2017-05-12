@@ -1,6 +1,5 @@
 package org.cerion.stockcharts.common;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -8,11 +7,9 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.InputFilter;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class SymbolLookupDialogFragment extends DialogFragment {
 
@@ -54,7 +51,8 @@ public class SymbolLookupDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Enter Symbol");
 
-        final EditText input = new EditText(getContext());
+        final AutoCompleteTextView input = new SymbolAutoCompleteTextView(getContext());
+
         input.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -78,4 +76,5 @@ public class SymbolLookupDialogFragment extends DialogFragment {
 
         return builder.create();
     }
+
 }

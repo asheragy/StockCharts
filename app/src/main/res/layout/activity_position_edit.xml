@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Symbol"/>
 
-    <EditText
+    <org.cerion.stockcharts.common.SymbolAutoCompleteTextView
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/symbol"

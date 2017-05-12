@@ -16,6 +16,8 @@ public interface StockDataStore {
     void addSymbol(Symbol symbol);
     void deleteAllSymbols();
 
+    // TODO add new table for symbols that can be pre-populated and looked up for reference, not shown in list though
+
     // Positions
     void addPosition(Position position);
     List<Position> getPositions();
