@@ -60,6 +60,7 @@ class ChartFactory {
     private StockDataManager mDataManager;
 
     // TODO cache lists here, if the same one is requested multiple times hold it
+    // OR cache in the ChartViewActivity since each activity instance usually is 1 PriceList required
 
     ChartFactory(Context context) {
         mContext = context;

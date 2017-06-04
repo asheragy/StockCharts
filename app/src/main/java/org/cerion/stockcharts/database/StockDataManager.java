@@ -22,7 +22,7 @@ import java.util.Set;
 public class StockDataManager {
     private static final String TAG = StockDataManager.class.getSimpleName();
     private StockDataStore mDb;
-    private IYahooFinance mYahooFinance; // TODO yahooFinance class should only be used in this file
+    private static IYahooFinance mYahooFinance = new YahooFinance(); // TODO yahooFinance class should only be used in this file
     private Context mContext;
 
     public StockDataManager(Context context) {
@@ -32,16 +32,27 @@ public class StockDataManager {
     }
 
     public void updatePrices(String symbol, Interval interval) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(1990, Calendar.JANUARY, 1);
-        //PriceList list = YahooFinance.getPrices(symbol, interval, cal);
-        //TODO limit for now
-        PriceList list = YahooFinance.getPrices(symbol, interval, 500);
+        PriceList list = null;
+        try
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.set(1990, Calendar.JANUARY, 1);
+            //PriceList list = YahooFinance.getPrices(symbol, interval, cal);
+            //TODO limit for now
+            list = mYahooFinance.getPrices(symbol, interval, 500);
+        }
+        catch(Exception e)
+        {
+            // nothing
+        }
 
-        if (list.size() > 0) {
+        if (list != null && list.size() > 0) {
             mDb.addPriceList(list);
             Log.d(TAG, "Updated prices for " + symbol);
             mDb.log();
+        }
+        else {
+            Toast.makeText(mContext, "Failed to get updated prices for " + symbol, Toast.LENGTH_SHORT).show();
         }
     }
 
