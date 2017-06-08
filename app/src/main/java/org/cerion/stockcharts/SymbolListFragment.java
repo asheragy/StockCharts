@@ -25,6 +25,8 @@ import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
 import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDataStore;
+import org.cerion.stockcharts.viewmodel.SymbolListViewModel;
+import org.cerion.stockcharts.viewmodel.SymbolListViewModel.SymbolItem;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
@@ -39,29 +41,23 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     private static final String TAG = SymbolListFragment.class.getSimpleName();
     //private ArrayAdapter<String> mAdapter;
     private SymbolListAdapter mAdapter;
-    private List<SymbolItem> mSymbols = new ArrayList<>();
-
-    private class SymbolItem {
-        public Symbol symbol;
-        public boolean position;
-    }
+    private List<SymbolListViewModel.SymbolItem> mSymbols = new ArrayList<>();
+    private SymbolListViewModel vm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.generic_list_fragment, container, false);
+
+        vm = new SymbolListViewModel(getActivity());
 
         //mAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, mSymbols);
         mAdapter = new SymbolListAdapter(getContext(), mSymbols);
 
         setListAdapter(mAdapter);
-
         setHasOptionsMenu(true);
 
         //TODO add empty list case
-
         refresh();
-
         return view;
     }
 
@@ -80,27 +76,8 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     }
 
     public void refresh() {
-        StockDataStore db = StockDB.getInstance(this.getContext());
         mSymbols.clear();
-
-        List<Symbol> symbols = db.getSymbols();
-        List<Position> positions = db.getPositions();
-
-        List<SymbolItem> items = new ArrayList<>();
-
-        for(Symbol s : symbols) {
-            SymbolItem item = new SymbolItem();
-            item.symbol = s;
-
-            for(Position p : positions) {
-                if (p.getSymbol().contentEquals(s.getSymbol()))
-                    item.position = true;
-            }
-
-            items.add(item);
-        }
-
-        mSymbols.addAll(items);
+        mSymbols.addAll( vm.getItems() );
         mAdapter.notifyDataSetChanged();
     }
 
