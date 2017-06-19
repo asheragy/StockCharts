@@ -70,6 +70,7 @@ public class PositionViewActivity extends AppCompatActivity implements Observer 
     protected void onPause() {
         super.onPause();
 
+        // TODO check what cases isFinishing is true
         if (isFinishing()) {
             getSupportFragmentManager()
                     .beginTransaction()

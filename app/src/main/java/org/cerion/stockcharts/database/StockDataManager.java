@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.model.HistoricalDates;
+import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Symbol;
@@ -29,6 +30,10 @@ public class StockDataManager {
         mDb = StockDB.getInstance(context);
         mContext = context;
         mYahooFinance = new YahooFinance();
+    }
+
+    public List<Dividend> getDividends(String symbol) {
+        return mYahooFinance.getDividends(symbol);
     }
 
     public void updatePrices(String symbol, Interval interval) {

@@ -28,9 +28,7 @@ import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -203,7 +201,7 @@ public class PositionListFragment extends ListFragment {
                 {
                     String symbol = p.getSymbol();
                     if(!downloaded.containsKey(symbol)) {
-                        List<Dividend> list = YahooFinance.getDividends(symbol);
+                        List<Dividend> list = mDataManager.getDividends(symbol);
                         Log.d(TAG, "downloaded new list, size = " + list.size());
                         mDb.addDividends(symbol, list);
                         downloaded.put(symbol, "");
@@ -222,8 +220,7 @@ public class PositionListFragment extends ListFragment {
         task.execute();
     }
 
-    private void onRefresh()
-    {
+    private void onRefresh() {
         mSwipeRefresh.setRefreshing(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
@@ -269,7 +266,7 @@ public class PositionListFragment extends ListFragment {
                         if(q.dividendDate == null) {
                             Log.d(TAG,symbol + ": Unable to determine if dividends were updated, skipping for now");
                         } else {
-                            list = YahooFinance.getDividends(symbol);
+                            list = mDataManager.getDividends(symbol);
                             Log.d(TAG, "downloaded new list, size = " + list.size());
                             mDb.addDividends(symbol, list);
                         }
