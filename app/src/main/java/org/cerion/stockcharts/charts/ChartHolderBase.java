@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.Chart;
 
@@ -94,7 +95,12 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     }
 
     private Chart getChart() {
-        return mChartFactory.getChart(mStockChart, mSymbol);
+        try {
+            return mChartFactory.getChart(mStockChart, mSymbol);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
+            return mChartFactory.getEmptyChart();
+        }
     }
 
     public void reload(Interval interval) {

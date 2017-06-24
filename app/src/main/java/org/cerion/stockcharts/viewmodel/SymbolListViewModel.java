@@ -2,8 +2,8 @@ package org.cerion.stockcharts.viewmodel;
 
 import android.content.Context;
 
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataStore;
+import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
@@ -13,7 +13,8 @@ import java.util.List;
 public class SymbolListViewModel {
 
     private Context mContext;
-    private StockDataStore mDb;
+    private SymbolRepository repo;
+    private PositionRepository positionRepo;
 
     public static class SymbolItem {
         public Symbol symbol;
@@ -22,12 +23,13 @@ public class SymbolListViewModel {
 
     public SymbolListViewModel(Context context) {
         mContext = context;
-        mDb = StockDB.getInstance(context);
+        repo = new SymbolRepository(context);
+        positionRepo = new PositionRepository(context);
     }
 
     public List<SymbolItem> getItems() {
-        List<Symbol> symbols = mDb.getSymbols();
-        List<Position> positions = mDb.getPositions();
+        List<Symbol> symbols = repo.getAll();
+        List<Position> positions = positionRepo.getAll();
         List<SymbolItem> items = new ArrayList<>();
 
         for(Symbol s : symbols) {

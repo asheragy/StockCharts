@@ -22,9 +22,8 @@ import android.widget.Toast;
 import org.cerion.stockcharts.charts.ChartViewActivity;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataManager;
-import org.cerion.stockcharts.database.StockDataStore;
+import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stockcharts.viewmodel.SymbolListViewModel;
 import org.cerion.stockcharts.viewmodel.SymbolListViewModel.SymbolItem;
 import org.cerion.stocklist.model.Position;
@@ -43,6 +42,7 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     private SymbolListAdapter mAdapter;
     private List<SymbolListViewModel.SymbolItem> mSymbols = new ArrayList<>();
     private SymbolListViewModel vm;
+    private SymbolRepository repo = new SymbolRepository(getContext());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,18 +127,17 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                StockDB db = StockDB.getInstance(getContext());
-                StockDataManager dataManager = new StockDataManager(getContext());
+                PositionRepository positionRepo = new PositionRepository(getContext());
 
-                List<Symbol> sList = db.getSymbols();
+                List<Symbol> sList = repo.getAll();
                 Set<String> symbols = new HashSet<>();
                 for(Symbol s : sList)
                     symbols.add(s.getSymbol());
 
-                List<Position> positions = db.getPositions();
+                List<Position> positions = positionRepo.getAll();
                 for(Position p : positions) {
                     if (!symbols.contains(p.getSymbol())) {
-                        dataManager.insertSymbol(p.getSymbol());
+                        repo.add(p.getSymbol());
                         symbols.add(p.getSymbol());
                     }
                 }
@@ -161,8 +160,7 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
 
             @Override
             public void run() {
-                StockDataManager dataManager = new StockDataManager(getContext());
-                result = dataManager.insertSymbol(name);
+                result = repo.add(name);
             }
 
             @Override

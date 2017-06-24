@@ -6,8 +6,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stocklist.model.Position;
 
 import java.text.SimpleDateFormat;
@@ -17,8 +15,6 @@ import java.util.Locale;
 public class PositionEditViewModel {
     private static final String TAG = PositionEditViewModel.class.getSimpleName();
 
-    private StockDataManager mDataManager;
-    private StockDB mDb;
     private Context mContext;
     private IView mListener;
 
@@ -36,8 +32,6 @@ public class PositionEditViewModel {
 
     public PositionEditViewModel(Context context, IView listener) {
         mContext = context;
-        mDataManager = new StockDataManager(context);
-        mDb = StockDB.getInstance(context);
         mListener = listener;
     }
 

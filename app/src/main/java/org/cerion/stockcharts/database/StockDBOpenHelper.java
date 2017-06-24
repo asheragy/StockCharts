@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stockcharts.database.Tables.*;
 
 public class StockDBOpenHelper extends SQLiteOpenHelper {
 
@@ -37,23 +38,6 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         ALL_COLUMNS_DIVIDENDS
      */
 
-
-    public static class Dividends {
-        public static final String TABLE_NAME = "dividends";
-        public static final String _SYMBOL = "symbol";
-        public static final String _DATE = "date";
-        public static final String _AMOUNT = "amount";
-
-        public static final String[] ALL_COLUMNS = { _SYMBOL, _DATE, _AMOUNT };
-        public static String SQL_CREATE =
-            "create table " + TABLE_NAME + "("
-                    + _SYMBOL + " TEXT NOT NULL, "
-                    + _DATE + " INTEGER NOT NULL, "
-                    + _AMOUNT + " REAL NOT NULL, "
-                    + "PRIMARY KEY (" + _SYMBOL + "," + _DATE + ")"
-                    + ")";
-    }
-
     public static class Symbols {
         public static final String TABLE_NAME = "symbols";
         public static final String _SYMBOL = "symbol";
@@ -67,19 +51,19 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
                 + ")";
     }
 
-    static class HistoricalDates {
-        static final String TABLE_HISTORICAL_DATES_DAILY = "historical_dates_daily";
-        static final String TABLE_HISTORICAL_DATES_WEEKLY = "historical_dates_weekly";
-        static final String TABLE_HISTORICAL_DATES_MONTHLY = "historical_dates_monthly";
+    public static class HistoricalDates {
+        public static final String TABLE_HISTORICAL_DATES_DAILY = "historical_dates_daily";
+        public static final String TABLE_HISTORICAL_DATES_WEEKLY = "historical_dates_weekly";
+        public static final String TABLE_HISTORICAL_DATES_MONTHLY = "historical_dates_monthly";
 
-        static final String _SYMBOL = "symbol";
-        static final String _UPDATED = "updated";
-        static final String _FIRST = "first";
-        static final String _LAST = "last";
+        public static final String _SYMBOL = "symbol";
+        public static final String _UPDATED = "updated";
+        public static final String _FIRST = "first";
+        public static final String _LAST = "last";
 
-        static final String[] ALL_COLUMNS = { _SYMBOL, _UPDATED, _FIRST, _LAST };
+        public static final String[] ALL_COLUMNS = { _SYMBOL, _UPDATED, _FIRST, _LAST };
 
-        static String getTableName(Interval interval) {
+        public static String getTableName(Interval interval) {
             if(interval == Interval.WEEKLY)
                 return TABLE_HISTORICAL_DATES_WEEKLY;
             if(interval == Interval.MONTHLY)

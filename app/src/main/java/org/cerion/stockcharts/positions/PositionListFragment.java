@@ -17,8 +17,9 @@ import android.widget.AdapterView;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataManager;
+import org.cerion.stockcharts.repository.DividendRepository;
+import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
@@ -42,17 +43,18 @@ public class PositionListFragment extends ListFragment {
     private PositionListAdapter mAdapter;
     private List<Position> mPositions = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefresh;
-    private StockDB mDb;
-    private StockDataManager mDataManager;
+    private DividendRepository dividendRepo;
+    private PositionRepository repo;
+    private PriceListRepository priceRepo;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Non-view related initialization
-        mDb = StockDB.getInstance(getContext());
-
-        mDataManager = new StockDataManager(getContext());
+        repo = new PositionRepository(getContext());
+        dividendRepo = new DividendRepository(getContext());
+        priceRepo = new PriceListRepository(getContext());
     }
 
     @Override
@@ -91,15 +93,7 @@ public class PositionListFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Position p = mAdapter.getItem(position);
-                Intent intent = new Intent(getContext(), PositionViewActivity.class);
-
-                // TODO add a string constructor for position so it can be passed with 1 field
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION_COUNT, p.getCount());
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION_DATE, p.getDate());
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION_SYMBOL, p.getSymbol());
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION_PRICE, p.getOrigPrice());
-                intent.putExtra(PositionViewActivity.EXTRA_POSITION_DIV, p.IsDividendsReinvested());
-
+                Intent intent = PositionViewActivity.newIntent(getContext(), p.getId());
                 startActivity(intent);
             }
         });
@@ -132,7 +126,7 @@ public class PositionListFragment extends ListFragment {
                 Position p = mPositions.get(info.position);
                 Log.d(TAG, "removing " + p.getSymbol());
 
-                mDb.deletePosition(p);
+                repo.delete(p);
                 refreshList();
                 break;
             default:
@@ -152,7 +146,7 @@ public class PositionListFragment extends ListFragment {
         if(savedPositions != null)
             mPositions.addAll( savedPositions);
         else
-            mPositions.addAll( mDb.getPositions() );
+            mPositions.addAll( repo.getAll() );
 
         mAdapter.notifyDataSetChanged();
     }
@@ -201,14 +195,15 @@ public class PositionListFragment extends ListFragment {
                 {
                     String symbol = p.getSymbol();
                     if(!downloaded.containsKey(symbol)) {
-                        List<Dividend> list = mDataManager.getDividends(symbol);
+                        List<Dividend> list = dividendRepo.getLatest(symbol);
                         Log.d(TAG, "downloaded new list, size = " + list.size());
-                        mDb.addDividends(symbol, list);
+
+                        dividendRepo.add(symbol, list);
                         downloaded.put(symbol, "");
                     }
                 }
 
-                mDb.log();
+                repo.log();
             }
 
             @Override
@@ -243,14 +238,19 @@ public class PositionListFragment extends ListFragment {
                     Quote q = quotes.get(symbol);
 
                     if(p.IsDividendsReinvested()) {
-                        PriceList list = mDataManager.getLatestPrices(symbol, Interval.DAILY);
-                        p.setPriceHistory(list);
+                        try {
+                            PriceList list = priceRepo.getLatest(symbol, Interval.DAILY);
+                            p.setPriceHistory(list);
+                        } catch (Exception e){
+                            continue;
+                        }
+
                     }
 
                     p.setQuote(q);
 
                     // Check for cached copy of dividends
-                    List<Dividend> list = mDb.getDividends(symbol);
+                    List<Dividend> list = dividendRepo.get(symbol);
                     boolean refreshList = true;
 
                     // Check if list needs to be refreshed
@@ -266,9 +266,9 @@ public class PositionListFragment extends ListFragment {
                         if(q.dividendDate == null) {
                             Log.d(TAG,symbol + ": Unable to determine if dividends were updated, skipping for now");
                         } else {
-                            list = mDataManager.getDividends(symbol);
+                            list = dividendRepo.getLatest(symbol);
                             Log.d(TAG, "downloaded new list, size = " + list.size());
-                            mDb.addDividends(symbol, list);
+                            dividendRepo.add(symbol, list);
                         }
                     } else {
                         //Log.d(TAG, "using previous list");

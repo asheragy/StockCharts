@@ -1,5 +1,7 @@
 package org.cerion.stockcharts.positions;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,27 +13,29 @@ import android.widget.TextView;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.RetainFragment;
 import org.cerion.stockcharts.common.Utils;
+import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.viewmodel.PositionViewModel;
 import org.cerion.stocklist.model.Position;
 
 import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
 public class PositionViewActivity extends AppCompatActivity implements Observer {
 
-    public static final String EXTRA_POSITION_SYMBOL = "position_symbol";
-    public static final String EXTRA_POSITION_DATE = "position_date";
-    public static final String EXTRA_POSITION_COUNT = "position_count";
-    public static final String EXTRA_POSITION_PRICE = "position_price";
-    public static final String EXTRA_POSITION_DIV = "position_dividends_reinvested";
+    private static final String EXTRA_POSITION_ID = "position_id";
     private static final String TAG = PositionViewActivity.class.getSimpleName();
     private static final String RETAINED_FRAGMENT = "RetainedFragment";
 
     private static DecimalFormat df = new DecimalFormat("0.00");
     private PositionViewModel vm;
     private RetainFragment<Position> mRetainFragment;
+
+    public static Intent newIntent(Context context, int id) {
+        Intent intent = new Intent(context, PositionViewActivity.class);
+        intent.putExtra(PositionViewActivity.EXTRA_POSITION_ID, id);
+        return intent;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -50,18 +54,15 @@ public class PositionViewActivity extends AppCompatActivity implements Observer 
         vm = new PositionViewModel(this);
         vm.addObserver(this);
 
-        String symbol = (String) getIntent().getSerializableExtra(EXTRA_POSITION_SYMBOL);
-        Date date = (Date) getIntent().getSerializableExtra(EXTRA_POSITION_DATE);
-        double count = (double) getIntent().getSerializableExtra(EXTRA_POSITION_COUNT);
-        double price = (double) getIntent().getSerializableExtra(EXTRA_POSITION_PRICE);
-        boolean div = (boolean) getIntent().getSerializableExtra(EXTRA_POSITION_DIV);
-
         if (mRetainFragment.data != null && mRetainFragment.data.getCurrPrice() != 0) {
             Log.d(TAG, "using retained Position object");
             vm.setPosition(mRetainFragment.data);
             updateViews();
         } else {
-            vm.setPosition(new Position(symbol, count, price, date, div));
+            int id = getIntent().getIntExtra(EXTRA_POSITION_ID, 0);
+            Position position = new PositionRepository(this).get(id);
+
+            vm.setPosition(position);
             vm.load();
         }
     }

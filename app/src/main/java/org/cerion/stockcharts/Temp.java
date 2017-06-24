@@ -3,7 +3,6 @@ package org.cerion.stockcharts;
 
 import android.content.Context;
 
-import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stocklist.model.Position;
 
 import java.util.ArrayList;
@@ -19,8 +18,8 @@ public class Temp {
         list.add(new Position("XLE", 65, 76.30, new GregorianCalendar(2015, 0, 22).getTime()));
         list.add(new Position("OHI", 125, 40.5999, new GregorianCalendar(2015, 1, 17).getTime()));
 
-        StockDB db = StockDB.getInstance(context);
-        for(Position p : list)
-            db.addPosition(p);
+        //StockDB db = StockDB.getInstance(context);
+        //for(Position p : list)
+        //    db.addPosition(p);
     }
 }

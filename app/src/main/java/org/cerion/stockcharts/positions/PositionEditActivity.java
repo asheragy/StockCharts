@@ -1,11 +1,14 @@
 package org.cerion.stockcharts.positions;
 
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.ChartViewActivity;
 import org.cerion.stockcharts.common.DatePickerFragment;
 import org.cerion.stockcharts.databinding.ActivityPositionEditBinding;
 import org.cerion.stockcharts.ui.ViewModelActivity;

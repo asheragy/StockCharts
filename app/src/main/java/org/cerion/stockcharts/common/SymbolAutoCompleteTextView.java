@@ -15,8 +15,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataStore;
+import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
@@ -57,8 +56,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
             mResults = new ArrayList<>();
             mApi = new YahooFinance();
 
-            StockDataStore db = StockDB.getInstance(context);
-            mDatabaseList = db.getSymbols();
+            mDatabaseList = new SymbolRepository(context).getAll();
         }
 
         @Override

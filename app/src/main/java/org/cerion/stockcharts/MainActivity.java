@@ -16,8 +16,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.database.StockDB;
 import org.cerion.stockcharts.positions.PositionListFragment;
+import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
 
 import java.util.ArrayList;
@@ -109,12 +109,12 @@ public class MainActivity extends AppCompatActivity {
                         new Symbol("XLE", "Energy Select Sector SPDR ETF", "")
                 ));
 
-                StockDB db = StockDB.getInstance(MainActivity.this);
+                SymbolRepository repo = new SymbolRepository(MainActivity.this);
                 for(Symbol s : symbols) {
-                    db.addSymbol(s);
+                    repo.add(s);
                 }
 
-                db.log();
+                repo.log();
             }
 
             @Override

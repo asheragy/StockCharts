@@ -16,10 +16,8 @@ import android.widget.TextView;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.database.StockDataManager;
 import org.cerion.stockcharts.database.StockDBOpenHelper.Prices;
 import org.cerion.stockcharts.database.StockDataProvider;
-import org.cerion.stocklist.model.Interval;
 
 import java.util.Date;
 
@@ -75,8 +73,8 @@ public class PriceListActivity extends AppCompatActivity {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                StockDataManager du = new StockDataManager(PriceListActivity.this);
-                du.updatePrices(mSymbol, Interval.MONTHLY);
+                //StockDataManager du = new StockDataManager(PriceListActivity.this);
+                //du.updatePrices(mSymbol, Interval.MONTHLY);
             }
 
             @Override

@@ -4,8 +4,8 @@ import android.content.Context;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.database.StockDB;
-import org.cerion.stockcharts.database.StockDataManager;
+import org.cerion.stockcharts.repository.DividendRepository;
+import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
@@ -17,13 +17,13 @@ import java.util.Observable;
 public class PositionViewModel extends Observable {
 
     private Position mPosition;
-    private StockDB mDb;
+    private DividendRepository dividendRepo;
+    private PriceListRepository priceRepo;
     private IYahooFinance mAPI = new YahooFinance();
-    private StockDataManager mDataManager;
 
     public PositionViewModel(Context context) {
-        mDb = StockDB.getInstance(context);
-        mDataManager = new StockDataManager(context);
+        dividendRepo = new DividendRepository(context);
+        priceRepo = new PriceListRepository(context);
     }
 
     public Position getPosition() {
@@ -58,9 +58,14 @@ public class PositionViewModel extends Observable {
                 final String symbol = mPosition.getSymbol();
 
                 // Add dividends to position
-                mPosition.addDividends(mDb.getDividends(symbol));
-                if(mPosition.IsDividendsReinvested())
-                    mPosition.setPriceHistory(mDataManager.getLatestPrices(symbol, Interval.DAILY));
+                mPosition.addDividends( dividendRepo.get(symbol) );
+                if(mPosition.IsDividendsReinvested()) {
+                    try {
+                        mPosition.setPriceHistory(priceRepo.getLatest(symbol, Interval.DAILY));
+                    } catch (Exception e) {
+                        // Failed to load
+                    }
+                }
 
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {

@@ -26,10 +26,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import org.cerion.stockcharts.database.StockDataManager;
+import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.DataSet;
 import org.cerion.stocklist.charts.IDataSet;
@@ -57,7 +56,7 @@ class ChartFactory {
     private static DateFormat mDateFormat        = new SimpleDateFormat("MMM d, yy");
     private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM ''yy");
     private Description mDesc = new Description();
-    private StockDataManager mDataManager;
+    private PriceListRepository repo;
 
     // TODO cache lists here, if the same one is requested multiple times hold it
     // OR cache in the ChartViewActivity since each activity instance usually is 1 PriceList required
@@ -65,20 +64,20 @@ class ChartFactory {
     ChartFactory(Context context) {
         mContext = context;
         mDesc.setText("");
-        mDataManager = new StockDataManager(mContext);
+        repo = new PriceListRepository(context);
     }
 
-    Chart getChart(StockChart chart, String symbol) {
-        PriceList list = mDataManager.getLatestPrices(symbol, chart.interval);
+    Chart getChart(StockChart chart, String symbol) throws Exception {
+        PriceList list = repo.getLatest(symbol, chart.interval);
         chart.setPriceList(list);
 
-        if(chart instanceof PriceChart)
-            return getPriceChart((PriceChart)chart);
+        if (chart instanceof PriceChart)
+            return getPriceChart((PriceChart) chart);
 
-        if(chart instanceof IndicatorChart)
-            return getLineChart((IndicatorChart)chart);
+        if (chart instanceof IndicatorChart)
+            return getLineChart((IndicatorChart) chart);
 
-        return getVolumeChart((VolumeChart)chart);
+        return getVolumeChart((VolumeChart) chart);
     }
 
     Chart getEmptyChart() {
