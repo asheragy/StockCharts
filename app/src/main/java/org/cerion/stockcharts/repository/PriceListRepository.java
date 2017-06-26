@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
+import org.cerion.stockcharts.database.Tables;
 import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
@@ -77,6 +78,7 @@ public class PriceListRepository extends SQLiteRepositoryBase {
         }
 
         //Add dates
+        // TODO refactor to private function
         Date first = list.getDates()[0];
         Date last = list.getDates()[list.size() - 1];
         table = StockDBOpenHelper.HistoricalDates.getTableName(list.getInterval());
@@ -163,12 +165,4 @@ public class PriceListRepository extends SQLiteRepositoryBase {
             throw new Exception("Failed to get updated prices for " + symbol);
         }
     }
-        /*
-    @Override
-    public void deletePrices(String symbol, Interval interval) {
-        String table = Prices.getTableName(interval);
-        delete(table, String.format("%s='%s'", Prices._SYMBOL, symbol) );
-    }
-    */
-
 }

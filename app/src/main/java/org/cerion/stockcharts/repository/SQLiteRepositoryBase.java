@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.repository;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,16 +13,22 @@ import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.web.IYahooFinance;
 import org.cerion.stocklist.web.YahooFinance;
 
+import java.io.File;
+import java.util.Date;
+
 public abstract class SQLiteRepositoryBase {
 
     private SQLiteOpenHelper mOpenHelper;
     private static final String TAG = SQLiteRepositoryBase.class.getSimpleName();
     protected static IYahooFinance mYahooFinance = new YahooFinance(); // TODO yahooFinance class should only be used in this file
 
+    public SQLiteRepositoryBase(Context context) {
+        this(StockDBOpenHelper.getInstance(context));
+    }
+
     public SQLiteRepositoryBase(SQLiteOpenHelper openHelper) {
         mOpenHelper = openHelper;
     }
-
 
     protected SQLiteDatabase open() {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -75,6 +82,18 @@ public abstract class SQLiteRepositoryBase {
             Log.d(TAG, "deleted " + result + " rows");
     }
 
+    protected void deleteAll(String table) {
+        SQLiteDatabase db = open();
+        db.execSQL("delete from "+ table);
+        db.close();
+    }
+
+    protected void optimize() {
+        SQLiteDatabase db = open();
+        db.execSQL("VACUUM");
+        db.close();
+    }
+
     public void log() {
         SQLiteDatabase db = openReadOnly();
         Cursor c = db.rawQuery("SELECT count(*) FROM " + StockDBOpenHelper.Symbols.TABLE_NAME, null);
@@ -91,6 +110,9 @@ public abstract class SQLiteRepositoryBase {
 
         // Prices
         for(Interval interval : Interval.values()) {
+            if (interval == Interval.QUARTERLY)
+                break;
+
             Log.d(TAG, interval.toString());
 
             c = db.rawQuery(String.format("SELECT %s,count(*) FROM %s GROUP BY %s", StockDBOpenHelper.Prices._SYMBOL, StockDBOpenHelper.Prices.getTableName(interval), StockDBOpenHelper.Prices._SYMBOL), null);
@@ -106,14 +128,17 @@ public abstract class SQLiteRepositoryBase {
 
         // History Dates
         for(Interval interval : Interval.values()) {
+            if (interval == Interval.QUARTERLY)
+                break;
+
             Log.d(TAG, "HISTORY " + interval.toString());
 
-            c = db.rawQuery(String.format("SELECT %s,count(*) FROM %s GROUP BY %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates.getTableName(interval), StockDBOpenHelper.HistoricalDates._SYMBOL), null);
+            c = db.rawQuery(String.format("SELECT %s,%s FROM %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates._UPDATED, StockDBOpenHelper.HistoricalDates.getTableName(interval)), null);
             if (c != null) {
                 while (c.moveToNext()) {
                     String symbol = c.getString(0);
-                    int count = c.getInt(1);
-                    Log.d(TAG, "  " + symbol + ": " + count);
+                    long date = c.getLong(1);
+                    Log.d(TAG, "  " + symbol + ":\t" + new Date(date));
                 }
                 c.close();
             }
@@ -141,5 +166,20 @@ public abstract class SQLiteRepositoryBase {
         }
 
         db.close();
+    }
+
+    protected long getDbSize() {
+        return new File(getPath()).length();
+    }
+
+    private String mPath = null;
+    private String getPath() {
+        if (mPath == null) {
+            SQLiteDatabase db = openReadOnly();
+            mPath = db.getPath();
+            db.close();
+        }
+
+        return mPath;
     }
 }

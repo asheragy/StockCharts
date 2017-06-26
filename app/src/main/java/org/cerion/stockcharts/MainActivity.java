@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.positions.PositionListFragment;
+import org.cerion.stockcharts.repository.DividendRepository;
+import org.cerion.stockcharts.repository.MasterRepository;
+import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
 
@@ -87,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
         } else if(id == R.id.import_sp500) {
             onImportSP500();
             return true;
+        } else if(id == R.id.clear_cache) {
+            onClearCache();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -127,6 +133,25 @@ public class MainActivity extends AppCompatActivity {
 
         task.execute();
         //List<String> symbols = Symbols.getSP500List();
+    }
+
+    private void onClearCache() {
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+
+            private long spaceSaved = 0;
+            @Override
+            public void run() {
+                spaceSaved = new MasterRepository(MainActivity.this).clearCache();
+            }
+
+            @Override
+            public void onFinish() {
+                long kb = spaceSaved / 1024;
+                Toast.makeText(MainActivity.this,String.format("Removed %sKB", kb),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        task.execute();
     }
 
     /**
