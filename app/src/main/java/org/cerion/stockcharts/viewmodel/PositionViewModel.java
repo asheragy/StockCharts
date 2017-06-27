@@ -6,11 +6,10 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.repository.DividendRepository;
 import org.cerion.stockcharts.repository.PriceListRepository;
+import org.cerion.stockcharts.repository.QuoteRepository;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.IYahooFinance;
-import org.cerion.stocklist.web.YahooFinance;
 
 import java.util.Observable;
 
@@ -19,11 +18,12 @@ public class PositionViewModel extends Observable {
     private Position mPosition;
     private DividendRepository dividendRepo;
     private PriceListRepository priceRepo;
-    private IYahooFinance mAPI = new YahooFinance();
+    private QuoteRepository quoteRepo;
 
     public PositionViewModel(Context context) {
         dividendRepo = new DividendRepository(context);
         priceRepo = new PriceListRepository(context);
+        quoteRepo = new QuoteRepository(context);
     }
 
     public Position getPosition() {
@@ -58,7 +58,7 @@ public class PositionViewModel extends Observable {
                 final String symbol = mPosition.getSymbol();
 
                 // Add dividends to position
-                mPosition.addDividends( dividendRepo.get(symbol) );
+                mPosition.addDividends( dividendRepo.getLatest(symbol) );
                 if(mPosition.IsDividendsReinvested()) {
                     try {
                         mPosition.setPriceHistory(priceRepo.getLatest(symbol, Interval.DAILY));
@@ -69,7 +69,7 @@ public class PositionViewModel extends Observable {
 
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {
-                    Quote q = mAPI.getQuote(symbol);
+                    Quote q = quoteRepo.get(symbol);
                     mPosition.setQuote(q);
                 }
             }

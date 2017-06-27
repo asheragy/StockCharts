@@ -12,7 +12,7 @@ import org.cerion.stockcharts.database.Tables.*;
 public class StockDBOpenHelper extends SQLiteOpenHelper {
 
     private static final String TAG = StockDBOpenHelper.class.getSimpleName();
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "stocks.db";
 
     //Singleton class
@@ -55,6 +55,7 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         public static final String TABLE_HISTORICAL_DATES_DAILY = "historical_dates_daily";
         public static final String TABLE_HISTORICAL_DATES_WEEKLY = "historical_dates_weekly";
         public static final String TABLE_HISTORICAL_DATES_MONTHLY = "historical_dates_monthly";
+        public static final String TABLE_HISTORICAL_DATES_DIVIDENDS = "historical_dates_dividends";
 
         public static final String _SYMBOL = "symbol";
         public static final String _UPDATED = "updated";
@@ -72,9 +73,17 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
             return TABLE_HISTORICAL_DATES_DAILY;
         }
 
+        /*
+        public static String getCreateDividends() {
+            return getCreate( TABLE_HISTORICAL_DATES_DIVIDENDS );
+        }
         public static String getCreate(Interval interval) {
+            return getCreate( getTableName(interval) );
+        }
+        */
 
-            return "create table " + getTableName(interval) + "("
+        public static String getCreate(String tableName) {
+            return "create table " + tableName + "("
                     + _SYMBOL + " TEXT NOT NULL, "
                     + _UPDATED + " INTEGER NOT NULL, "
                     + _FIRST + " INTEGER NOT NULL, "
@@ -150,29 +159,31 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(Prices.getCreate(Interval.MONTHLY));
         db.execSQL(Dividends.SQL_CREATE);
         db.execSQL(Positions.SQL_CREATE);
-        db.execSQL(HistoricalDates.getCreate(Interval.DAILY));
-        db.execSQL(HistoricalDates.getCreate(Interval.WEEKLY));
-        db.execSQL(HistoricalDates.getCreate(Interval.MONTHLY));
+        db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_DAILY));
+        db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY));
+        db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY));
+        db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS));
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-    {
-        Log.d(TAG, "onUpgrade");
-        db.execSQL("DROP TABLE IF EXISTS " + Symbols.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_DAILY);
-        db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_WEEKLY);
-        db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_MONTHLY);
-        db.execSQL("DROP TABLE IF EXISTS " + Dividends.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + Positions.TABLE_NAME);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "onUpgrade old=" + oldVersion + " new=" + newVersion);
 
-        if(oldVersion < 9) {
-            db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);
-            db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY);
-            db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
+        switch(oldVersion) {
+            case 8:
+                db.execSQL("DROP TABLE IF EXISTS " + Symbols.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_DAILY);
+                db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_WEEKLY);
+                db.execSQL("DROP TABLE IF EXISTS " + Prices.TABLE_PRICES_MONTHLY);
+                db.execSQL("DROP TABLE IF EXISTS " + Dividends.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + Positions.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);
+                db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY);
+                db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
+                onCreate(db);
+            case 9:
+                db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS));
         }
-
-        onCreate(db);
     }
 
 }

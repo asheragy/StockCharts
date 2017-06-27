@@ -2,24 +2,19 @@ package org.cerion.stockcharts;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-
-import android.support.v13.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.positions.PositionListFragment;
-import org.cerion.stockcharts.repository.DividendRepository;
 import org.cerion.stockcharts.repository.MasterRepository;
-import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
 
@@ -93,9 +88,16 @@ public class MainActivity extends AppCompatActivity {
         } else if(id == R.id.clear_cache) {
             onClearCache();
             return true;
+        } else if(id == R.id.log_database) {
+            getOnLogDatabase();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getOnLogDatabase() {
+        new MasterRepository(this).log();
     }
 
     private void onImportSP500()

@@ -17,8 +17,6 @@ import android.widget.TextView;
 
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
-import org.cerion.stocklist.web.IYahooFinance;
-import org.cerion.stocklist.web.YahooFinance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
 
         private ArrayList<Symbol> mResults;
         private List<Symbol> mDatabaseList;
-        private IYahooFinance mApi;
+        private SymbolRepository repo;
         private Context mContext;
 
         SymbolAutoCompleteAdapter(@NonNull Context context, @LayoutRes int resource) {
@@ -54,7 +52,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
 
             mContext = context;
             mResults = new ArrayList<>();
-            mApi = new YahooFinance();
+            repo = new SymbolRepository(context);
 
             mDatabaseList = new SymbolRepository(context).getAll();
         }
@@ -93,7 +91,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
                     if(constraint != null) {
                         mResults.clear();
 
-                        Symbol symbol = mApi.getSymbol(constraint + "");
+                        Symbol symbol = repo.lookup(constraint + "");
                         if (symbol != null && symbol.isValid())
                             mResults.add(symbol);
 

@@ -127,6 +127,7 @@ public abstract class SQLiteRepositoryBase {
         }
 
         // History Dates
+        /*
         for(Interval interval : Interval.values()) {
             if (interval == Interval.QUARTERLY)
                 break;
@@ -143,6 +144,12 @@ public abstract class SQLiteRepositoryBase {
                 c.close();
             }
         }
+        */
+
+        logHistoryTable(db, StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);
+        logHistoryTable(db, StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY);
+        logHistoryTable(db, StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
+        logHistoryTable(db, StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS);
 
         Log.d(TAG, Tables.Dividends.TABLE_NAME);
 
@@ -166,6 +173,20 @@ public abstract class SQLiteRepositoryBase {
         }
 
         db.close();
+    }
+
+    private void logHistoryTable(SQLiteDatabase db, String tableName) {
+        Log.d(TAG, "HISTORY " + tableName);
+
+        Cursor c = db.rawQuery(String.format("SELECT %s,%s FROM %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates._UPDATED, tableName), null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String symbol = c.getString(0);
+                long date = c.getLong(1);
+                Log.d(TAG, "  " + symbol + ":\t" + new Date(date));
+            }
+            c.close();
+        }
     }
 
     protected long getDbSize() {

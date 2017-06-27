@@ -22,9 +22,10 @@ public class MasterRepository extends SQLiteRepositoryBase {
         deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.DAILY));
         deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.WEEKLY));
         deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.MONTHLY));
-        deleteAll(StockDBOpenHelper.HistoricalDates.getTableName(Interval.DAILY));
-        deleteAll(StockDBOpenHelper.HistoricalDates.getTableName(Interval.WEEKLY));
-        deleteAll(StockDBOpenHelper.HistoricalDates.getTableName(Interval.MONTHLY));
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY);
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS);
         deleteAll(Tables.Dividends.TABLE_NAME);
 
         optimize();

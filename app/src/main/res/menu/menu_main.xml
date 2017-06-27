@@ -10,4 +10,7 @@
 
     <item android:id="@+id/clear_cache" android:title="Clear Cache"
         android:orderInCategory="100" app:showAsAction="never"/>
+
+    <item android:id="@+id/log_database" android:title="Log Database"
+        android:orderInCategory="100" app:showAsAction="never"/>
 </menu>

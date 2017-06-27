@@ -20,6 +20,10 @@ public class SymbolRepository extends SQLiteRepositoryBase {
         super(StockDBOpenHelper.getInstance(context));
     }
 
+    public Symbol lookup(String symbol) {
+        return mYahooFinance.getSymbol(symbol);
+    }
+
     public List<Symbol> getAll() {
         SQLiteDatabase db = openReadOnly();
 
