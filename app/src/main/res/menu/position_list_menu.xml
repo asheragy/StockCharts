@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/update_dividends" android:title="Update Dividends"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100" app:showAsAction="never" android:visible="false"/>
 
     <item android:id="@+id/add_position" android:title="Add Position"
         android:orderInCategory="100" app:showAsAction="never" />

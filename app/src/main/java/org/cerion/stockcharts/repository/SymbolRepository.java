@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stocklist.model.Symbol;
+import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocklist.web.YahooFinance;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +18,10 @@ import java.util.Set;
 
 public class SymbolRepository extends SQLiteRepositoryBase {
 
+    private DataAPI mYahooFinance = YahooFinance.getInstance();
+
     public SymbolRepository(Context context) {
         super(StockDBOpenHelper.getInstance(context));
-    }
-
-    public Symbol lookup(String symbol) {
-        return mYahooFinance.getSymbol(symbol);
     }
 
     public List<Symbol> getAll() {

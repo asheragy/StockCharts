@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.positions.PositionListFragment;
-import org.cerion.stockcharts.repository.MasterRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
 
@@ -89,15 +88,17 @@ public class MainActivity extends AppCompatActivity {
             onClearCache();
             return true;
         } else if(id == R.id.log_database) {
-            getOnLogDatabase();
+            onLogDatabase();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void getOnLogDatabase() {
-        new MasterRepository(this).log();
+    private void onLogDatabase() {
+        //new MasterRepository(this).log();
+        // TODO add database logging to the database class
+        Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
     }
 
     private void onImportSP500()
@@ -139,17 +140,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void onClearCache() {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-
-            private long spaceSaved = 0;
             @Override
             public void run() {
-                spaceSaved = new MasterRepository(MainActivity.this).clearCache();
+                Injection.getAPI(MainActivity.this).clearCache();
             }
 
             @Override
             public void onFinish() {
-                long kb = spaceSaved / 1024;
-                Toast.makeText(MainActivity.this,String.format("Removed %sKB", kb),Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Cache cleared",Toast.LENGTH_SHORT).show();
             }
         });
 

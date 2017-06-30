@@ -15,22 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.repository.DividendRepository;
 import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stockcharts.repository.PriceListRepository;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.IYahooFinance;
+import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocklist.web.DataAPI;
 import org.cerion.stocklist.web.YahooFinance;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +42,9 @@ public class PositionListFragment extends ListFragment {
     private PositionListAdapter mAdapter;
     private List<Position> mPositions = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefresh;
-    private DividendRepository dividendRepo;
+    //private DividendSQLRepository dividendRepo;
     private PositionRepository repo;
-    private PriceListRepository priceRepo;
+    private CachedDataAPI api;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,8 +52,8 @@ public class PositionListFragment extends ListFragment {
 
         // Non-view related initialization
         repo = new PositionRepository(getContext());
-        dividendRepo = new DividendRepository(getContext());
-        priceRepo = new PriceListRepository(getContext());
+        //dividendRepo = new DividendSQLRepository(getContext());
+        api = Injection.getAPI(getContext());
     }
 
     @Override
@@ -161,9 +160,9 @@ public class PositionListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch(item.getItemId()) {
-            case R.id.update_dividends:
-                updateDividends();
-                break;
+            //case R.id.update_dividends:
+            //    updateDividends();
+            //    break;
             case R.id.add_position:
                 Intent intent = new Intent(getContext(), PositionEditActivity.class);
                 startActivityForResult(intent, 0);
@@ -183,6 +182,7 @@ public class PositionListFragment extends ListFragment {
         refreshList();
     }
 
+    /*
     private void updateDividends() {
 
         mSwipeRefresh.setRefreshing(true);
@@ -214,14 +214,15 @@ public class PositionListFragment extends ListFragment {
 
         task.execute();
     }
+    */
 
     private void onRefresh() {
         mSwipeRefresh.setRefreshing(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-            private IYahooFinance api = new YahooFinance();
+            private DataAPI api = YahooFinance.getInstance();
 
-            private Map<String,Quote> getQuotes(List<Position> positions) {
+            private Map<String,Quote> getQuotes() {
                 Set<String> symbols = new HashSet<>();
                 for(Position p : mPositions)
                     symbols.add(p.getSymbol());
@@ -231,7 +232,7 @@ public class PositionListFragment extends ListFragment {
 
             @Override
             public void run() {
-                Map<String,Quote> quotes = getQuotes(mPositions);
+                Map<String,Quote> quotes = getQuotes();
 
                 for(Position p : mPositions) {
                     String symbol = p.getSymbol();
@@ -239,7 +240,7 @@ public class PositionListFragment extends ListFragment {
 
                     if(p.IsDividendsReinvested()) {
                         try {
-                            PriceList list = priceRepo.getLatest(symbol, Interval.DAILY);
+                            PriceList list = api.getPrices(symbol, Interval.DAILY, 500);
                             p.setPriceHistory(list);
                         } catch (Exception e){
                             continue;
@@ -249,31 +250,7 @@ public class PositionListFragment extends ListFragment {
 
                     p.setQuote(q);
 
-                    // Check for cached copy of dividends
-                    List<Dividend> list = dividendRepo.get(symbol);
-                    boolean refreshList = true;
-
-                    // Check if list needs to be refreshed
-                    for(Dividend d : list) {
-                        if(d.mDate.equals(q.dividendDate)) {
-                            refreshList = false;
-                            break;
-                        }
-                    }
-
-                    if(refreshList) {
-                        // TODO not sure its possible at the moment to get this so a manual menu option is added for now
-                        if(q.dividendDate == null) {
-                            Log.d(TAG,symbol + ": Unable to determine if dividends were updated, skipping for now");
-                        } else {
-                            list = dividendRepo.getLatest(symbol);
-                            Log.d(TAG, "downloaded new list, size = " + list.size());
-                            dividendRepo.add(symbol, list);
-                        }
-                    } else {
-                        //Log.d(TAG, "using previous list");
-                    }
-
+                    List<Dividend> list = api.getDividends(symbol);
                     p.addDividends(list);
 
                     //db.log();

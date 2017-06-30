@@ -2,28 +2,23 @@ package org.cerion.stockcharts.viewmodel;
 
 import android.content.Context;
 
+import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.repository.DividendRepository;
-import org.cerion.stockcharts.repository.PriceListRepository;
-import org.cerion.stockcharts.repository.QuoteRepository;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
+import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.util.Observable;
 
 public class PositionViewModel extends Observable {
 
     private Position mPosition;
-    private DividendRepository dividendRepo;
-    private PriceListRepository priceRepo;
-    private QuoteRepository quoteRepo;
+    private CachedDataAPI api;
 
     public PositionViewModel(Context context) {
-        dividendRepo = new DividendRepository(context);
-        priceRepo = new PriceListRepository(context);
-        quoteRepo = new QuoteRepository(context);
+        api = Injection.getAPI(context);
     }
 
     public Position getPosition() {
@@ -58,10 +53,10 @@ public class PositionViewModel extends Observable {
                 final String symbol = mPosition.getSymbol();
 
                 // Add dividends to position
-                mPosition.addDividends( dividendRepo.getLatest(symbol) );
+                mPosition.addDividends( api.getDividends(symbol) );
                 if(mPosition.IsDividendsReinvested()) {
                     try {
-                        mPosition.setPriceHistory(priceRepo.getLatest(symbol, Interval.DAILY));
+                        mPosition.setPriceHistory(api.getPrices(symbol, Interval.DAILY, 500));
                     } catch (Exception e) {
                         // Failed to load
                     }
@@ -69,7 +64,7 @@ public class PositionViewModel extends Observable {
 
                 // Get most recent quote
                 if(mPosition.getCurrPrice() == 0) {
-                    Quote q = quoteRepo.get(symbol);
+                    Quote q = api.getQuote(symbol);
                     mPosition.setQuote(q);
                 }
             }

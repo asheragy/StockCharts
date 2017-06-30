@@ -15,8 +15,10 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocklist.model.Symbol;
+import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
         private ArrayList<Symbol> mResults;
         private List<Symbol> mDatabaseList;
         private SymbolRepository repo;
+        private CachedDataAPI api;
         private Context mContext;
 
         SymbolAutoCompleteAdapter(@NonNull Context context, @LayoutRes int resource) {
@@ -53,6 +56,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
             mContext = context;
             mResults = new ArrayList<>();
             repo = new SymbolRepository(context);
+            api = Injection.getAPI(context);
 
             mDatabaseList = new SymbolRepository(context).getAll();
         }
@@ -91,7 +95,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
                     if(constraint != null) {
                         mResults.clear();
 
-                        Symbol symbol = repo.lookup(constraint + "");
+                        Symbol symbol = api.getSymbol(constraint + "");
                         if (symbol != null && symbol.isValid())
                             mResults.add(symbol);
 

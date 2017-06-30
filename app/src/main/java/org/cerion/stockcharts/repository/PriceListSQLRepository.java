@@ -4,27 +4,26 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
-import org.cerion.stockcharts.database.Tables;
-import org.cerion.stockcharts.model.HistoricalDates;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.model.HistoricalDates;
 import org.cerion.stocklist.model.Interval;
+import org.cerion.stocklist.repository.PriceListRepository;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class PriceListRepository extends SQLiteRepositoryBase {
-    private static final String TAG = PriceListRepository.class.getSimpleName();
+public class PriceListSQLRepository extends SQLiteRepositoryBase implements PriceListRepository {
+    private static final String TAG = PriceListSQLRepository.class.getSimpleName();
 
-    public PriceListRepository(Context context) {
+    public PriceListSQLRepository(Context context) {
         super(StockDBOpenHelper.getInstance(context));
     }
 
+    /*
     public PriceList getLatest(String symbol, Interval interval) throws Exception {
         HistoricalDates dates = getHistoricalDates(symbol, interval);
         boolean update = false;
@@ -51,12 +50,15 @@ public class PriceListRepository extends SQLiteRepositoryBase {
 
         return get(symbol, interval);
     }
+    */
 
+    @Override
     public PriceList get(String symbol, Interval interval) {
         List<Price> prices = getPrices(symbol, interval);
         return new PriceList(symbol,prices);
     }
 
+    @Override
     public void add(PriceList list) {
         SQLiteDatabase db = open();
         db.beginTransaction();
@@ -94,7 +96,8 @@ public class PriceListRepository extends SQLiteRepositoryBase {
         db.close();
     }
 
-    private HistoricalDates getHistoricalDates(String symbol, Interval interval) {
+    @Override
+    public HistoricalDates getHistoricalDates(String symbol, Interval interval) {
         SQLiteDatabase db = openReadOnly();
 
         String where = String.format(StockDBOpenHelper.HistoricalDates._SYMBOL + "='%s'", symbol);
@@ -113,6 +116,18 @@ public class PriceListRepository extends SQLiteRepositoryBase {
 
         db.close();
         return result;
+    }
+
+    @Override
+    public void deleteAll() {
+        deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.DAILY));
+        deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.WEEKLY));
+        deleteAll(StockDBOpenHelper.Prices.getTableName(Interval.MONTHLY));
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_WEEKLY);
+        deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
+
+        optimize();
     }
 
     private List<Price> getPrices(String symbol, Interval interval) {
@@ -141,6 +156,7 @@ public class PriceListRepository extends SQLiteRepositoryBase {
         return prices;
     }
 
+    /*
     private void updatePrices(String symbol, Interval interval) throws Exception {
         PriceList list = null;
         try
@@ -165,4 +181,5 @@ public class PriceListRepository extends SQLiteRepositoryBase {
             throw new Exception("Failed to get updated prices for " + symbol);
         }
     }
+    */
 }

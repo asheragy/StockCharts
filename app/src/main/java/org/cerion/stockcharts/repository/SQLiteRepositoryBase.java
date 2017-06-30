@@ -10,8 +10,6 @@ import android.util.Log;
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables;
 import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.web.IYahooFinance;
-import org.cerion.stocklist.web.YahooFinance;
 
 import java.io.File;
 import java.util.Date;
@@ -20,7 +18,6 @@ public abstract class SQLiteRepositoryBase {
 
     private SQLiteOpenHelper mOpenHelper;
     private static final String TAG = SQLiteRepositoryBase.class.getSimpleName();
-    protected static IYahooFinance mYahooFinance = new YahooFinance(); // TODO yahooFinance class should only be used in this file
 
     public SQLiteRepositoryBase(Context context) {
         this(StockDBOpenHelper.getInstance(context));
