@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewmodel" type="org.cerion.stockcharts.viewmodel.PositionEditViewModel"/>
+        <variable name="viewmodel" type="org.cerion.stockcharts.positions.PositionEditViewModel"/>
     </data>
 
     <LinearLayout

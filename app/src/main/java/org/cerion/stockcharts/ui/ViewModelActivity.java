@@ -12,6 +12,7 @@ public abstract class ViewModelActivity<T> extends AppCompatActivity {
     private T mViewModel;
     private RetainFragment<T> mRetainFragment;
     private static final String RETAINED_FRAGMENT = "RetainedFragment";
+    private boolean mIsRetained = false;
 
     protected T getViewModel() {
         return mViewModel;
@@ -33,7 +34,12 @@ public abstract class ViewModelActivity<T> extends AppCompatActivity {
             fm.beginTransaction().add(mRetainFragment, RETAINED_FRAGMENT).commit();
         } else {
             mViewModel = mRetainFragment.data;
+            mIsRetained = true;
         }
+    }
+
+    protected boolean IsRetained() {
+        return mIsRetained;
     }
 
     @Override

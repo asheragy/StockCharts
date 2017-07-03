@@ -51,6 +51,16 @@ public abstract class SQLiteRepositoryBase {
             Log.e(TAG, "insert: " + values.toString());
     }
 
+    protected void update(String table, ContentValues values, String whereField, Object whereValue) {
+        String where = null;
+        if (whereValue instanceof Integer)
+            where = String.format("%s=%d", whereField, (int)whereValue);
+        else
+            throw new RuntimeException("unimplemented type");
+
+        update(table, values, where);
+    }
+
     protected void update(String sTable, ContentValues values, String sWhere) {
         SQLiteDatabase db = open();
         update(db,sTable,values,sWhere);

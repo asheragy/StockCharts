@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.viewmodel;
+package org.cerion.stockcharts.positions;
 
 import android.content.Context;
 import android.databinding.ObservableField;
@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stockcharts.common.Utils;
+import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stocklist.model.Position;
 
 import java.text.SimpleDateFormat;
@@ -17,6 +19,8 @@ public class PositionEditViewModel {
 
     private Context mContext;
     private IView mListener;
+    private PositionRepository repo;
+    private int mId = 0;
 
     public final ObservableField<String> symbol = new ObservableField<>("");
     public final ObservableField<String> count = new ObservableField<>("");
@@ -33,13 +37,20 @@ public class PositionEditViewModel {
     public PositionEditViewModel(Context context, IView listener) {
         mContext = context;
         mListener = listener;
+        repo = new PositionRepository(context);
     }
 
-    public void setPosition(Position position) {
+    public void setPosition(int id) {
+        mId = id;
+        Position position = repo.get(id);
+        setPosition(position);
+    }
+
+    private void setPosition(Position position) {
         date.set(position.getDate());
         symbol.set(position.getSymbol());
-        count.set("" + position.getCount());
-        price.set("" + position.getOrigPrice());
+        count.set( Utils.getDecimalFormat3(position.getCount()) );
+        price.set( Utils.getDecimalFormat3(position.getOrigPrice()) );
         dividendsReinvested.set(position.IsDividendsReinvested());
     }
 
@@ -74,10 +85,16 @@ public class PositionEditViewModel {
                     double d_price = Double.parseDouble(price.get());
 
                     Position p = new Position(symbol.get(), d_count, d_price, date.get(), dividendsReinvested.get());
-                    Log.d(TAG, "Saving position " + p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate());
 
-                    //mDataManager.insertSymbol(p.getSymbol());
-                    //mDb.addPosition(p);
+                    if (mId > 0) {
+                        Log.d(TAG, "UPDATE position " + p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate());
+                        p.setId(mId);
+                        repo.update(p);
+                    } else {
+                        Log.d(TAG, "ADD position " + p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate());
+                        repo.add(p);
+                    }
+
                 } catch (Exception e) {
                     ex = e;
                 }

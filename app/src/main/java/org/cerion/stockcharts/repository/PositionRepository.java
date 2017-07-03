@@ -29,6 +29,17 @@ public class PositionRepository extends SQLiteRepositoryBase {
         insert(StockDBOpenHelper.Positions.TABLE_NAME, values);
     }
 
+    public void update(Position position) {
+        ContentValues values = new ContentValues();
+        values.put(StockDBOpenHelper.Positions._SYMBOL, position.getSymbol());
+        values.put(StockDBOpenHelper.Positions._DATE, position.getDate().getTime());
+        values.put(StockDBOpenHelper.Positions._PRICE, position.getOrigPrice());
+        values.put(StockDBOpenHelper.Positions._COUNT, position.getCount());
+        values.put(StockDBOpenHelper.Positions._DR, position.IsDividendsReinvested());
+
+        update(StockDBOpenHelper.Positions.TABLE_NAME, values, StockDBOpenHelper.Positions._ID, position.getId());
+    }
+
     public List<Position> getAll() {
         SQLiteDatabase db = openReadOnly();
 

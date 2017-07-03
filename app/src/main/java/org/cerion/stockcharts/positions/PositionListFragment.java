@@ -1,11 +1,12 @@
 package org.cerion.stockcharts.positions;
 
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,101 +15,70 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
-import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
-import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.model.Dividend;
-import org.cerion.stocklist.model.Interval;
+import org.cerion.stockcharts.databinding.FragmentPositionsBinding;
+import org.cerion.stockcharts.databinding.ListItemPositionBinding;
 import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.CachedDataAPI;
-import org.cerion.stocklist.web.DataAPI;
-import org.cerion.stocklist.web.YahooFinance;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public class PositionListFragment extends ListFragment {
+public class PositionListFragment extends ListFragment implements PositionsViewModel.IView {
     private static final String TAG = PositionListFragment.class.getSimpleName();
 
-    private static final String KEY_POSITION_ITEMS = "positionItems";
     private PositionListAdapter mAdapter;
-    private List<Position> mPositions = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefresh;
-    //private DividendSQLRepository dividendRepo;
-    private PositionRepository repo;
-    private CachedDataAPI api;
+    private PositionsViewModel vm;
+    private FragmentPositionsBinding bindingFrag;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Non-view related initialization
-        repo = new PositionRepository(getContext());
-        //dividendRepo = new DividendSQLRepository(getContext());
-        api = Injection.getAPI(getContext());
+        vm = new PositionsViewModel(getContext(), this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.generic_list_fragment, container, false);
-        mAdapter = new PositionListAdapter(getContext(), R.layout.list_item_position, mPositions);
-        setListAdapter(mAdapter);
-
-        if(savedInstanceState != null && savedInstanceState.containsKey(KEY_POSITION_ITEMS)) {
-            PositionItems savedItems = (PositionItems)savedInstanceState.getSerializable(KEY_POSITION_ITEMS);
-            if(savedItems != null)
-                refreshList(savedItems.list);
-        } else
-            refreshList();
+        bindingFrag = FragmentPositionsBinding.inflate(inflater, container, false);
 
         setHasOptionsMenu(true);
 
-        //Swipe Refresh
-        mSwipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                PositionListFragment.this.onRefresh();
-            }
-        });
-        return view;
+        return bindingFrag.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        registerForContextMenu(getListView());
+        //Swipe Refresh
+        mSwipeRefresh = bindingFrag.swipeRefresh;
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefresh.setRefreshing(true);
+                vm.update();
+            }
+        });
 
+        mAdapter = new PositionListAdapter(getContext(), R.layout.list_item_position, vm.positions);
+        setListAdapter(mAdapter);
+
+        registerForContextMenu(getListView());
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Position p = mAdapter.getItem(position);
-                Intent intent = PositionViewActivity.newIntent(getContext(), p.getId());
+                Intent intent = PositionDetailActivity.newIntent(getContext(), p.getId());
                 startActivity(intent);
             }
         });
-    }
 
-    /*
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(KEY_POSITION_ITEMS, new PositionItems(mPositions));
+        vm.load();
     }
-    */
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
         if (v.getId() == android.R.id.list) {
             super.onCreateContextMenu(menu, v, menuInfo);
             MenuInflater inflater = getActivity().getMenuInflater();
@@ -118,15 +88,15 @@ public class PositionListFragment extends ListFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Position p = vm.positions.get(info.position);
 
         switch(item.getItemId()) {
+            case R.id.edit:
+                onEdit(p);
+                break;
             case R.id.delete:
-                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-                Position p = mPositions.get(info.position);
-                Log.d(TAG, "removing " + p.getSymbol());
-
-                repo.delete(p);
-                refreshList();
+                vm.delete(p);
                 break;
             default:
                 return super.onContextItemSelected(item);
@@ -135,19 +105,9 @@ public class PositionListFragment extends ListFragment {
         return true;
     }
 
-    private void refreshList() {
-        refreshList(null);
-    }
-
-    private void refreshList(List<Position> savedPositions) {
-        mPositions.clear();
-
-        if(savedPositions != null)
-            mPositions.addAll( savedPositions);
-        else
-            mPositions.addAll( repo.getAll() );
-
-        mAdapter.notifyDataSetChanged();
+    private void onEdit(Position p) {
+        Intent intent = PositionEditActivity.newIntent(getContext(), p);
+        startActivityForResult(intent, 0);
     }
 
     @Override
@@ -158,11 +118,7 @@ public class PositionListFragment extends ListFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch(item.getItemId()) {
-            //case R.id.update_dividends:
-            //    updateDividends();
-            //    break;
             case R.id.add_position:
                 Intent intent = new Intent(getContext(), PositionEditActivity.class);
                 startActivityForResult(intent, 0);
@@ -179,99 +135,48 @@ public class PositionListFragment extends ListFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         // For now just assume result is just the activity that possibly added a new position entry in the db
-        refreshList();
+        vm.load();
     }
 
-    /*
-    private void updateDividends() {
-
-        mSwipeRefresh.setRefreshing(true);
-
-        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-            @Override
-            public void run() {
-                Map<String, String> downloaded = new HashMap<>(); // TODO convert list to set instead of this
-                for(Position p : mPositions)
-                {
-                    String symbol = p.getSymbol();
-                    if(!downloaded.containsKey(symbol)) {
-                        List<Dividend> list = dividendRepo.getLatest(symbol);
-                        Log.d(TAG, "downloaded new list, size = " + list.size());
-
-                        dividendRepo.add(symbol, list);
-                        downloaded.put(symbol, "");
-                    }
-                }
-
-                repo.log();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-        });
-
-        task.execute();
-    }
-    */
-
-    private void onRefresh() {
-        mSwipeRefresh.setRefreshing(true);
-
-        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-            private DataAPI api = YahooFinance.getInstance();
-
-            private Map<String,Quote> getQuotes() {
-                Set<String> symbols = new HashSet<>();
-                for(Position p : mPositions)
-                    symbols.add(p.getSymbol());
-
-                return api.getQuotes(symbols);
-            }
-
-            @Override
-            public void run() {
-                Map<String,Quote> quotes = getQuotes();
-
-                for(Position p : mPositions) {
-                    String symbol = p.getSymbol();
-                    Quote q = quotes.get(symbol);
-
-                    if(p.IsDividendsReinvested()) {
-                        try {
-                            PriceList list = api.getPrices(symbol, Interval.DAILY, 500);
-                            p.setPriceHistory(list);
-                        } catch (Exception e){
-                            continue;
-                        }
-
-                    }
-
-                    p.setQuote(q);
-
-                    List<Dividend> list = api.getDividends(symbol);
-                    p.addDividends(list);
-
-                    //db.log();
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                mAdapter.notifyDataSetChanged();
-                mSwipeRefresh.setRefreshing(false);
-            }
-        });
-
-        task.execute();
+    @Override
+    public void onNewData() {
+        mAdapter.notifyDataSetChanged();
+        mSwipeRefresh.setRefreshing(false);
     }
 
-    private static class PositionItems implements Serializable {
-        public List<Position> list;
+    private static class PositionListAdapter extends ArrayAdapter<Position> {
+        private int mColorGreen;
+        private int mColorRed;
+        private LayoutInflater inflater;
 
-        public PositionItems(List<Position> list) {
-            this.list = list;
+        public PositionListAdapter(Context context, int resource, List<Position> objects) {
+            super(context, resource, objects);
+
+            mColorGreen = context.getResources().getColor(R.color.positive_green);
+            mColorRed = context.getResources().getColor(R.color.negative_red);
+
+            inflater = LayoutInflater.from(getContext());
         }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Position p = getItem(position);
+
+            ListItemPositionBinding binding;
+
+            if (convertView == null) {
+                //binding = DataBindingUtil.inflate(inflater, R.layout.list_item_position, parent, false);
+                binding = ListItemPositionBinding.inflate(inflater, parent, false);
+            } else {
+                // TODO make sure this works when recycled
+                binding = DataBindingUtil.getBinding(convertView);
+            }
+
+            final PositionItemViewModel vm = new PositionItemViewModel(p, mColorGreen, mColorRed);
+            binding.setViewmodel(vm);
+
+            return binding.getRoot();
+        }
+
     }
 }

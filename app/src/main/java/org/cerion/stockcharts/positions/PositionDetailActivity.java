@@ -14,26 +14,25 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.RetainFragment;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stockcharts.viewmodel.PositionViewModel;
 import org.cerion.stocklist.model.Position;
 
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
 
-public class PositionViewActivity extends AppCompatActivity implements Observer {
+public class PositionDetailActivity extends AppCompatActivity implements Observer {
 
     private static final String EXTRA_POSITION_ID = "position_id";
-    private static final String TAG = PositionViewActivity.class.getSimpleName();
+    private static final String TAG = PositionDetailActivity.class.getSimpleName();
     private static final String RETAINED_FRAGMENT = "RetainedFragment";
 
     private static DecimalFormat df = new DecimalFormat("0.00");
-    private PositionViewModel vm;
+    private PositionDetailViewModel vm;
     private RetainFragment<Position> mRetainFragment;
 
     public static Intent newIntent(Context context, int id) {
-        Intent intent = new Intent(context, PositionViewActivity.class);
-        intent.putExtra(PositionViewActivity.EXTRA_POSITION_ID, id);
+        Intent intent = new Intent(context, PositionDetailActivity.class);
+        intent.putExtra(EXTRA_POSITION_ID, id);
         return intent;
     }
 
@@ -51,7 +50,7 @@ public class PositionViewActivity extends AppCompatActivity implements Observer 
             fm.beginTransaction().add(mRetainFragment, RETAINED_FRAGMENT).commit();
         }
 
-        vm = new PositionViewModel(this);
+        vm = new PositionDetailViewModel(this);
         vm.addObserver(this);
 
         if (mRetainFragment.data != null && mRetainFragment.data.getCurrPrice() != 0) {
@@ -60,7 +59,7 @@ public class PositionViewActivity extends AppCompatActivity implements Observer 
             updateViews();
         } else {
             int id = getIntent().getIntExtra(EXTRA_POSITION_ID, 0);
-            Position position = new PositionRepository(this).get(id);
+            Position position = new PositionRepository(this).get(id); // TODO repo should be in viewmodel
 
             vm.setPosition(position);
             vm.load();

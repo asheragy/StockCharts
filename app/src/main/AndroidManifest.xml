@@ -39,7 +39,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".positions.PositionEditActivity" />
-        <activity android:name=".positions.PositionViewActivity" />
+        <activity android:name=".positions.PositionDetailActivity" />
         
         <provider
             android:authorities="org.cerion.stockcharts.stockdataprovider"

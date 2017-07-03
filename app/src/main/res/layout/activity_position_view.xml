@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:columnCount="2"
     android:verticalSpacing="10dp"
-    tools:context="org.cerion.stockcharts.positions.PositionViewActivity">
+    tools:context="org.cerion.stockcharts.positions.PositionDetailActivity">
 
     <TextView android:text="Symbol" style="@style/TextAppearance.GridLabel" />
     <TextView

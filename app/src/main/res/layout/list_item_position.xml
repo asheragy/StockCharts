@@ -1,80 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:padding="5dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="viewmodel" type="org.cerion.stockcharts.positions.PositionItemViewModel"/>
+    </data>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:padding="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/symbol"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:paddingEnd="10dp"
+                android:text="@{viewmodel.symbol()}"
+                tools:text="Symbol"/>
+
+            <TextView
+                android:id="@+id/purchase_lot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:text="@{viewmodel.purchaseLot()}"
+                tools:text="123 @ 45.64" />
+
+            <TextView
+                android:id="@+id/purchase_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Purchase Date"
+                android:text="@{viewmodel.purchaseDate()}"
+                android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+                android:textAlignment="viewEnd" />
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            android:paddingEnd="10dp"
-            tools:text="Symbol"/>
+            android:paddingStart="8dp">
 
-        <TextView
-            android:id="@+id/purchase_lot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            tools:text="123 @ 45.64" />
+            <TextView
+                android:id="@+id/current_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="10dp"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:text="@{viewmodel.currentPrice()}"
+                tools:text="43.61"/>
 
-        <TextView
-            android:id="@+id/purchase_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            tools:text="Purchase Date"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-            android:textAlignment="viewEnd" />
+            <TextView
+                android:id="@+id/oneday_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="15dp"
+                android:text="@{viewmodel.dayChange()}"
+                android:textColor="@{viewmodel.dayChangeColor()}"
+                tools:text="+1.42 (0.76%)"/>
+
+            <TextView
+                android:id="@+id/total_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="10dp"
+                android:text="@{viewmodel.totalChange()}"
+                android:textColor="@{viewmodel.totalChangeColor()}"
+                tools:text="+5.34 (8.23%)"/>
+
+            <TextView
+                android:id="@+id/profit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewmodel.profit()}"
+                tools:text="$0.00"/>
+
+        </LinearLayout>
+
     </LinearLayout>
-
-
-
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="8dp">
-
-        <TextView
-            android:id="@+id/current_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="10dp"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            tools:text="43.61"/>
-
-        <TextView
-            android:id="@+id/oneday_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="15dp"
-            tools:text="+1.42 (0.76%)"/>
-
-        <TextView
-            android:id="@+id/total_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="10dp"
-            tools:text="+5.34 (8.23%)"/>
-
-        <TextView
-            android:id="@+id/profit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="$0.00"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</layout>

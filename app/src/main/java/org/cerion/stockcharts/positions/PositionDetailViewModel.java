@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.viewmodel;
+package org.cerion.stockcharts.positions;
 
 import android.content.Context;
 
@@ -12,12 +12,12 @@ import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.util.Observable;
 
-public class PositionViewModel extends Observable {
+public class PositionDetailViewModel extends Observable {
 
     private Position mPosition;
     private CachedDataAPI api;
 
-    public PositionViewModel(Context context) {
+    public PositionDetailViewModel(Context context) {
         api = Injection.getAPI(context);
     }
 

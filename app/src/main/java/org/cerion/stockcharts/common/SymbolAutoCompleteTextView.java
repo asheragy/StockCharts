@@ -92,7 +92,8 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
 
-                    if(constraint != null) {
+                    // If not focused this was probably set in code and shouldn't show the filter
+                    if(constraint != null && isFocused()) {
                         mResults.clear();
 
                         Symbol symbol = api.getSymbol(constraint + "");
