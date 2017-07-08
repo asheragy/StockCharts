@@ -113,10 +113,10 @@ public class ChartViewActivity extends AppCompatActivity {
             Log.d(TAG, "found chart");
 
         } else {
-            onAddPriceChart();
+            //onAddPriceChart();
             //onAddVolumeChart();
             onAddIndicatorChart();
-            onAddIndicatorChart();
+            //onAddIndicatorChart();
         }
     }
 

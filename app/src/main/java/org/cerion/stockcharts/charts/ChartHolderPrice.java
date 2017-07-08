@@ -17,45 +17,20 @@ class ChartHolderPrice extends ChartHolderBase {
 
     public ChartHolderPrice(Context context, String symbol, PriceChart chart) {
         super(context, symbol, chart);
-
-        findViewById(R.id.function).setVisibility(View.GONE);
-        findViewById(R.id.check_linechart).setVisibility(View.VISIBLE);
-
-        init();
-        reload();
     }
 
-    private PriceChart priceChart() {
-        return (PriceChart)mStockChart;
+    @Override
+    protected void onSave() {
+        PriceChart chart = (PriceChart)mStockChart;
+        mStockChart.clearOverlays();
+
+        // Get overlay parameters
+        for(int i = 0; i < mOverlays.getChildCount(); i++) {
+            OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
+            chart.addOverlay(editControl.getOverlayFunction());
+        }
+
+        chart.logScale = mViewModel.logScale.get();
+        chart.candleData = !mViewModel.lineChart.get();
     }
-
-    private void init() {
-
-        findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View controls = findViewById(R.id.edit_layout);
-
-                if(controls.getVisibility() == View.VISIBLE) { // SAVE
-                    mStockChart.clearOverlays();
-
-                    // Get overlay parameters
-                    for(int i = 0; i < mOverlays.getChildCount(); i++) {
-                        OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-                        priceChart().addOverlay(editControl.getOverlayFunction());
-                    }
-
-                    priceChart().logScale = mCheckLogScale.isChecked();
-                    priceChart().candleData = !((CheckBox)findViewById(R.id.check_linechart)).isChecked();
-
-                    reload();
-                    setInEditMode(false);
-                } else {
-                    setInEditMode(true);
-                }
-            }
-        });
-
-    }
-
 }

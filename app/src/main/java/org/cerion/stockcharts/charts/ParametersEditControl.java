@@ -9,6 +9,10 @@ import org.cerion.stockcharts.R;
 
 public abstract class ParametersEditControl extends LinearLayout {
 
+    public ParametersEditControl(Context context) {
+        super(context);
+    }
+
     public ParametersEditControl(Context context, int layout) {
         super(context);
 

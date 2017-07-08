@@ -19,46 +19,21 @@ class ChartHolderVolume extends ChartHolderBase {
 
     public ChartHolderVolume(Context context, String symbol, VolumeChart chart) {
         super(context, symbol, chart);
-
-        // Fill spinner
-        Spinner sp = (Spinner)findViewById(R.id.function);
-        sp.setVisibility(View.GONE);
-
-        init();
-        reload();
     }
 
-    private VolumeChart volumeChart() {
-        return (VolumeChart)mStockChart;
+    @Override
+    protected void onSave() {
+        VolumeChart chart = (VolumeChart)mStockChart;
+        mStockChart.clearOverlays();
+
+        // Get overlay parameters
+        for(int i = 0; i < mOverlays.getChildCount(); i++) {
+            OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
+
+            // TODO see if there is a way to avoid this cast
+            chart.addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
+        }
+
+        chart.logScale = mViewModel.logScale.get();
     }
-
-    private void init() {
-
-        findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View controls = findViewById(R.id.edit_layout);
-
-                if(controls.getVisibility() == View.VISIBLE) { // SAVE
-
-                    mStockChart.clearOverlays();
-
-                    // Get overlay parameters
-                    for(int i = 0; i < mOverlays.getChildCount(); i++) {
-                        OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
-
-                        // TODO see if there is a way to avoid this cast
-                        volumeChart().addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
-                    }
-
-                    volumeChart().logScale = mCheckLogScale.isChecked();
-                    reload();
-                    setInEditMode(false);
-                } else {
-                    setInEditMode(true);
-                }
-            }
-        });
-    }
-
 }

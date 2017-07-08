@@ -1,115 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <data>
+        <variable
+            name="viewmodel"
+            type="org.cerion.stockcharts.charts.ChartViewModel" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/chart_frame">
-        </FrameLayout>
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/loading_progressBar"
-            android:visibility="gone"/>
-
-    </RelativeLayout>
-
-
+        <import type="android.view.View"/>
+    </data>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:text="Save"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/save_edit_button" />
-
-        <Button
-            android:text="Remove"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/remove"
-            android:layout_weight="1" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/edit_layout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:text="Log Scale"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/check_logscale" />
-
-        <CheckBox
-            android:text="Line"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/check_linechart"
-            android:visibility="gone"/>
-
-        <Spinner
-            android:id="@+id/function"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            tools:entries="@array/functions_toolsonly"/>
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/chart_frame">
+            </FrameLayout>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/loading_progressBar"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+
 
         <LinearLayout
-            android:id="@+id/parameters"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <TextView
-                tools:text="Parameters go here"
-                tools:visibility="visible"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <Button
+                android:text="Save"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/save_edit_button" />
+
+            <Button
+                android:text="Remove"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/remove"
+                android:layout_weight="1" />
+
 
         </LinearLayout>
 
-        <Button
-            android:text="Overlay"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/add_overlay" />
-
         <LinearLayout
-            android:id="@+id/overlays"
-            android:orientation="vertical"
+            android:id="@+id/edit_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                tools:text="Overlays go here"
-                tools:visibility="visible"
-                android:visibility="gone"
+            <CheckBox
+                android:text="Log Scale"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:checked="@={viewmodel.logScale}"
+                android:visibility="@{viewmodel.showLogScale ? View.VISIBLE : View.GONE}"
+                android:id="@+id/check_logscale" />
+
+            <CheckBox
+                android:text="Line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/check_linechart"
+                android:checked="@={viewmodel.lineChart}"
+                android:visibility="@{viewmodel.showLineCheckbox ? View.VISIBLE:View.GONE}"/>
+
+            <Spinner
+                android:id="@+id/function"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:selectedItemPosition="@={viewmodel.functionIndex}"
+                android:entries="@{viewmodel.functions}"
+                android:visibility="@{viewmodel.showFunctions ? View.VISIBLE : View.GONE}"
+                tools:entries="@array/functions_toolsonly"/>
+
+            <LinearLayout
+                android:id="@+id/parameters"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    tools:text="Parameters go here"
+                    tools:visibility="visible"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <Button
+                android:text="Overlay"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewmodel.showAddOverlay ? View.VISIBLE : View.GONE}"
+                android:id="@+id/add_overlay" />
+
+            <LinearLayout
+                android:id="@+id/overlays"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    tools:text="Overlays go here"
+                    tools:visibility="visible"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
 
         </LinearLayout>
+
 
     </LinearLayout>
-
-
-</LinearLayout>
+</layout>

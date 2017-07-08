@@ -1,10 +1,11 @@
 package org.cerion.stockcharts.charts;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -14,6 +15,7 @@ import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stockcharts.databinding.ViewChartHolderBinding;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.model.Interval;
 
@@ -22,16 +24,24 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     protected LinearLayout mOverlays;
     protected ChartFactory mChartFactory;
     protected StockChart mStockChart;
+    protected ChartViewModel mViewModel;
     protected String mSymbol;
-    protected CheckBox mCheckLogScale;
+    protected ViewChartHolderBinding mBinding;
 
     public ChartHolderBase(Context context, String symbol, StockChart chart) {
-        super(context, R.layout.view_chart_holder);
+        //super(context, R.layout.view_chart_holder);
+        super(context);
+
+        mBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_chart_holder, this, true);
+        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //mBinding = ViewChartHolderBinding.inflate(inflater);
+
+        mViewModel = new ChartViewModel(chart);
+        mBinding.setViewmodel(mViewModel);
 
         mSymbol = symbol;
         mStockChart = chart;
 
-        mCheckLogScale = (CheckBox)findViewById(R.id.check_logscale);
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
 
@@ -44,8 +54,31 @@ public abstract class ChartHolderBase extends ParametersEditControl {
             }
         });
 
+        findViewById(R.id.save_edit_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View controls = findViewById(R.id.edit_layout);
+                if(controls.getVisibility() == View.VISIBLE) { // SAVE
+                    onSave();
+                    reload();
+                    setInEditMode(false);
+                } else {
+                    setInEditMode(true);
+                }
+            }
+        });
+
         setInEditMode(false);
     }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        reload();
+    }
+
+    protected abstract void onSave();
 
     public void setOnRemoveClickListener(OnClickListener listener) {
         findViewById(R.id.remove).setOnClickListener(listener);
