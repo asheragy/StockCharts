@@ -12,20 +12,20 @@ import android.widget.LinearLayout;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
+import org.cerion.stockcharts.ui.ViewModelActivity;
 import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.model.Interval;
 
-public class ChartsActivity extends AppCompatActivity {
+public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     private static final String TAG = ChartsActivity.class.getSimpleName();
     private static final String EXTRA_SYMBOL = "symbol";
     private static final String STATE_CHARTS = "charts";
     private static final String STATE_INTERVAL = "interval";
 
     private LinearLayout mCharts;
-    private ChartsViewModel viewModel = null;
 
     public static Intent newIntent(Context context, String symbol) {
         Intent intent = new Intent(context,ChartsActivity.class);
@@ -34,14 +34,16 @@ public class ChartsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected ChartsViewModel newViewModel() {
+        return new ChartsViewModel(getIntent().getStringExtra(EXTRA_SYMBOL));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO save state by using base class
-        this.viewModel = new ChartsViewModel(getIntent().getStringExtra(EXTRA_SYMBOL));
-
         ActivityChartsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
-        binding.setViewmodel(viewModel);
+        binding.setViewmodel(getViewModel());
 
         //setContentView(R.layout.activity_charts);
 
@@ -73,21 +75,21 @@ public class ChartsActivity extends AppCompatActivity {
         findViewById(R.id.daily).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.interval.set(Interval.DAILY);
+                getViewModel().interval.set(Interval.DAILY);
             }
         });
 
         findViewById(R.id.weekly).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.interval.set(Interval.WEEKLY);
+                getViewModel().interval.set(Interval.WEEKLY);
             }
         });
 
         findViewById(R.id.monthly).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.interval.set(Interval.MONTHLY);
+                getViewModel().interval.set(Interval.MONTHLY);
             }
         });
 
@@ -125,15 +127,25 @@ public class ChartsActivity extends AppCompatActivity {
         }
         */
 
-        onAddChart(new PriceChart());
+        // Restore previous charts
+        if (IsRetained()) {
+            for(ChartViewModel vm : getViewModel().charts) {
+                ChartView view = ChartView.getInstance(this, vm);
+                mCharts.addView(view);
+            }
+        } else {
+            onAddChart(new PriceChart());
+        }
     }
 
     private void onAddChart(StockChart chart) {
-        ChartViewModel vm = new ChartViewModel(this.viewModel, chart);
+        ChartViewModel vm = new ChartViewModel(getViewModel(), chart);
 
         // chart.interval = viewModel.interval.get();
         ChartView view = ChartView.getInstance(this, vm);
+
         mCharts.addView(view);
+        getViewModel().charts.add(vm);
     }
 
     /*

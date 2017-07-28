@@ -43,7 +43,7 @@ public abstract class ChartView extends ParametersEditControl implements IChartV
             return new VolumeChartView(context, viewModel);
     }
 
-    protected ChartView(Context context, ChartViewModel viewModel) {
+    protected ChartView(Context context, final ChartViewModel viewModel) {
         //super(context, R.layout.view_chart_holder);
         super(context);
 
@@ -90,6 +90,9 @@ public abstract class ChartView extends ParametersEditControl implements IChartV
             public void onClick(View v) {
                 ViewGroup viewGroup = (ViewGroup)getParent();
                 viewGroup.removeView(ChartView.this);
+
+                // Remove viewmodel from parent list
+                viewModel.getParent().charts.remove(viewModel);
             }
         });
 
