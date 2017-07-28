@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -29,6 +29,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.cerion.stockcharts.Injection;
+import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.DataSet;
 import org.cerion.stocklist.charts.IDataSet;
@@ -48,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-class ChartFactory {
+class ChartViewFactory {
 
     private Context mContext;
 
@@ -60,15 +61,21 @@ class ChartFactory {
     private CachedDataAPI api;
 
     // TODO cache lists here, if the same one is requested multiple times hold it
-    // OR cache in the ChartViewActivity since each activity instance usually is 1 PriceList required
+    // OR cache in the ChartsActivity since each activity instance usually is 1 PriceList required
 
-    ChartFactory(Context context) {
+    ChartViewFactory(Context context) {
         mContext = context;
         mDesc.setText("");
         api = Injection.getAPI(context);
     }
 
-    Chart getChart(StockChart chart, String symbol) throws Exception {
+    Chart getChart(ChartViewModel viewModel) throws Exception {
+        viewModel.getChart().interval = viewModel.getInterval();
+        return getChart(viewModel.getChart(), viewModel.getParent().getSymbol());
+    }
+
+    // TODO move to above
+    private Chart getChart(StockChart chart, String symbol) throws Exception {
         PriceList list = api.getPrices(symbol, chart.interval, 500);
         chart.setPriceList(list);
 
@@ -84,7 +91,7 @@ class ChartFactory {
     Chart getEmptyChart() {
         Chart chart = new LineChart(mContext);
         chart.setDescription(mDesc);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+        chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
         return chart;
     }
 
@@ -110,7 +117,7 @@ class ChartFactory {
         }
 
         setChartDefaults(chart, pchart);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT_PRICE);
+        chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT_PRICE);
 
         if(pchart.logScale) {
             YAxis axis = chart.getAxisRight();
@@ -124,7 +131,7 @@ class ChartFactory {
     private Chart getLineChart(IndicatorChart ichart) {
         LineChart chart = new LineChart(mContext);
         setChartDefaults(chart, ichart);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+        chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
 
         List<IDataSet> sets = getDataSets(ichart);
         chart.setData(getLineData(sets));
@@ -154,7 +161,7 @@ class ChartFactory {
 
     private void setChartDefaults(BarLineChartBase chart, StockChart stockchart) {
         chart.setDescription(mDesc);
-        chart.setMinimumHeight(ChartFactory.CHART_HEIGHT);
+        chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
 
         //Set Y axis
         chart.getAxisLeft().setDrawLabels(false);

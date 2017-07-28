@@ -27,7 +27,7 @@
             android:name=".charts.ChartEditActivity"
             android:label="Charts Editor" />
         <activity
-            android:name=".charts.ChartViewActivity"
+            android:name=".charts.ChartsActivity"
             android:label="@string/title_activity_chart_test">
         </activity>
         <!--

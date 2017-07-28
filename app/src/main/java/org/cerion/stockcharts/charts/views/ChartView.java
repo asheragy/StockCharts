@@ -1,10 +1,11 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -14,38 +15,54 @@ import android.widget.Toast;
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.ChartViewModel;
+import org.cerion.stockcharts.charts.IChartView;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.databinding.ViewChartHolderBinding;
+import org.cerion.stocklist.charts.IndicatorChart;
+import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.model.Interval;
 
-public abstract class ChartHolderBase extends ParametersEditControl {
+public abstract class ChartView extends ParametersEditControl implements IChartView {
 
     protected LinearLayout mOverlays;
-    protected ChartFactory mChartFactory;
+    protected ChartViewFactory mChartFactory;
     protected StockChart mStockChart;
     protected ChartViewModel mViewModel;
     protected String mSymbol;
-    protected ViewChartHolderBinding mBinding;
+    protected ViewChartHolderBinding binding;
 
-    public ChartHolderBase(Context context, String symbol, StockChart chart) {
+    public static ChartView getInstance(Context context, ChartViewModel viewModel) {
+        StockChart chart = viewModel.getChart();
+
+        if (chart instanceof  PriceChart)
+            return new PriceChartView(context, viewModel);
+        else if (chart instanceof IndicatorChart)
+            return new IndicatorChartView(context, viewModel);
+        else
+            return new VolumeChartView(context, viewModel);
+    }
+
+    protected ChartView(Context context, ChartViewModel viewModel) {
         //super(context, R.layout.view_chart_holder);
         super(context);
 
-        mBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_chart_holder, this, true);
+        viewModel.setView(this);
+
+        binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_chart_holder, this, true);
         //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //mBinding = ViewChartHolderBinding.inflate(inflater);
+        //binding = ViewChartHolderBinding.inflate(inflater);
 
-        mViewModel = new ChartViewModel(chart);
-        mBinding.setViewmodel(mViewModel);
+        mViewModel = viewModel;
+        binding.setViewmodel(mViewModel);
 
-        mSymbol = symbol;
-        mStockChart = chart;
+        mSymbol = viewModel.getParent().getSymbol();
+        mStockChart = viewModel.getChart();
 
         mOverlays = (LinearLayout)findViewById(R.id.overlays);
         mOverlays.removeAllViews(); // remove placeholder used in design viewer
 
-        mChartFactory = new ChartFactory(context);
+        mChartFactory = new ChartViewFactory(context);
 
         findViewById(R.id.add_overlay).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +85,14 @@ public abstract class ChartHolderBase extends ParametersEditControl {
             }
         });
 
+        binding.remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewGroup viewGroup = (ViewGroup)getParent();
+                viewGroup.removeView(ChartView.this);
+            }
+        });
+
         setInEditMode(false);
     }
 
@@ -79,10 +104,6 @@ public abstract class ChartHolderBase extends ParametersEditControl {
     }
 
     protected abstract void onSave();
-
-    public void setOnRemoveClickListener(OnClickListener listener) {
-        findViewById(R.id.remove).setOnClickListener(listener);
-    }
 
     public StockChart getStockChart() {
         return mStockChart;
@@ -105,13 +126,12 @@ public abstract class ChartHolderBase extends ParametersEditControl {
             button.setText("Edit");
             controls.setVisibility(View.GONE);
         }
-
     }
 
     private void onAddOverlay() {
 
         final OverlayEditControl control;
-        if(getClass() == ChartHolderPrice.class)
+        if(getClass() == PriceChartView.class)
             control = new OverlayEditControl(getContext(), mStockChart.getOverlays());
         else
             control = new OverlayEditControl(getContext(), mStockChart.getOverlays());
@@ -129,21 +149,14 @@ public abstract class ChartHolderBase extends ParametersEditControl {
 
     private Chart getChart() {
         try {
-            return mChartFactory.getChart(mStockChart, mSymbol);
+            return mChartFactory.getChart(this.mViewModel);
         } catch (Exception e) {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
             return mChartFactory.getEmptyChart();
         }
     }
 
-    public void reload(Interval interval) {
-        mStockChart.interval = interval;
-        reload();
-    }
-
-    protected void reload() {
-        // TODO see if interval can be set ONLY when this function is called
-
+    public void reload() {
         final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progressBar);
         progressBar.setVisibility(View.VISIBLE);
 

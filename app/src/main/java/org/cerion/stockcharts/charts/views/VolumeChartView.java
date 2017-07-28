@@ -1,24 +1,17 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.Spinner;
 
-import com.github.mikephil.charting.charts.Chart;
-
-import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.functions.IOverlay;
-import org.cerion.stocklist.functions.IPriceOverlay;
 import org.cerion.stocklist.functions.ISimpleOverlay;
-import org.cerion.stocklist.model.Interval;
 
-class ChartHolderVolume extends ChartHolderBase {
+class VolumeChartView extends ChartView {
 
-    private static final String TAG = ChartHolderIndicator.class.getSimpleName();
+    private static final String TAG = IndicatorChartView.class.getSimpleName();
 
-    public ChartHolderVolume(Context context, String symbol, VolumeChart chart) {
-        super(context, symbol, chart);
+    VolumeChartView(Context context, ChartViewModel viewModel) {
+        super(context, viewModel);
     }
 
     @Override

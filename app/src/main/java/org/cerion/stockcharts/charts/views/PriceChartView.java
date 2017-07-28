@@ -1,22 +1,16 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.CheckBox;
 
-import com.github.mikephil.charting.charts.Chart;
-
-import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stocklist.charts.PriceChart;
-import org.cerion.stocklist.functions.IPriceOverlay;
-import org.cerion.stocklist.model.Interval;
 
-class ChartHolderPrice extends ChartHolderBase {
+class PriceChartView extends ChartView {
 
-    private static final String TAG = ChartHolderIndicator.class.getSimpleName();
+    private static final String TAG = IndicatorChartView.class.getSimpleName();
 
-    public ChartHolderPrice(Context context, String symbol, PriceChart chart) {
-        super(context, symbol, chart);
+    PriceChartView(Context context, ChartViewModel viewModel) {
+        super(context, viewModel);
     }
 
     @Override

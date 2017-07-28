@@ -3,91 +3,95 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.views.ChartView;
+import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.functions.Indicator;
 import org.cerion.stocklist.model.Interval;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-public class ChartViewActivity extends AppCompatActivity {
-    private static final String TAG = ChartViewActivity.class.getSimpleName();
+public class ChartsActivity extends AppCompatActivity {
+    private static final String TAG = ChartsActivity.class.getSimpleName();
     private static final String EXTRA_SYMBOL = "symbol";
     private static final String STATE_CHARTS = "charts";
     private static final String STATE_INTERVAL = "interval";
 
     private LinearLayout mCharts;
-    private String mSymbol;
-    private Interval mInterval;
+    private ChartsViewModel viewModel = null;
 
     public static Intent newIntent(Context context, String symbol) {
-        Intent intent = new Intent(context,ChartViewActivity.class);
-        intent.putExtra(ChartViewActivity.EXTRA_SYMBOL, symbol);
+        Intent intent = new Intent(context,ChartsActivity.class);
+        intent.putExtra(ChartsActivity.EXTRA_SYMBOL, symbol);
         return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart_view);
 
-        mSymbol = getIntent().getStringExtra(EXTRA_SYMBOL);
+        // TODO save state by using base class
+        this.viewModel = new ChartsViewModel(getIntent().getStringExtra(EXTRA_SYMBOL));
+
+        ActivityChartsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
+        binding.setViewmodel(viewModel);
+
+        //setContentView(R.layout.activity_charts);
+
+
         mCharts = (LinearLayout) findViewById(R.id.charts);
-        onSelectInterval(Interval.DAILY);
+        //onSelectInterval(Interval.DAILY);
 
         findViewById(R.id.add_price).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAddPriceChart();
+                onAddChart(new PriceChart());
             }
         });
 
         findViewById(R.id.add_volume).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAddVolumeChart();
+                onAddChart(new VolumeChart());
             }
         });
 
         findViewById(R.id.add_indicator).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAddIndicatorChart();
+                onAddChart(new IndicatorChart(null));
             }
         });
 
         findViewById(R.id.daily).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSelectInterval(Interval.DAILY);
+                viewModel.interval.set(Interval.DAILY);
             }
         });
 
         findViewById(R.id.weekly).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSelectInterval(Interval.WEEKLY);
+                viewModel.interval.set(Interval.WEEKLY);
             }
         });
 
         findViewById(R.id.monthly).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSelectInterval(Interval.MONTHLY);
+                viewModel.interval.set(Interval.MONTHLY);
             }
         });
 
+        /*
         if (savedInstanceState != null) {
             mInterval = Interval.values()[savedInstanceState.getInt(STATE_INTERVAL)];
             ArrayList<ChartState> charts = (ArrayList<ChartState>)savedInstanceState.getSerializable(STATE_CHARTS);
@@ -112,72 +116,45 @@ public class ChartViewActivity extends AppCompatActivity {
             }
             Log.d(TAG, "found chart");
 
-        } else {
+        }
+        else {
             //onAddPriceChart();
             //onAddVolumeChart();
             onAddIndicatorChart();
             //onAddIndicatorChart();
         }
+        */
+
+        onAddChart(new PriceChart());
     }
 
-    private void onSelectInterval(Interval interval) {
-        mInterval = interval;
-        for(int i = 0; i < mCharts.getChildCount(); i++) {
-            ChartHolderBase holder = (ChartHolderBase)mCharts.getChildAt(i);
-            //onRequest(holder, mSymbol);
-            holder.reload(interval);
-        }
+    private void onAddChart(StockChart chart) {
+        ChartViewModel vm = new ChartViewModel(this.viewModel, chart);
 
-        findViewById(R.id.daily).setEnabled(mInterval != Interval.DAILY);
-        findViewById(R.id.weekly).setEnabled(mInterval != Interval.WEEKLY);
-        findViewById(R.id.monthly).setEnabled(mInterval != Interval.MONTHLY);
+        // chart.interval = viewModel.interval.get();
+        ChartView view = ChartView.getInstance(this, vm);
+        mCharts.addView(view);
     }
 
-    private void onAddPriceChart() {
-        PriceChart chart = new PriceChart();
-        chart.interval = mInterval;
-        addHolder(new ChartHolderPrice(this, mSymbol, chart));
-    }
-
-    private void onAddVolumeChart() {
-        VolumeChart chart = new VolumeChart();
-        chart.interval = mInterval;
-        addHolder(new ChartHolderVolume(this, mSymbol, chart));
-    }
-
-    private void onAddIndicatorChart() {
-        IndicatorChart chart = new IndicatorChart(null);
-        chart.interval = mInterval;
-        addHolder(new ChartHolderIndicator(this, mSymbol, chart));
-    }
-
-    private void addHolder(final ChartHolderBase holder) {
-        holder.setOnRemoveClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCharts.removeView(holder);
-            }
-        });
-
-        mCharts.addView(holder);
-    }
-
+    /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         ArrayList<ChartState> charts = new ArrayList<>();
         for(int i = 0; i < mCharts.getChildCount(); i++) {
-            ChartHolderBase holder = (ChartHolderBase)mCharts.getChildAt(i);
+            ChartView holder = (ChartView)mCharts.getChildAt(i);
             StockChart chart = holder.getStockChart();
             ChartState state = new ChartState(chart);
             charts.add(state);
         }
 
         outState.putSerializable(STATE_CHARTS, charts);
-        outState.putInt(STATE_INTERVAL, mInterval.ordinal());
+        outState.putInt(STATE_INTERVAL, viewModel.getInterval().ordinal());
     }
+    */
 
+    /*
     private class ChartState implements Serializable {
         private int type;
         private int primaryValue;
@@ -194,7 +171,6 @@ public class ChartViewActivity extends AppCompatActivity {
                 primaryValue = ichart.getId().ordinal();
             }
         }
-
-
     }
+    */
 }

@@ -1,20 +1,21 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.functions.IIndicator;
 import org.cerion.stocklist.functions.ISimpleOverlay;
 
-class ChartHolderIndicator extends ChartHolderBase implements ChartViewModel.OnFunctionChangeListener {
+class IndicatorChartView extends ChartView implements ChartViewModel.OnFunctionChangeListener {
 
-    private static final String TAG = ChartHolderIndicator.class.getSimpleName();
+    private static final String TAG = IndicatorChartView.class.getSimpleName();
 
-    public ChartHolderIndicator(Context context, String symbol, IndicatorChart chart) {
-        super(context, symbol, chart);
+    IndicatorChartView(Context context, ChartViewModel viewModel) {
+        super(context, viewModel);
 
         mViewModel.setFunctionListener(this);
 

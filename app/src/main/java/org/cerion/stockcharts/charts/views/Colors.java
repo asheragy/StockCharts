@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.charts.views;
 
 import android.graphics.Color;
 

@@ -12,18 +12,20 @@ import org.cerion.stocklist.functions.IFunction;
 import org.cerion.stocklist.functions.IFunctionEnum;
 import org.cerion.stocklist.functions.IIndicator;
 import org.cerion.stocklist.functions.Indicator;
+import org.cerion.stocklist.model.Interval;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ChartViewModel {
 
     private StockChart mChart;
+    private ChartsViewModel parent;
     private ChartType mType;
+    private IChartView view;
 
     // Fixed values after loading
     public boolean showLineCheckbox;
@@ -49,7 +51,8 @@ public class ChartViewModel {
         Indicator
     }
 
-    public ChartViewModel(StockChart chart) {
+    public ChartViewModel(ChartsViewModel parent, StockChart chart) {
+        this.parent = parent;
         mChart = chart;
 
         if (chart instanceof VolumeChart) {
@@ -75,6 +78,30 @@ public class ChartViewModel {
         showFunctions    = mType == ChartType.Indicator;
 
         initFunctions();
+
+        parent.interval.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (view != null)
+                    view.reload();
+            }
+        });
+    }
+
+    public void setView(IChartView view) {
+        this.view = view;
+    }
+
+    public StockChart getChart() {
+        return mChart;
+    }
+
+    public ChartsViewModel getParent() {
+        return parent;
+    }
+
+    public Interval getInterval() {
+        return parent.interval.get();
     }
 
     public void setFunctionListener(OnFunctionChangeListener listener) {

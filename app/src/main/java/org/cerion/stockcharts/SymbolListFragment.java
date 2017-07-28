@@ -19,7 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.cerion.stockcharts.charts.ChartViewActivity;
+import org.cerion.stockcharts.charts.ChartsActivity;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
 import org.cerion.stockcharts.repository.PositionRepository;
@@ -66,11 +66,11 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
         super.onListItemClick(l, v, position, id);
 
         String s = mSymbols.get(position).symbol.getSymbol();
-        Intent intent = ChartViewActivity.newIntent(getContext(), s);
+        Intent intent = ChartsActivity.newIntent(getContext(), s);
 
         //Intent intent = new Intent(getActivity(),PriceListActivity.class);
         //intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
-        //Intent intent = new Intent(getActivity(),ChartViewActivity.class);
+        //Intent intent = new Intent(getActivity(),ChartsActivity.class);
         //intent.putExtra(PriceListActivity.SYMBOL_EXTRA,s);
         startActivity(intent);
     }
