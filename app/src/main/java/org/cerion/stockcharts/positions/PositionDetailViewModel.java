@@ -10,6 +10,7 @@ import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.CachedDataAPI;
 
+import java.util.List;
 import java.util.Observable;
 
 public class PositionDetailViewModel extends Observable {
@@ -54,7 +55,9 @@ public class PositionDetailViewModel extends Observable {
 
                 // Add dividends to position
                 mPosition.addDividends( api.getDividends(symbol) );
-                if(mPosition.IsDividendsReinvested()) {
+
+                if(mPosition.IsDividendsReinvested())
+                {
                     try {
                         mPosition.setPriceHistory(api.getPrices(symbol, Interval.DAILY, 500));
                     } catch (Exception e) {

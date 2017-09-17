@@ -3,18 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <Spinner
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         tools:entries="@array/overlays_toolsonly">
     </Spinner>
 
-    <LinearLayout
+    <org.cerion.stockcharts.charts.views.ParametersEditControl
         android:id="@+id/parameters"
         android:orientation="horizontal"
+        android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -25,11 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    </LinearLayout>
+    </org.cerion.stockcharts.charts.views.ParametersEditControl>
 
     <Button
-        android:text="Remove"
-        android:layout_width="wrap_content"
+        android:text="X"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:id="@+id/remove" />
 </LinearLayout>

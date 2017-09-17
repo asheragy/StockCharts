@@ -21,11 +21,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PriceListActivity"
+            android:name=".PortfolioValueActivity"
             android:label="" />
         <activity
-            android:name=".charts.ChartEditActivity"
-            android:label="Charts Editor" />
+            android:name=".PriceListActivity"
+            android:label="" />
         <activity
             android:name=".charts.ChartsActivity"
             android:label="@string/title_activity_chart_test">

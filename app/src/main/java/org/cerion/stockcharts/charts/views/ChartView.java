@@ -1,5 +1,7 @@
 package org.cerion.stockcharts.charts.views;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Looper;
@@ -16,6 +18,7 @@ import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.ChartViewModel;
+import org.cerion.stockcharts.charts.EditChartDialog;
 import org.cerion.stockcharts.charts.IChartView;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.databinding.ViewChartHolderBinding;
@@ -23,11 +26,11 @@ import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 
-public abstract class ChartView extends ParametersEditControl implements IChartView {
+public abstract class ChartView extends LinearLayout implements IChartView, EditChartDialog.ChartChangeListener {
 
     protected LinearLayout mOverlays;
     protected ChartViewFactory mChartFactory;
-    protected StockChart mStockChart;
+    protected StockChart mStockChart; // TODO redundant, same as view model
     protected ChartViewModel mViewModel;
     protected String mSymbol;
     protected ViewChartHolderBinding binding;
@@ -41,6 +44,21 @@ public abstract class ChartView extends ParametersEditControl implements IChartV
             return new IndicatorChartView(context, viewModel);
         else
             return new VolumeChartView(context, viewModel);
+    }
+
+    @Override
+    public void chartChanged(StockChart chart) {
+        mStockChart = chart;
+        reload();
+    }
+
+    @Override
+    public void chartRemoved() {
+        ViewGroup viewGroup = (ViewGroup)getParent();
+        viewGroup.removeView(ChartView.this);
+
+        // Remove viewmodel from parent list
+        mViewModel.getParent().charts.remove(mViewModel);
     }
 
     protected ChartView(Context context, final ChartViewModel viewModel) {
@@ -112,10 +130,23 @@ public abstract class ChartView extends ParametersEditControl implements IChartV
         return mStockChart;
     }
 
+    public void edit() {
+        FragmentManager fm = ((Activity)getContext()).getFragmentManager();
+        EditChartDialog dialog = EditChartDialog.newInstance(mStockChart, ChartView.this);
+        dialog.show(fm, "editDialog");
+    }
+
     protected void setChart(Chart chart) {
         final FrameLayout frame = (FrameLayout) findViewById(R.id.chart_frame);
         frame.removeAllViews();
         frame.addView(chart);
+
+        chart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edit();
+            }
+        });
     }
 
     protected void setInEditMode(boolean bEdit) {

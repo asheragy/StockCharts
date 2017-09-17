@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.charts;
 
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -146,6 +147,9 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
 
         mCharts.addView(view);
         getViewModel().charts.add(vm);
+
+        if (chart instanceof IndicatorChart)
+            view.edit();
     }
 
     /*

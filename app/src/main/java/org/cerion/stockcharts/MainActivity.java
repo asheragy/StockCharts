@@ -82,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         } else if(id == R.id.import_sp500) {
-            onImportSP500();
+            //onImportSP500();
+            onViewPortfolio();
             return true;
         } else if(id == R.id.clear_cache) {
             onClearCache();
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity {
         //new MasterRepository(this).log();
         // TODO add database logging to the database class
         Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
+    }
+
+    private void onViewPortfolio() {
+        startActivity(PortfolioValueActivity.getIntent(this));
     }
 
     private void onImportSP500()

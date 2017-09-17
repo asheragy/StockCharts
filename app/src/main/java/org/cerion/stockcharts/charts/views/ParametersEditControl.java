@@ -1,33 +1,44 @@
 package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.util.AttributeSet;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.cerion.stockcharts.R;
 
-public abstract class ParametersEditControl extends LinearLayout {
+public class ParametersEditControl extends LinearLayout {
+
+    private Number[] defaultParameters;
 
     public ParametersEditControl(Context context) {
         super(context);
     }
 
-    public ParametersEditControl(Context context, int layout) {
-        super(context);
-
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(layout, this, true);
+    public ParametersEditControl(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
     }
 
-    protected Number[] getParameters(Number[] defaultValues) {
-        LinearLayout parameters = (LinearLayout)findViewById(R.id.parameters);
-        Number p[] = defaultValues.clone();
+    public void setParameters(Number params[]) {
+        defaultParameters = params;
+        final EditText[] fields = new EditText[params.length];
 
-        if(defaultValues.length != parameters.getChildCount())
+        removeAllViews();
+        for(int i = 0; i < params.length; i++) {
+            Number n = params[i];
+            fields[i] = getInputField(n);
+            addView(fields[i]);
+        }
+    }
+
+    public Number[] getParameters() {
+        LinearLayout parameters = (LinearLayout)findViewById(R.id.parameters);
+        Number p[] = defaultParameters.clone();
+
+        if(p.length != parameters.getChildCount())
             throw new IllegalStateException("expected parameters do not match layout count");
 
-        for (int i = 0; i < defaultValues.length; i++) {
+        for (int i = 0; i < p.length; i++) {
             EditText field = (EditText)parameters.getChildAt(i);
             try {
                 String entered = field.getText().toString();
@@ -38,14 +49,14 @@ public abstract class ParametersEditControl extends LinearLayout {
                 }
             } catch(Exception e) {
                 // Reset input field to default value
-                field.setText(p[i] + "");
+                field.setText(p[i].toString());
             }
         }
 
         return p;
     }
 
-    protected EditText getInputField(Number n) {
+    private EditText getInputField(Number n) {
         final EditText input = new EditText(getContext());
         input.setText(n.toString());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);

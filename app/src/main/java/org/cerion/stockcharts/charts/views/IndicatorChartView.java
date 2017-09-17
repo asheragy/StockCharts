@@ -27,6 +27,7 @@ class IndicatorChartView extends ChartView implements ChartViewModel.OnFunctionC
         return (IndicatorChart)mStockChart;
     }
 
+
     @Override
     public void onFunctionChanged() {
         setIndicator(mViewModel.getFunction());
@@ -47,6 +48,7 @@ class IndicatorChartView extends ChartView implements ChartViewModel.OnFunctionC
             mOverlays.removeAllViews();
         }
 
+        /*
         // Add parameters
         LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
         layout.removeAllViews();
@@ -55,10 +57,12 @@ class IndicatorChartView extends ChartView implements ChartViewModel.OnFunctionC
             fields[i] = getInputField(n);
             layout.addView(fields[i]);
         }
+        */
     }
 
     @Override
     protected void onSave() {
+        /*
         final IIndicator instance = mViewModel.getFunction();
         final Number[] params = instance.params();
         //final EditText[] fields = new EditText[params.length];
@@ -79,5 +83,6 @@ class IndicatorChartView extends ChartView implements ChartViewModel.OnFunctionC
             OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
             indicatorChart().addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
         }
+        */
     }
 }
