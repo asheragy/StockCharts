@@ -32,6 +32,11 @@ public class ChartViewModel {
         return mChart;
     }
 
+    public void setChart(StockChart chart) {
+        mChart = chart;
+        view.reload();
+    }
+
     public ChartsViewModel getParent() {
         return parent;
     }

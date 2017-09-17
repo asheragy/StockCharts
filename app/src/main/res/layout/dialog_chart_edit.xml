@@ -19,6 +19,7 @@
 
 
         <LinearLayout
+            android:layout_weight="1"
             android:id="@+id/edit_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,28 +74,28 @@
                 android:visibility="@{viewmodel.showAddOverlay ? View.VISIBLE : View.GONE}"
                 android:id="@+id/add_overlay" />
 
+            <LinearLayout
+                android:id="@+id/overlays"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    tools:text="Overlays go here"
+                    tools:visibility="visible"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
 
         <LinearLayout
-            android:id="@+id/overlays"
-            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                tools:text="Overlays go here"
-                tools:visibility="visible"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/edit_layout">
 
             <Button
                 android:text="Save"

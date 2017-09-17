@@ -31,14 +31,14 @@ public class OverlayEditControl extends LinearLayout {
     }
 
     public OverlayEditControl(Context context, IFunctionEnum[] overlays) {
-        super(context); // TODO rename layout to match class name
+        super(context);
 
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.overlay_parameters, this, true);
+        inflater.inflate(R.layout.view_overlay_edit_control, this, true);
 
         parameters = (ParametersEditControl)findViewById(R.id.parameters);
         mOverlays = FunctionAdapterItem.getList(overlays);
-        //Collections.sort(mOverlays);
+        //Collections.sort(overlays);
 
         ArrayAdapter<FunctionAdapterItem> adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mOverlays);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

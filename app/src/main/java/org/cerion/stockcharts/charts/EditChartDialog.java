@@ -24,9 +24,8 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
 
     private EditChartViewModel viewModel;
     private DialogChartEditBinding binding;
-    protected LinearLayout mOverlays; // TODO use binding
+    private LinearLayout overlays;
     private View view;
-    //private StockChart chart;
     private ChartChangeListener listener;
 
     public interface ChartChangeListener {
@@ -52,10 +51,8 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.dialog_chart_edit, container);
 
-        DialogChartEditBinding binding = DialogChartEditBinding.bind(view);
+        binding = DialogChartEditBinding.bind(view);
         binding.setViewmodel(viewModel);
-
-        //binding.addOverlay.setVisibility(View.VISIBLE);
 
         // TODO add as binding
         binding.addOverlay.setOnClickListener(new View.OnClickListener() {
@@ -89,8 +86,8 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
                 }
 
                 // Get overlay parameters
-                for(int i = 0; i < mOverlays.getChildCount(); i++) {
-                    OverlayEditControl editControl = (OverlayEditControl)mOverlays.getChildAt(i);
+                for(int i = 0; i < overlays.getChildCount(); i++) {
+                    OverlayEditControl editControl = (OverlayEditControl) overlays.getChildAt(i);
 
                     if (chart instanceof PriceChart) {
                         ((PriceChart) chart).addOverlay(editControl.getOverlayFunction());
@@ -105,8 +102,8 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
             }
         });
 
-        mOverlays = (LinearLayout)view.findViewById(R.id.overlays);
-        mOverlays.removeAllViews(); // remove placeholder used in design viewer
+        overlays = binding.overlays;
+        overlays.removeAllViews(); // remove placeholder used in design viewer
 
         viewModel.setFunctionListener(EditChartDialog.this);
         if (getChart() instanceof IndicatorChart) {
@@ -143,7 +140,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
 
         // If overlay is not allowed then hide it
         if(!viewModel.showAddOverlay.get()) {
-            mOverlays.removeAllViews();
+            overlays.removeAllViews();
         }
 
         // Add parameters
@@ -153,7 +150,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
 
     private ParametersEditControl getParametersControl() {
         if (getChart() instanceof IndicatorChart)
-            return (ParametersEditControl) view.findViewById(R.id.parameters);
+            return binding.parameters;
 
         throw new RuntimeException();
     }
@@ -167,11 +164,11 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         control.setOnDelete(new OverlayEditControl.OnDeleteListener() {
             @Override
             public void delete() {
-                mOverlays.removeView(control);
+                overlays.removeView(control);
             }
         });
 
-        mOverlays.addView(control);
+        overlays.addView(control);
         return control;
     }
 }

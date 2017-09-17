@@ -20,51 +20,30 @@ import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stockcharts.charts.EditChartDialog;
 import org.cerion.stockcharts.charts.IChartView;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.databinding.ViewChartHolderBinding;
+import org.cerion.stockcharts.databinding.ViewChartBinding;
 import org.cerion.stocklist.charts.StockChart;
 
 public class ChartView extends LinearLayout implements IChartView, EditChartDialog.ChartChangeListener {
 
-    protected ChartViewFactory mChartFactory;
-    protected StockChart mStockChart; // TODO redundant, same as view model
-    protected ChartViewModel mViewModel;
-    protected String mSymbol;
-    protected ViewChartHolderBinding binding;
+    protected ChartViewFactory chartFactory;
+    protected ChartViewModel viewModel;
+    protected ViewChartBinding binding;
 
     public ChartView(Context context, ChartViewModel viewModel) {
-        //super(context, R.layout.view_chart_holder);
         super(context);
 
+        this.viewModel = viewModel;
         viewModel.setView(this);
+        binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_chart, this, true);
+        binding.setViewmodel(this.viewModel);
 
-        binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_chart_holder, this, true);
-        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //binding = ViewChartHolderBinding.inflate(inflater);
-
-        mViewModel = viewModel;
-        binding.setViewmodel(mViewModel);
-
-        mSymbol = viewModel.getParent().getSymbol();
-        mStockChart = viewModel.getChart();
-
-        mChartFactory = new ChartViewFactory(context);
-
-        binding.remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ViewGroup viewGroup = (ViewGroup)getParent();
-                viewGroup.removeView(ChartView.this);
-
-                // Remove viewmodel from parent list
-                mViewModel.getParent().charts.remove(mViewModel);
-            }
-        });
+        chartFactory = new ChartViewFactory(context);
     }
 
     @Override
     public void chartChanged(StockChart chart) {
-        mStockChart = chart;
-        reload();
+        // TODO see if all this can be moved from viewmodel -> viewmodel calls
+        viewModel.setChart(chart);
     }
 
     @Override
@@ -73,7 +52,7 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
         viewGroup.removeView(ChartView.this);
 
         // Remove viewmodel from parent list
-        mViewModel.getParent().charts.remove(mViewModel);
+        viewModel.getParent().charts.remove(viewModel);
     }
 
     @Override
@@ -85,7 +64,7 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
 
     public void edit() {
         FragmentManager fm = ((Activity)getContext()).getFragmentManager();
-        EditChartDialog dialog = EditChartDialog.newInstance(mStockChart, ChartView.this);
+        EditChartDialog dialog = EditChartDialog.newInstance(viewModel.getChart(), ChartView.this);
         dialog.show(fm, "editDialog");
     }
 
@@ -104,10 +83,10 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
 
     private Chart getChart() {
         try {
-            return mChartFactory.getChart(this.mViewModel);
+            return chartFactory.getChart(this.viewModel);
         } catch (Exception e) {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            return mChartFactory.getEmptyChart();
+            return chartFactory.getEmptyChart();
         }
     }
 

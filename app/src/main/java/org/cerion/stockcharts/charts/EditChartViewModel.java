@@ -24,7 +24,6 @@ public class EditChartViewModel {
 
     private StockChart mChart;
     private EditChartViewModel.ChartType mType;
-    private IChartView view;
 
     // Fixed values after loading
     public boolean showLineCheckbox;
@@ -67,7 +66,6 @@ public class EditChartViewModel {
             lineChart.set(!c.candleData);
         }
         else {
-            IndicatorChart c = (IndicatorChart)chart;
             mType = EditChartViewModel.ChartType.Indicator;
         }
 
@@ -76,10 +74,6 @@ public class EditChartViewModel {
         showFunctions    = mType == EditChartViewModel.ChartType.Indicator;
 
         initFunctions();
-    }
-
-    public void setView(IChartView view) {
-        this.view = view;
     }
 
     public StockChart getChart() {
@@ -119,8 +113,6 @@ public class EditChartViewModel {
             Collections.sort(functions);
             IndicatorChart chart = (IndicatorChart)mChart;
 
-            // TODO only do this if chart doesnt have one selected already
-            //String macd = Indicator.MACD.getInstance().getName();
             for(int i = 0; i < functionMap.size(); i++) {
                 String s = functions.get(i);
                 IFunction f = functionMap.get(s);
