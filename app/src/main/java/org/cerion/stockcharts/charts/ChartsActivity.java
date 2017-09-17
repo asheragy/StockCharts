@@ -18,6 +18,7 @@ import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
+import org.cerion.stocklist.indicators.MACD;
 import org.cerion.stocklist.model.Interval;
 
 public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
@@ -69,7 +70,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         findViewById(R.id.add_indicator).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAddChart(new IndicatorChart(null));
+                onAddChart(new IndicatorChart(new MACD()));
             }
         });
 
@@ -131,7 +132,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         // Restore previous charts
         if (IsRetained()) {
             for(ChartViewModel vm : getViewModel().charts) {
-                ChartView view = ChartView.getInstance(this, vm);
+                ChartView view = new ChartView(this, vm);
                 mCharts.addView(view);
             }
         } else {
@@ -143,7 +144,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         ChartViewModel vm = new ChartViewModel(getViewModel(), chart);
 
         // chart.interval = viewModel.interval.get();
-        ChartView view = ChartView.getInstance(this, vm);
+        ChartView view = new ChartView(this, vm);
 
         mCharts.addView(view);
         getViewModel().charts.add(vm);

@@ -83,25 +83,9 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
                     ((PriceChart) chart).logScale = viewModel.logScale.get();
                     ((PriceChart) chart).candleData = !viewModel.lineChart.get();
                 } else if (chart instanceof IndicatorChart) {
-                    //IndicatorChart ichart = (IndicatorChart)chart;
-
                     final IIndicator instance = viewModel.getFunction();
-                    //final Number[] params = instance.params();
                     instance.setParams( getParametersControl().getParameters() );
-
-                    //ichart.setIndicator(instance);
-                    //final EditText[] fields = new EditText[params.length];
-
                     indicatorChart().setIndicator(instance);
-
-                    //Get parameters and redraw chart
-                    /*
-                    if (params.length > 0) {
-                        Number p[] = getParameters(params);
-                        instance.setParams(p);
-                        indicatorChart().setIndicator( instance );
-                    }
-                    */
                 }
 
                 // Get overlay parameters
@@ -179,14 +163,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
     }
 
     private OverlayEditControl onAddOverlay() {
-
-        final OverlayEditControl control;
-        //if(viewModel.getChart() instanceof PriceChart)
-            control = new OverlayEditControl(getContext(), viewModel.getChart().getOverlays());
-        //else
-        //    control = new OverlayEditControl(getContext(), mStockChart.getOverlays());
-
-
+        final OverlayEditControl control = new OverlayEditControl(getContext(), viewModel.getChart().getOverlays());
         control.setOnDelete(new OverlayEditControl.OnDeleteListener() {
             @Override
             public void delete() {
@@ -195,7 +172,6 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         });
 
         mOverlays.addView(control);
-
         return control;
     }
 }
