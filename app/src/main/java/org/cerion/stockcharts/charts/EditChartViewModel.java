@@ -50,7 +50,11 @@ public class EditChartViewModel {
     }
 
     public EditChartViewModel(StockChart chart) {
-        mChart = chart;
+        try {
+            mChart = (StockChart)chart.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
         if (chart instanceof VolumeChart) {
             VolumeChart c = (VolumeChart)chart;

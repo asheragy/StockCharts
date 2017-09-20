@@ -136,7 +136,8 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
     }
 
     private void setIndicator(final IIndicator instance) {
-        indicatorChart().setIndicator(instance);
+        if (indicatorChart().getIndicator() != instance)
+            indicatorChart().setIndicator(instance);
 
         // If overlay is not allowed then hide it
         if(!viewModel.showAddOverlay.get()) {
