@@ -28,8 +28,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import org.cerion.stockcharts.Injection;
-import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.DataSet;
 import org.cerion.stocklist.charts.IDataSet;
@@ -39,7 +37,6 @@ import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -58,25 +55,13 @@ class ChartViewFactory {
     private static DateFormat mDateFormat        = new SimpleDateFormat("MMM d, yy");
     private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM ''yy");
     private Description mDesc = new Description();
-    private CachedDataAPI api;
-
-    // TODO cache lists here, if the same one is requested multiple times hold it
-    // OR cache in the ChartsActivity since each activity instance usually is 1 PriceList required
 
     ChartViewFactory(Context context) {
         mContext = context;
         mDesc.setText("");
-        api = Injection.getAPI(context);
     }
 
-    Chart getChart(ChartViewModel viewModel) throws Exception {
-        viewModel.getChart().interval = viewModel.getInterval();
-        return getChart(viewModel.getChart(), viewModel.getParent().getSymbol());
-    }
-
-    // TODO move to above
-    private Chart getChart(StockChart chart, String symbol) throws Exception {
-        PriceList list = api.getPrices(symbol, chart.interval, 500);
+    Chart getChart(StockChart chart, PriceList list) {
         chart.setPriceList(list);
 
         if (chart instanceof PriceChart)

@@ -53,8 +53,8 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
     */
 
     @Override
-    public PriceList get(String symbol, Interval interval) {
-        List<Price> prices = getPrices(symbol, interval);
+    public PriceList get(String symbol, Interval interval, int max) {
+        List<Price> prices = getPrices(symbol, interval, max);
         return new PriceList(symbol,prices);
     }
 
@@ -130,11 +130,11 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         optimize();
     }
 
-    private List<Price> getPrices(String symbol, Interval interval) {
+    private List<Price> getPrices(String symbol, Interval interval, int max) {
         SQLiteDatabase db = openReadOnly();
 
         String where = String.format(StockDBOpenHelper.Prices._SYMBOL + "='%s'", symbol);
-        Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, null);
+        Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, StockDBOpenHelper.Prices._DATE + " DESC", max + "");
         List<Price> prices = new ArrayList<>();
 
         if(c != null) {

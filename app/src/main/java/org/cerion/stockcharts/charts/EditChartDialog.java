@@ -73,31 +73,9 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         binding.save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StockChart chart = viewModel.getChart();
-                chart.clearOverlays();
+                updateChart();
 
-                if (chart instanceof PriceChart) {
-                    ((PriceChart) chart).logScale = viewModel.logScale.get();
-                    ((PriceChart) chart).candleData = !viewModel.lineChart.get();
-                } else if (chart instanceof IndicatorChart) {
-                    final IIndicator instance = viewModel.getFunction();
-                    instance.setParams( getParametersControl().getParameters() );
-                    indicatorChart().setIndicator(instance);
-                }
-
-                // Get overlay parameters
-                for(int i = 0; i < overlays.getChildCount(); i++) {
-                    OverlayEditControl editControl = (OverlayEditControl) overlays.getChildAt(i);
-
-                    if (chart instanceof PriceChart) {
-                        ((PriceChart) chart).addOverlay(editControl.getOverlayFunction());
-
-                    }
-                    else
-                        chart.addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
-                }
-
-                listener.chartChanged(chart);
+                listener.chartChanged(viewModel.getChart());
                 dismiss();
             }
         });
@@ -116,6 +94,38 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         }
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Overlays are not working with binding yet so manually update them before rotation
+        updateChart();
+    }
+
+    private void updateChart() {
+        StockChart chart = viewModel.getChart();
+        chart.clearOverlays();
+
+        // TODO overlays and parameters all need to be in viewmodel
+        if (chart instanceof IndicatorChart) {
+            final IIndicator instance = viewModel.getFunction();
+            instance.setParams( getParametersControl().getParameters() );
+            indicatorChart().setIndicator(instance);
+        }
+
+        // Get overlay parameters
+        for(int i = 0; i < overlays.getChildCount(); i++) {
+            OverlayEditControl editControl = (OverlayEditControl) overlays.getChildAt(i);
+
+            if (chart instanceof PriceChart) {
+                ((PriceChart) chart).addOverlay(editControl.getOverlayFunction());
+
+            }
+            else
+                chart.addOverlay((ISimpleOverlay)editControl.getOverlayFunction());
+        }
     }
 
     @Override

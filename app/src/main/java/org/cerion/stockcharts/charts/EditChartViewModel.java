@@ -81,6 +81,16 @@ public class EditChartViewModel {
     }
 
     public StockChart getChart() {
+        if (mChart instanceof PriceChart) {
+            ((PriceChart) mChart).logScale = logScale.get();
+            ((PriceChart) mChart).candleData = !lineChart.get();
+        } else if (mChart instanceof IndicatorChart) {
+            // TODO this clears overlays, need to have those in VM too
+            //final IIndicator instance = viewModel.getFunction();
+            //instance.setParams( getParametersControl().getParameters() );
+            //indicatorChart().setIndicator(instance);
+        }
+
         return mChart;
     }
 

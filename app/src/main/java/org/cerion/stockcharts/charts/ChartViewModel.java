@@ -2,6 +2,7 @@ package org.cerion.stockcharts.charts;
 
 import android.databinding.Observable;
 
+import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.model.Interval;
 
@@ -15,7 +16,7 @@ public class ChartViewModel {
         this.parent = parent;
         mChart = chart;
 
-        parent.interval.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        parent.priceList.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
                 if (view != null)
@@ -41,7 +42,11 @@ public class ChartViewModel {
         return parent;
     }
 
-    public Interval getInterval() {
+    public PriceList getList() {
+        return parent.priceList.get();
+    }
+
+    public Interval getIntervalOLD() {
         return parent.interval.get();
     }
 }

@@ -65,6 +65,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:enabled="@{viewmodel.interval != Interval.DAILY}"
+                        android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
                         android:id="@+id/daily" />
 
                     <Button
@@ -72,6 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:enabled="@{viewmodel.interval != Interval.WEEKLY}"
+                        android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
                         android:id="@+id/weekly" />
 
                     <Button
@@ -79,9 +81,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:enabled="@{viewmodel.interval != Interval.MONTHLY}"
+                        android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
                         android:id="@+id/monthly" />
 
+                    <Button
+                        android:text="Quarterly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="@{viewmodel.interval != Interval.QUARTERLY}"
+                        android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
+                        android:id="@+id/quarterly" />
+
                 </LinearLayout>
+
+                <com.edmodo.rangebar.RangeBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rangeBar"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
