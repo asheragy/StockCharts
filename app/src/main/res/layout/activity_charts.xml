@@ -13,102 +13,185 @@
         <import type="org.cerion.stocklist.model.Interval"/>
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="4"
-        tools:context=".charts.ChartsActivity">
+        android:layout_height="match_parent">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="4"
+            tools:context=".charts.ChartsActivity">
 
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:text="Daily"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{viewmodel.interval != Interval.DAILY}"
+                            android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
+                            android:id="@+id/daily" />
+
+                        <Button
+                            android:text="Weekly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{viewmodel.interval != Interval.WEEKLY}"
+                            android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
+                            android:id="@+id/weekly" />
+
+                        <Button
+                            android:text="Monthly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{viewmodel.interval != Interval.MONTHLY}"
+                            android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
+                            android:id="@+id/monthly" />
+
+                        <Button
+                            android:text="Quarterly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{viewmodel.interval != Interval.QUARTERLY}"
+                            android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
+                            android:id="@+id/quarterly" />
+
+                    </LinearLayout>
+
+                    <com.edmodo.rangebar.RangeBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rangeBar"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:id="@+id/charts">
+                        <!-- Dynamically add charts here-->
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#88888888"
+            android:visibility="gone"
+            android:id="@+id/fab_overlay">
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/fab_volume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="@dimen/fab"
+                    android:layout_height="@dimen/fab"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:padding="4dp"
+                    android:gravity="center"
+                    android:layout_gravity="bottom|end"/>
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center"
+                    android:text="Vo"
+                    android:elevation="16dp"
+                    android:textSize="24sp"
+                    android:textColor="@android:color/white"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </FrameLayout>
 
-                    <Button
-                        android:text="Price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/add_price" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fab_price">
 
-                    <Button
-                        android:text="Volume"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/add_volume" />
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="@dimen/fab"
+                    android:layout_height="@dimen/fab"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:padding="4dp"
+                    android:layout_gravity="bottom|end"/>
 
-                    <Button
-                        android:text="Indicator"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/add_indicator" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center"
+                    android:text="Pr"
+                    android:elevation="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </FrameLayout>
 
-                    <Button
-                        android:text="Daily"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="@{viewmodel.interval != Interval.DAILY}"
-                        android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
-                        android:id="@+id/daily" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-                    <Button
-                        android:text="Weekly"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="@{viewmodel.interval != Interval.WEEKLY}"
-                        android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
-                        android:id="@+id/weekly" />
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="@dimen/fab"
+                    android:layout_height="@dimen/fab"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:padding="4dp"
+                    android:id="@+id/fab"
+                    android:layout_gravity="bottom|end"/>
 
-                    <Button
-                        android:text="Monthly"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="@{viewmodel.interval != Interval.MONTHLY}"
-                        android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
-                        android:id="@+id/monthly" />
-
-                    <Button
-                        android:text="Quarterly"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="@{viewmodel.interval != Interval.QUARTERLY}"
-                        android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
-                        android:id="@+id/quarterly" />
-
-                </LinearLayout>
-
-                <com.edmodo.rangebar.RangeBar
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/rangeBar"/>
+                    android:id="@+id/fab_label"
+                    android:layout_gravity="center"
+                    android:text="+"
+                    android:elevation="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="36sp"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:id="@+id/charts">
-                    <!-- Dynamically add charts here-->
-                </LinearLayout>
+            <!--
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="@dimen/fab"
+                android:layout_height="@dimen/fab"
+                android:layout_margin="@dimen/fab_margin"
+                android:gravity="center"
+                android:layout_gravity="bottom|end"/>
+                -->
 
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
 </layout>
 

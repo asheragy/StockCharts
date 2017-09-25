@@ -155,6 +155,7 @@ class ChartViewFactory {
 
         XAxis xaxis = chart.getXAxis();
         xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates(), stockchart.interval));
+        xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
         // Always start at position 0 even if data set starts after that
         xaxis.setAxisMinimum(0);
@@ -186,7 +187,12 @@ class ChartViewFactory {
             lastColor = color;
         }
 
-        chart.getLegend().setCustom(entries);
+        Legend legend = chart.getLegend();
+        legend.setCustom(entries);
+        legend.setDrawInside(true);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setWordWrapEnabled(false);
     }
 
     private List<IDataSet> getDataSets(StockChart chart) {

@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.edmodo.rangebar.RangeBar;
 
@@ -29,6 +32,8 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
 
     private LinearLayout mCharts;
     private RangeBar rangeBar;
+    private ActivityChartsBinding binding;
+    private boolean isFABOpen;
 
     public static Intent newIntent(Context context, String symbol) {
         Intent intent = new Intent(context,ChartsActivity.class);
@@ -45,7 +50,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityChartsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
         binding.setViewmodel(getViewModel());
 
         //setContentView(R.layout.activity_charts);
@@ -68,9 +73,11 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
             public void onPropertyChanged(Observable sender, int propertyId) {
                 int size = getViewModel().priceList.get().size();
                 rangeBar.setTickCount(size);
+                rangeBar.setThumbIndices(0, size-1);
             }
         });
 
+        /*
         findViewById(R.id.add_price).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +98,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
                 onAddChart(new IndicatorChart(new MACD()));
             }
         });
+        */
 
         // Restore previous charts
         if (IsRetained()) {
@@ -101,9 +109,65 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         } else {
             addPriceChart();
         }
+
+        // FAB
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isFABOpen){
+                    showFAB();
+                }else{
+                    closeFAB();
+                    onAddChart(new IndicatorChart(new MACD()));
+                }
+            }
+        });
+
+        binding.fabVolume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFAB();
+                onAddChart(new VolumeChart());
+            }
+        });
+
+        binding.fabPrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFAB();
+                addPriceChart();
+            }
+        });
+
+        binding.fabOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFAB();
+            }
+        });
     }
 
-    private void addPriceChart() {
+    private void showFAB(){
+        isFABOpen=true;
+
+        float shift = getResources().getDimension(R.dimen.fab) + (getResources().getDimension(R.dimen.fab_margin) / 2);
+        binding.fabPrice.animate().translationY(-shift);
+        binding.fabVolume.animate().translationY(-shift * 2);
+        binding.fabOverlay.setVisibility(View.VISIBLE);
+        binding.fabLabel.setText("In");
+        binding.fabLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+    }
+
+    private void closeFAB(){
+        isFABOpen=false;
+        binding.fabPrice.animate().translationY(0);
+        binding.fabVolume.animate().translationY(0);
+        binding.fabOverlay.setVisibility(View.GONE);
+        binding.fabLabel.setText("+");
+        binding.fabLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+    }
+
+    public void addPriceChart() {
         PriceChart chart = new PriceChart();
         chart.candleData = false;
         onAddChart(chart);

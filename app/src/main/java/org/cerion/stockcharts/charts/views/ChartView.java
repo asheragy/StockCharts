@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 
 import org.cerion.stockcharts.R;
@@ -68,8 +70,7 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
 
     public void setRange(int start, int end) {
         if (chart != null) {
-            LineChart c = (LineChart) chart;
-
+            BarLineChartBase c = (BarLineChartBase) chart;
 
             c.setVisibleXRangeMinimum(end - start);
             c.setVisibleXRangeMaximum(end - start);
