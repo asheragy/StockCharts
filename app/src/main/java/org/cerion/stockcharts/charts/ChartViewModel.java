@@ -4,13 +4,17 @@ import android.databinding.Observable;
 
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.model.Interval;
 
 public class ChartViewModel {
 
     private StockChart mChart;
     private ChartsViewModel parent;
     private IChartView view;
+    private OnRemoveListener listener;
+
+    public interface OnRemoveListener {
+        void onRemove();
+    }
 
     ChartViewModel(ChartsViewModel parent, StockChart chart) {
         this.parent = parent;
@@ -25,6 +29,16 @@ public class ChartViewModel {
         });
     }
 
+    public void remove() {
+        // TODO this should actually call remove on parent
+        if (listener != null)
+            listener.onRemove();
+    }
+
+    public void setOnRemoveListener(OnRemoveListener listener) {
+        this.listener = listener;
+    }
+
     public void setView(IChartView view) {
         this.view = view;
     }
@@ -35,7 +49,7 @@ public class ChartViewModel {
 
     public void setChart(StockChart chart) {
         mChart = chart;
-        view.reload();
+        view.reload(); // TODO view should be observing this
     }
 
     public ChartsViewModel getParent() {
@@ -44,9 +58,5 @@ public class ChartViewModel {
 
     public PriceList getList() {
         return parent.priceList.get();
-    }
-
-    public Interval getIntervalOLD() {
-        return parent.interval.get();
     }
 }

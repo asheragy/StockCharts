@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.edmodo.rangebar.RangeBar;
 
@@ -53,7 +51,6 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
         binding.setViewmodel(getViewModel());
 
-        //setContentView(R.layout.activity_charts);
         rangeBar = binding.rangeBar;
         mCharts = binding.charts;
 
@@ -76,29 +73,6 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
                 rangeBar.setThumbIndices(0, size-1);
             }
         });
-
-        /*
-        findViewById(R.id.add_price).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addPriceChart();
-            }
-        });
-
-        findViewById(R.id.add_volume).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddChart(new VolumeChart());
-            }
-        });
-
-        findViewById(R.id.add_indicator).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddChart(new IndicatorChart(new MACD()));
-            }
-        });
-        */
 
         // Restore previous charts
         if (IsRetained()) {
@@ -174,13 +148,19 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     }
 
     private void onAddChart(StockChart chart) {
-        ChartViewModel vm = new ChartViewModel(getViewModel(), chart);
-
-        // chart.interval = viewModel.interval.get();
-        ChartView view = new ChartView(this, vm);
+        final ChartViewModel vm = new ChartViewModel(getViewModel(), chart);
+        final ChartView view = new ChartView(this, vm);
 
         mCharts.addView(view);
         getViewModel().charts.add(vm);
+
+        vm.setOnRemoveListener(new ChartViewModel.OnRemoveListener() {
+            @Override
+            public void onRemove() {
+                getViewModel().charts.remove(vm);
+                mCharts.removeView(view);
+            }
+        });
 
         if (chart instanceof IndicatorChart)
             view.edit();

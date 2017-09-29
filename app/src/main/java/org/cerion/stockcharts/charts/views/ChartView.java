@@ -12,17 +12,14 @@ import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.LineChart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.ChartViewModel;
 import org.cerion.stockcharts.charts.EditChartDialog;
 import org.cerion.stockcharts.charts.IChartView;
 import org.cerion.stockcharts.databinding.ViewChartBinding;
-import org.cerion.stocklist.charts.StockChart;
 
-public class ChartView extends LinearLayout implements IChartView, EditChartDialog.ChartChangeListener {
+public class ChartView extends LinearLayout implements IChartView {
 
     protected ChartViewFactory chartFactory;
     protected ChartViewModel viewModel;
@@ -41,30 +38,14 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
     }
 
     @Override
-    public void chartChanged(StockChart chart) {
-        // TODO see if all this can be moved from viewmodel -> viewmodel calls
-        viewModel.setChart(chart);
-    }
-
-    @Override
-    public void chartRemoved() {
-        ViewGroup viewGroup = (ViewGroup)getParent();
-        viewGroup.removeView(ChartView.this);
-
-        // Remove viewmodel from parent list
-        viewModel.getParent().charts.remove(viewModel);
-    }
-
-    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
         reload();
     }
 
     public void edit() {
         FragmentManager fm = ((Activity)getContext()).getFragmentManager();
-        EditChartDialog dialog = EditChartDialog.newInstance(viewModel.getChart(), ChartView.this);
+        EditChartDialog dialog = EditChartDialog.newInstance(viewModel.getChart(), viewModel);
         dialog.show(fm, "editDialog");
     }
 
@@ -102,32 +83,5 @@ public class ChartView extends LinearLayout implements IChartView, EditChartDial
             chart = chartFactory.getEmptyChart();
 
         setChart(chart);
-
-        /*
-        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progressBar);
-        progressBar.setVisibility(View.VISIBLE);
-
-        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-
-            Chart chart;
-            @Override
-            public void run() {
-                if (Looper.myLooper() == null)
-                    Looper.prepare(); // This is needed to create a new chart instance inside a different thread
-
-                chart = getChart();
-                if( Looper.myLooper() != null)
-                    Looper.myLooper().quit();
-            }
-
-            @Override
-            public void onFinish() {
-                setChart(chart);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
-        task.execute();
-        */
     }
 }

@@ -1,10 +1,8 @@
 package org.cerion.stockcharts.charts;
 
-import android.app.Application;
 import android.databinding.Observable;
 import android.databinding.ObservableField;
 
-import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Interval;
@@ -21,6 +19,7 @@ public class ChartsViewModel {
     public final ObservableField<Interval> interval = new ObservableField<>(Interval.DAILY);
     public final ObservableField<PriceList> priceList = new ObservableField<>();
     public List<ChartViewModel> charts = new ArrayList<>();
+    public final ObservableField<Boolean> loading = new ObservableField<>();
 
     public ChartsViewModel(String symbol, CachedDataAPI api) {
         this.symbol = symbol;
@@ -41,6 +40,8 @@ public class ChartsViewModel {
     }
 
     public void loadData() {
+        loading.set(true);
+
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             PriceList result;
             @Override
@@ -56,6 +57,7 @@ public class ChartsViewModel {
             @Override
             public void onFinish() {
                 priceList.set(result);
+                loading.set(false);
             }
         });
 

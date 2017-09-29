@@ -25,18 +25,12 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
     private EditChartViewModel viewModel;
     private DialogChartEditBinding binding;
     private LinearLayout overlays;
-    private View view;
-    private ChartChangeListener listener;
+    private ChartViewModel chartViewModel;
 
-    public interface ChartChangeListener {
-        void chartChanged(StockChart chart);
-        void chartRemoved();
-    }
-
-    public static EditChartDialog newInstance(StockChart chart, ChartChangeListener listener) {
+    public static EditChartDialog newInstance(StockChart chart, ChartViewModel chartViewModel) {
         EditChartDialog dialog = new EditChartDialog();
-        dialog.listener = listener;
         dialog.viewModel = new EditChartViewModel(chart);
+        dialog.chartViewModel = chartViewModel;
         return dialog;
     }
 
@@ -49,7 +43,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.dialog_chart_edit, container);
+        View view = inflater.inflate(R.layout.dialog_chart_edit, container);
 
         binding = DialogChartEditBinding.bind(view);
         binding.setViewmodel(viewModel);
@@ -65,7 +59,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         binding.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.chartRemoved();
+                chartViewModel.remove();
                 dismiss();
             }
         });
@@ -74,8 +68,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
             @Override
             public void onClick(View v) {
                 updateChart();
-
-                listener.chartChanged(viewModel.getChart());
+                chartViewModel.setChart(viewModel.getChart());
                 dismiss();
             }
         });
@@ -96,6 +89,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         return view;
     }
 
+    /*
     @Override
     public void onPause() {
         super.onPause();
@@ -103,17 +97,20 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         // Overlays are not working with binding yet so manually update them before rotation
         updateChart();
     }
+    */
 
     private void updateChart() {
         StockChart chart = viewModel.getChart();
         chart.clearOverlays();
 
         // TODO overlays and parameters all need to be in viewmodel
+        /*
         if (chart instanceof IndicatorChart) {
             final IIndicator instance = viewModel.getFunction();
             instance.setParams( getParametersControl().getParameters() );
             indicatorChart().setIndicator(instance);
         }
+        */
 
         // Get overlay parameters
         for(int i = 0; i < overlays.getChildCount(); i++) {

@@ -12,7 +12,6 @@ import org.cerion.stocklist.functions.IFunction;
 import org.cerion.stocklist.functions.IFunctionEnum;
 import org.cerion.stocklist.functions.IIndicator;
 import org.cerion.stocklist.functions.Indicator;
-import org.cerion.stocklist.model.Interval;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +49,7 @@ public class EditChartViewModel {
     }
 
     public EditChartViewModel(StockChart chart) {
+        // Create copy of chart that is the one to be edited
         try {
             mChart = (StockChart)chart.clone();
         } catch (CloneNotSupportedException e) {

@@ -1,6 +1,8 @@
 package org.cerion.stockcharts.charts.views;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,15 +21,38 @@ public class ParametersEditControl extends LinearLayout {
         super(context, attributeSet);
     }
 
-    public void setParameters(Number params[]) {
+    public void setParameters(final Number params[]) {
+
+        // TODO add binding so EditText updates corresponding array at all times
+
         defaultParameters = params;
-        final EditText[] fields = new EditText[params.length];
+        //final EditText[] fields = new EditText[params.length];
 
         removeAllViews();
         for(int i = 0; i < params.length; i++) {
             Number n = params[i];
-            fields[i] = getInputField(n);
-            addView(fields[i]);
+            final int pos = i;
+            EditText et = getInputField(n);
+
+            et.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // TryParse
+                    Number defValue = defaultParameters[pos];
+                    params[pos] = tryParseNumber(s.toString(), defValue);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+            addView(et);
         }
     }
 
@@ -48,12 +73,25 @@ public class ParametersEditControl extends LinearLayout {
                     p[i] = Float.parseFloat(entered);
                 }
             } catch(Exception e) {
+                // TODO may be unnecessary, we are only getting values
                 // Reset input field to default value
                 field.setText(p[i].toString());
             }
         }
 
         return p;
+    }
+
+    private Number tryParseNumber(String text, Number defaultVal) {
+        try {
+            if (defaultVal instanceof Integer) {
+                return Integer.parseInt(text);
+            } else {
+                return Float.parseFloat(text);
+            }
+        } catch(Exception e) {
+            return defaultVal;
+        }
     }
 
     private EditText getInputField(Number n) {
