@@ -113,88 +113,39 @@
             android:gravity="bottom"
             android:orientation="vertical">
 
-            <FrameLayout
+            <org.cerion.stockcharts.common.ChildFloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/fab_price">
+                android:id="@+id/fab_price"
+                android:visibility="gone"
+                android:text="Price"
+                android:layout_alignParentEnd="true">
+            </org.cerion.stockcharts.common.ChildFloatingActionButton>
 
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="@dimen/fab"
-                    android:layout_height="@dimen/fab"
-                    android:gravity="center"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:padding="4dp"
-                    android:layout_gravity="bottom|end"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Pr"
-                    android:elevation="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="24sp"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            </FrameLayout>
-
-            <FrameLayout
+            <org.cerion.stockcharts.common.ChildFloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/fab_volume"
+                android:visibility="gone"
+                android:text="Volume"
+                android:layout_alignParentEnd="true">
+            </org.cerion.stockcharts.common.ChildFloatingActionButton>
+
+            <org.cerion.stockcharts.common.ChildFloatingActionButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:id="@+id/fab_indicator"
+                android:visibility="gone"
+                android:text="Indicator"
+                android:layout_alignParentEnd="true">
+            </org.cerion.stockcharts.common.ChildFloatingActionButton>
 
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="@dimen/fab"
-                    android:layout_height="@dimen/fab"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:padding="4dp"
-                    android:gravity="center"
-                    android:layout_gravity="bottom|end"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Vo"
-                    android:elevation="16dp"
-                    android:textSize="24sp"
-                    android:textColor="@android:color/white"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            </FrameLayout>
-
-            <FrameLayout
+            <org.cerion.stockcharts.common.MasterFloatingActionButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="@dimen/fab"
-                    android:layout_height="@dimen/fab"
-                    android:gravity="center"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:padding="4dp"
-                    android:id="@+id/fab"
-                    android:layout_gravity="bottom|end"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/fab_label"
-                    android:layout_gravity="center"
-                    android:text="+"
-                    android:elevation="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="36sp"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            </FrameLayout>
-
-            <!--
-            <android.support.design.widget.FloatingActionButton
+                android:layout_height="wrap_content"
                 android:id="@+id/fab"
-                android:layout_width="@dimen/fab"
-                android:layout_height="@dimen/fab"
-                android:layout_margin="@dimen/fab_margin"
-                android:gravity="center"
-                android:layout_gravity="bottom|end"/>
-                -->
+                android:layout_alignParentEnd="true">
+            </org.cerion.stockcharts.common.MasterFloatingActionButton>
 
         </RelativeLayout>
 
