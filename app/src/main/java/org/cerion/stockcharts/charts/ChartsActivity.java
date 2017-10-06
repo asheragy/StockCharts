@@ -15,7 +15,6 @@ import com.edmodo.rangebar.RangeBar;
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
-import org.cerion.stockcharts.common.FabGroup;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stockcharts.ui.ViewModelActivity;
 import org.cerion.stocklist.charts.IndicatorChart;
@@ -31,7 +30,6 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     private LinearLayout mCharts;
     private RangeBar rangeBar;
     private ActivityChartsBinding binding;
-    private FabGroup fabGroup;
 
     public static Intent newIntent(Context context, String symbol) {
         Intent intent = new Intent(context,ChartsActivity.class);
@@ -84,31 +82,31 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
             addPriceChart();
         }
 
-        fabGroup = new FabGroup(binding.fab, binding.fabOverlay, getViewModel());
+        binding.fabGroup.setListener(getViewModel());
 
-        fabGroup.addFab(binding.fabVolume, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddChart(new VolumeChart());
-            }
-        });
-
-        fabGroup.addFab(binding.fabPrice, new View.OnClickListener() {
+        binding.fabGroup.add("Price", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addPriceChart();
             }
         });
 
-        fabGroup.addFab(binding.fabIndicator, new View.OnClickListener() {
+        binding.fabGroup.add("Volume", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddChart(new VolumeChart());
+            }
+        });
+
+        binding.fabGroup.add("Indicator", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onAddChart(new IndicatorChart(new MACD()));
             }
         });
 
-        if (getViewModel().getIsFabOpen())
-            fabGroup.open();
+        if (getViewModel().fabOpen.get())
+            binding.fabGroup.open();
     }
 
     public void addPriceChart() {

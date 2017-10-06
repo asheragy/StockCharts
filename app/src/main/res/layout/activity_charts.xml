@@ -96,58 +96,13 @@
             </ScrollView>
         </LinearLayout>
 
-        <LinearLayout
+        <org.cerion.stockcharts.common.FloatingActionButtonGroup
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#88888888"
-            android:visibility="gone"
-            android:id="@+id/fab_overlay">
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:gravity="bottom"
-            android:orientation="vertical">
-
-            <org.cerion.stockcharts.common.ChildFloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fab_price"
-                android:visibility="gone"
-                android:text="Price"
-                android:layout_alignParentEnd="true">
-            </org.cerion.stockcharts.common.ChildFloatingActionButton>
-
-            <org.cerion.stockcharts.common.ChildFloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fab_volume"
-                android:visibility="gone"
-                android:text="Volume"
-                android:layout_alignParentEnd="true">
-            </org.cerion.stockcharts.common.ChildFloatingActionButton>
-
-            <org.cerion.stockcharts.common.ChildFloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fab_indicator"
-                android:visibility="gone"
-                android:text="Indicator"
-                android:layout_alignParentEnd="true">
-            </org.cerion.stockcharts.common.ChildFloatingActionButton>
-
-            <org.cerion.stockcharts.common.MasterFloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fab"
-                android:layout_alignParentEnd="true">
-            </org.cerion.stockcharts.common.MasterFloatingActionButton>
-
-        </RelativeLayout>
+            android:id="@+id/fab_group">
+        </org.cerion.stockcharts.common.FloatingActionButtonGroup>
 
     </RelativeLayout>
 

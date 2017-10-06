@@ -3,7 +3,7 @@ package org.cerion.stockcharts.charts;
 import android.databinding.Observable;
 import android.databinding.ObservableField;
 
-import org.cerion.stockcharts.common.FabGroup;
+import org.cerion.stockcharts.common.FloatingActionButtonGroup;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Interval;
@@ -12,16 +12,16 @@ import org.cerion.stocklist.web.CachedDataAPI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChartsViewModel implements FabGroup.FabViewStateListener {
+public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListener {
 
     private String symbol;
     private CachedDataAPI api;
-    private boolean isFabOpen;
 
     public final ObservableField<Interval> interval = new ObservableField<>(Interval.DAILY);
     public final ObservableField<PriceList> priceList = new ObservableField<>();
     public List<ChartViewModel> charts = new ArrayList<>();
     public final ObservableField<Boolean> loading = new ObservableField<>();
+    public final ObservableField<Boolean> fabOpen = new ObservableField<>(false);
 
     public ChartsViewModel(String symbol, CachedDataAPI api) {
         this.symbol = symbol;
@@ -71,11 +71,7 @@ public class ChartsViewModel implements FabGroup.FabViewStateListener {
     }
 
     @Override
-    public void setOpen(boolean open) {
-        isFabOpen = open;
-    }
-
-    public boolean getIsFabOpen() {
-        return isFabOpen;
+    public void onStateChange(boolean open) {
+        fabOpen.set(open);
     }
 }
