@@ -18,7 +18,11 @@ public class ChildFloatingActionButton extends LinearLayout {
 
     public ChildFloatingActionButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        String text = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "text");
+
+        String text = "";
+        if (attrs != null)
+            text = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "text");
+
         init(text);
     }
 

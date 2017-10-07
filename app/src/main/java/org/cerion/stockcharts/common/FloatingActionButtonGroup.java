@@ -3,10 +3,12 @@ package org.cerion.stockcharts.common;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.cerion.stockcharts.R;
 
@@ -14,7 +16,7 @@ public class FloatingActionButtonGroup extends RelativeLayout {
 
     private RelativeLayout buttons;
     private boolean isOpen;
-    private MasterFloatingActionButton master;
+    private TextView master;
     private View overlay;
     private FabStateListener listener;
 
@@ -30,7 +32,7 @@ public class FloatingActionButtonGroup extends RelativeLayout {
 
         buttons = (RelativeLayout) view.findViewById(R.id.buttons);
         overlay = view.findViewById(R.id.fab_overlay);
-
+        master = (TextView)view.findViewById(R.id.text);
     }
 
     public void setListener(FabStateListener listener) {
@@ -41,7 +43,6 @@ public class FloatingActionButtonGroup extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-
         overlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +50,7 @@ public class FloatingActionButtonGroup extends RelativeLayout {
             }
         });
 
-        MasterFloatingActionButton fab = (MasterFloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,8 +61,6 @@ public class FloatingActionButtonGroup extends RelativeLayout {
                 }
             }
         });
-
-        master = fab;
     }
 
     public void add(String text, final OnClickListener listener) {
@@ -96,7 +95,7 @@ public class FloatingActionButtonGroup extends RelativeLayout {
         }
 
         overlay.setVisibility(View.VISIBLE);
-        master.open();
+        master.setText("X");
 
         if (listener != null)
             listener.onStateChange(true);
@@ -123,7 +122,7 @@ public class FloatingActionButtonGroup extends RelativeLayout {
         }
 
         overlay.setVisibility(View.GONE);
-        master.close();
+        master.setText("+");
 
         if (listener != null)
             listener.onStateChange(false);

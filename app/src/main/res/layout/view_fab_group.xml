@@ -19,13 +19,33 @@
 
     </RelativeLayout>
 
-    <org.cerion.stockcharts.common.MasterFloatingActionButton
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fab"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true">
-    </org.cerion.stockcharts.common.MasterFloatingActionButton>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="@dimen/fab"
+            android:layout_height="@dimen/fab"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:gravity="center"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:elevation="16dp"
+            android:text="+"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            android:textSize="36sp" />
+    </FrameLayout>
 
 
 </RelativeLayout>

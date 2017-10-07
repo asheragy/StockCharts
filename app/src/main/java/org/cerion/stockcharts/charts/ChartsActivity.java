@@ -29,7 +29,6 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
 
     private LinearLayout mCharts;
     private RangeBar rangeBar;
-    private ActivityChartsBinding binding;
 
     public static Intent newIntent(Context context, String symbol) {
         Intent intent = new Intent(context,ChartsActivity.class);
@@ -46,7 +45,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
+        ActivityChartsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_charts);
         binding.setViewmodel(getViewModel());
 
         rangeBar = binding.rangeBar;
