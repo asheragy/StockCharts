@@ -42,12 +42,13 @@ public class SymbolListFragment extends ListFragment implements SymbolLookupDial
     private SymbolListAdapter mAdapter;
     private List<SymbolListViewModel.SymbolItem> mSymbols = new ArrayList<>();
     private SymbolListViewModel vm;
-    private SymbolRepository repo = new SymbolRepository(getContext());
+    private SymbolRepository repo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.generic_list_fragment, container, false);
 
+        repo = new SymbolRepository(getContext());
         vm = new SymbolListViewModel(getActivity());
 
         //mAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, mSymbols);

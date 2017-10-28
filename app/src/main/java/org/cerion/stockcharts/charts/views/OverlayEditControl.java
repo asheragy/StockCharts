@@ -11,9 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import org.cerion.stockcharts.R;
-import org.cerion.stocklist.functions.IFunctionEnum;
 import org.cerion.stocklist.functions.IOverlay;
-import org.cerion.stocklist.functions.Overlay;
+import org.cerion.stocklist.functions.types.IFunctionEnum;
+import org.cerion.stocklist.functions.types.Overlay;
 
 import java.util.List;
 

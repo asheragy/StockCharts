@@ -4,7 +4,8 @@ package org.cerion.stockcharts.charts.views;
 import android.support.annotation.NonNull;
 
 import org.cerion.stocklist.functions.IFunction;
-import org.cerion.stocklist.functions.IFunctionEnum;
+import org.cerion.stocklist.functions.types.IFunctionEnum;
+
 
 import java.util.ArrayList;
 import java.util.Collections;

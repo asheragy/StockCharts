@@ -45,7 +45,7 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
 
         db.setTransactionSuccessful();
         db.endTransaction();
-        db.close();
+        //db.close();
     }
 
     /*
@@ -98,7 +98,7 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
             c.close();
         }
 
-        db.close();
+        //db.close();
         return result;
     }
 
@@ -120,7 +120,7 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
             c.close();
         }
 
-        db.close();
+        //db.close();
         return result;
     }
 

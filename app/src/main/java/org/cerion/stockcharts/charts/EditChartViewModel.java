@@ -9,9 +9,9 @@ import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.functions.IFunction;
-import org.cerion.stocklist.functions.IFunctionEnum;
 import org.cerion.stocklist.functions.IIndicator;
-import org.cerion.stocklist.functions.Indicator;
+import org.cerion.stocklist.functions.types.IFunctionEnum;
+import org.cerion.stocklist.functions.types.Indicator;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -54,7 +54,7 @@ public class PositionRepository extends SQLiteRepositoryBase {
             c.close();
         }
 
-        db.close();
+        //db.close();
         return result;
     }
 
@@ -80,7 +80,7 @@ public class PositionRepository extends SQLiteRepositoryBase {
             c.close();
         }
 
-        db.close();
+        //db.close();
         return result;
     }
 

@@ -16,7 +16,7 @@ import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
-import org.cerion.stockcharts.ui.ViewModelActivity;
+import org.cerion.stockcharts.common.ViewModelActivity;
 import org.cerion.stocklist.charts.IndicatorChart;
 import org.cerion.stocklist.charts.PriceChart;
 import org.cerion.stocklist.charts.StockChart;
