@@ -2,58 +2,53 @@ package org.cerion.stockcharts.watchlist;
 
 
 import android.databinding.ObservableField;
-import android.os.AsyncTask;
 
+import org.cerion.stockcharts.common.Constants;
+import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.functions.conditions.Condition;
 import org.cerion.stocklist.functions.conditions.IndicatorCondition;
 import org.cerion.stocklist.functions.conditions.PriceCondition;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.overlays.SimpleMovingAverage;
+import org.cerion.stocklist.web.DataAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WatchListViewModel {
 
-    public final ObservableField<ArrayList<WatchItem>> items = new ObservableField<>(new ArrayList<WatchItem>());
+    public final ObservableField<ArrayList<WatchItemViewModel>> items = new ObservableField<>(new ArrayList<WatchItemViewModel>());
     public final ObservableField<Boolean> loading = new ObservableField<>(false);
+    private DataAPI api;
 
-    public WatchListViewModel() {
-        items.get().add(new WatchItem(new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
-        items.get().add(new WatchItem(new IndicatorCondition(new SimpleMovingAverage(50), Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
+    public WatchListViewModel(DataAPI api) {
+        this.api = api;
+        items.get().add(new WatchItemViewModel(new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(50), Condition.BELOW, new SimpleMovingAverage(200)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(50), Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
     }
 
     public void load() {
-
-        AsyncTask<Object, Void, Void> task = new AsyncTask<Object, Void, Void>() {
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
-            protected Void doInBackground(Object[] params) {
+            public void run() {
                 loading.set(true);
-                items.get().get(0).price = 99;
-                publishProgress();
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                List<WatchItemViewModel> list = items.get();
+                for(int i = 0; i < list.size(); i++) {
+                    WatchItemViewModel item = list.get(i);
+                    PriceList prices = api.getPrices(item.getSymbol(), Interval.DAILY, Constants.MAX_DAILY);
+                    item.apply(prices);
                 }
-
-                items.get().get(1).price = 99;
-                publishProgress();
-                return null;
             }
 
             @Override
-            protected void onPostExecute(Void o) {
-                super.onPostExecute(o);
+            public void onFinish() {
                 loading.set(false);
             }
+        });
 
-            @Override
-            protected void onProgressUpdate(Void[] values) {
-                super.onProgressUpdate(values);
-                items.notifyChange();
-            }
-        };
-
-        task.execute((Object)null);
+        task.execute();
     }
 }

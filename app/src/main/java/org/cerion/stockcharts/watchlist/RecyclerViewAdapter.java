@@ -3,41 +3,30 @@ package org.cerion.stockcharts.watchlist;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import org.cerion.stockcharts.R;
-import org.cerion.stockcharts.common.Utils;
+import org.cerion.stockcharts.databinding.ListItemWatchBinding;
 
 import java.util.List;
 
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder> {
 
-    private List<WatchItem> items;
+    private List<WatchItemViewModel> items;
 
-    RecyclerViewAdapter(List<WatchItem> items) {
+    RecyclerViewAdapter(List<WatchItemViewModel> items) {
         this.items = items;
     }
 
     @Override
     public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_watch, parent, false);
-        return new ListItemViewHolder(itemView);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ListItemWatchBinding binding = ListItemWatchBinding.inflate(layoutInflater, parent, false);
+        return new ListItemViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(ListItemViewHolder holder, int position) {
-        WatchItem item = items.get(position);
-        holder.symbol.setText(item.getSymbol());
-        holder.condition.setText(item.getCondition().toString());
-
-        if(item.price == 0)
-            holder.price.setText("--");
-        else
-            holder.price.setText(Utils.decimalFormat.format(item.price));
-
-        holder.change.setText("--");
+        holder.bind(items.get(position));
     }
 
     @Override
@@ -45,18 +34,20 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
         return items.size();
     }
 
+    private static int defaultColor = -1;
     public final class ListItemViewHolder extends RecyclerView.ViewHolder {
-        TextView symbol;
-        TextView price;
-        TextView change;
-        TextView condition;
+        ListItemWatchBinding binding;
 
-        public ListItemViewHolder(View itemView) {
-            super(itemView);
-            symbol = (TextView) itemView.findViewById(R.id.symbol);
-            price = (TextView) itemView.findViewById(R.id.price);
-            change = (TextView) itemView.findViewById(R.id.change);
-            condition = (TextView) itemView.findViewById(R.id.condition);
+        public ListItemViewHolder(ListItemWatchBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            this.binding.weekRange.setEnabled(false);
+            this.binding.yearRange.setEnabled(false);
+        }
+
+        public void bind(WatchItemViewModel item) {
+            binding.setViewModel(item);
+            binding.executePendingBindings();
         }
     }
 }
