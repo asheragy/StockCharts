@@ -24,9 +24,10 @@ public class WatchListViewModel {
 
     public WatchListViewModel(DataAPI api) {
         this.api = api;
-        items.get().add(new WatchItemViewModel(new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
-        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(50), Condition.BELOW, new SimpleMovingAverage(200)), "^GSPC"));
-        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(50), Condition.ABOVE, new SimpleMovingAverage(200)), "^GSPC"));
+        // TODO save in database
+        items.get().add(new WatchItemViewModel(new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(35), Condition.BELOW, new SimpleMovingAverage(225)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(35), Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
     }
 
     public void load() {

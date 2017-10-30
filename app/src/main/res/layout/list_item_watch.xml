@@ -6,91 +6,113 @@
 
     <data>
         <variable name="viewModel" type="org.cerion.stockcharts.watchlist.WatchItemViewModel"/>
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!--
-        Symbol             Price      %Chg    Week [Range]
-    Above SMA 20                          Year [Range]
-        -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/star_on"
+            android:layout_gravity="center_vertical"
+            android:visibility="@{viewModel.isTrue ? View.VISIBLE : View.GONE}"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/star_off"
+            android:layout_gravity="center_vertical"
+            android:visibility="@{!viewModel.isTrue ? View.VISIBLE : View.GONE}"/>
 
         <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:id="@+id/symbol"
-                android:text="@{viewModel.symbol}"
-                tools:text="[Symbol]"/>
+            <!--
+            Symbol             Price      %Chg    Week [Range]
+        Above SMA 20                          Year [Range]
+            -->
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/price"
-                android:text="@{viewModel.price}"
-                tools:text="[Price]"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/change"
-                android:text="@{viewModel.change}"
-                android:textAlignment="textEnd"
-                tools:text="[%Chg]"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:id="@+id/symbol"
+                    android:text="@{viewModel.symbol}"
+                    tools:text="[Symbol]"/>
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAlignment="viewEnd"
-                android:text="Week"/>
-            <SeekBar
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/week_range"
-                android:progress="@{viewModel.weekPosition}"
-                android:layout_weight="2"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/price"
+                    android:text="@{viewModel.price}"
+                    tools:text="[Price]"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/change"
+                    android:text="@{viewModel.change}"
+                    android:textAlignment="textEnd"
+                    tools:text="[%Chg]"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="viewEnd"
+                    android:text="Week"/>
+                <SeekBar
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/week_range"
+                    android:progress="@{viewModel.weekPosition}"
+                    android:layout_weight="2"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:id="@+id/condition"
+                    android:text="@{viewModel.getCondition()}"
+                    tools:text="[Above SMA 20]"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="viewEnd"
+                    android:text="Year"/>
+                <SeekBar
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/year_range"
+                    android:progress="@{viewModel.yearPosition}"
+                    android:layout_weight="2"/>
+
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/condition"
-                android:layout_weight="4"
-                android:text="@{viewModel.getCondition()}"
-                tools:text="[Above SMA 20]"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAlignment="viewEnd"
-                android:text="Year"/>
-            <SeekBar
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/year_range"
-                android:progress="@{viewModel.yearPosition}"
-                android:layout_weight="2"/>
-
-
-        </LinearLayout>
-
     </LinearLayout>
+
+
 </layout>
 
