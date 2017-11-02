@@ -27,6 +27,9 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
     private static final String TAG = ChartsActivity.class.getSimpleName();
     private static final String EXTRA_SYMBOL = "symbol";
 
+    // TODO pass chart via intent when it can be made to/from string
+    private static StockChart nextChart;
+
     private LinearLayout mCharts;
     private RangeBar rangeBar;
 
@@ -34,6 +37,11 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         Intent intent = new Intent(context,ChartsActivity.class);
         intent.putExtra(ChartsActivity.EXTRA_SYMBOL, symbol);
         return intent;
+    }
+
+    public static Intent newIntent(Context context, String symbol, StockChart chart) {
+        nextChart = chart;
+        return newIntent(context, symbol);
     }
 
     @Override
@@ -78,7 +86,11 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
                 mCharts.addView(view);
             }
         } else {
-            addPriceChart();
+            if (nextChart != null) {
+                onAddChart(nextChart);
+                nextChart = null;
+            } else
+                addPriceChart();
         }
 
         binding.fabGroup.setListener(getViewModel());

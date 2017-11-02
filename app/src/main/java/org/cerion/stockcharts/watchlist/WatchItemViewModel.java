@@ -4,6 +4,7 @@ import android.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.functions.conditions.ICondition;
 
 public class WatchItemViewModel {
@@ -28,6 +29,10 @@ public class WatchItemViewModel {
 
     public String getCondition() {
         return condition.toString();
+    }
+
+    public StockChart getChart() {
+        return condition.getChart();
     }
 
     public void apply(PriceList list) {

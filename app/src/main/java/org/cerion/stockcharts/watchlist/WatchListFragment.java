@@ -7,12 +7,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.ViewModelFragment;
 import org.cerion.stockcharts.databinding.FragmentWatchlistBinding;
 
-public class WatchListFragment extends ViewModelFragment<WatchListViewModel> {
+public class WatchListFragment extends ViewModelFragment<WatchListViewModel> implements View.OnClickListener {
     RecyclerViewAdapter adapter;
     FragmentWatchlistBinding binding;
 
@@ -31,6 +32,7 @@ public class WatchListFragment extends ViewModelFragment<WatchListViewModel> {
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        binding.recyclerView.setOnClickListener(this);
         // TODO load data here when in database
 
         // TODO show like this http://www.marketwatch.com/watchlist
@@ -44,5 +46,13 @@ public class WatchListFragment extends ViewModelFragment<WatchListViewModel> {
     @Override
     protected WatchListViewModel newViewModel() {
         return new WatchListViewModel(Injection.getAPI(getContext()));
+    }
+
+    @Override
+    public void onClick(View view) {
+        int position = binding.recyclerView.getChildLayoutPosition(view);
+        WatchItemViewModel item = getViewModel().items.get().get(position);
+
+        Toast.makeText(getContext(), item.getCondition(), Toast.LENGTH_LONG).show();
     }
 }
