@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.viewmodel;
+package org.cerion.stockcharts;
 
 import android.content.Context;
 

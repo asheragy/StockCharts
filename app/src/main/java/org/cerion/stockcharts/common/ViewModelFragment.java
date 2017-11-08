@@ -23,10 +23,14 @@ public abstract class ViewModelFragment<T> extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        viewModel = newViewModel();
+    }
 
-        if (viewModel != null)
-            retained = true;
-        else
-            viewModel = newViewModel();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // When fragment survives after this it means it was retained
+        retained = true;
     }
 }

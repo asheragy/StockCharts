@@ -22,6 +22,7 @@ import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
+import org.cerion.stocklist.model.PositionValue;
 import org.cerion.stocklist.model.Quote;
 import org.cerion.stocklist.web.CachedDataAPI;
 
@@ -71,23 +72,25 @@ public class PortfolioValueActivity extends AppCompatActivity {
 
         this.dates = new Date[0];
         List<Position> list = repo.getAll();
-        for(Position p : list) {
+        for(Position position : list) {
+            String symbol = position.getSymbol();
 
-            p.addDividends( api.getDividends(p.getSymbol()) );
-
-            PriceList pl = api.getPrices(p.getSymbol(), Interval.DAILY, 500);
+            PriceList pl = api.getPrices(symbol, Interval.DAILY, 500);
             if (pl.getDates().length > dates.length)
                 dates=  pl.getDates();
 
-            p.setPriceHistory(pl);
+            PositionValue p = new PositionValue(position, pl);
+            //p.setPriceHistory(pl);
+            p.addDividends( api.getDividends(symbol) );
 
             // Get most recent quote
             if(p.getCurrPrice() == 0) {
-                Quote q = api.getQuote(p.getSymbol());
+                Quote q = api.getQuote(symbol);
                 p.setQuote(q);
             }
         }
 
+        /*
         List<Double> data = new ArrayList<>();
         // Add to chart v
         for(Position p : list) {
@@ -101,6 +104,7 @@ public class PortfolioValueActivity extends AppCompatActivity {
             }
         }
 
+
         dates = Arrays.copyOfRange(dates, dates.length - data.size(), dates.length - 1);
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -110,6 +114,7 @@ public class PortfolioValueActivity extends AppCompatActivity {
         LineDataSet lineDataSet = new LineDataSet(entries, "Label");
 
         this.lineData = new LineData(lineDataSet);
+        */
     }
 
     private void setChart() {

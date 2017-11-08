@@ -1,27 +1,66 @@
 package org.cerion.stockcharts.positions;
 
-import android.graphics.Color;
+import android.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.Utils;
+import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Position;
+import org.cerion.stocklist.model.PositionValue;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class PositionItemViewModel {
 
     private Position mPosition;
     private DecimalFormat df = Utils.decimalFormat;
-    private int mColorGreen;
-    private int mColorRed;
 
-    // TODO add dividends re-invested
-    // 1. Calculate percent gain (current_close - purchase_date_close) / purchase_Date_close
-    // 2. Apply percent increase to purchase cost
+    public ObservableField<Float> dayChange = new ObservableField<>(0.0f);
+    public ObservableField<Float> totalChange = new ObservableField<>(0.0f);
+    public ObservableField<String> dayChangeStr = new ObservableField<>("0.00 (0.00%)");
+    public ObservableField<String> totalChangeStr = new ObservableField<>("0.00 (0.00%)");
+    public ObservableField<String> currentPrice = new ObservableField<>("...");
+    public ObservableField<String> dividendProfit = new ObservableField<>("");
 
-    PositionItemViewModel(Position p, int positiveColor, int negativeColor) {
+    PositionItemViewModel(Position p) {
         mPosition = p;
-        mColorGreen = positiveColor;
-        mColorRed = negativeColor;
+    }
+
+    public void setData(PriceList list, List<Dividend> dividends) {
+        PositionValue value = new PositionValue(mPosition, list);
+        value.addDividends(dividends);
+
+        float change = list.getChange();
+        float percent = list.getPercentChange() * 100;
+        String sign = (change > 0 ? "+" : "");
+        String format = "%s%s (%s%%)";
+        dayChangeStr.set(String.format(format, sign, df.format(change), df.format(percent)));
+        dayChange.set(change);
+
+        // TODO possibly only percent should go here, with dividend reinvested increase is price and/or shares increasing
+        // This should actually just be the $ amount gain/loss ignoring dividends
+        // Total change
+        float profit = (float)value.getProfit();
+        sign = (profit > 0 ? "+" : "");
+        format = "%s$%s (%s%%)";
+        format = String.format(format, sign, df.format(profit), df.format(value.getPercentChanged() * 100) );
+        totalChangeStr.set(format);
+        totalChange.set(profit);
+
+        // Current Price
+        currentPrice.set( df.format(value.getCurrPrice()) );
+
+        // Dividends
+        profit = (float)value.getDividendProfit();
+        if(profit > 0) {
+            dividendProfit.set("$" + df.format(profit));
+        } else
+            dividendProfit.set("");
+    }
+
+    public Position getPosition() {
+        return mPosition;
     }
 
     public String symbol() {
@@ -32,73 +71,8 @@ public class PositionItemViewModel {
         return Utils.dateFormatShort.format(mPosition.getDate());
     }
 
+    // TODO this needs to be dynamic
     public String purchaseLot() {
         return Utils.getDecimalFormat3(mPosition.getCount()) + " @ " + df.format(mPosition.getOrigPrice());
-    }
-
-    public String currentPrice() {
-        if (hasQuote())
-            return df.format(mPosition.getCurrPrice());
-        else
-            return "...";
-    }
-
-    public String dayChange() {
-        if (hasQuote()) {
-            String sign = (mPosition.getOneDayChange() > 0 ? "+" : "");
-            String format = "%s%s (%s%%)";
-            return String.format(format, sign, df.format(mPosition.getOneDayChange()), df.format(mPosition.getOneDayPercentChange()));
-        }
-
-        return "";
-    }
-
-    public String totalChange() {
-        if (hasQuote()) {
-            String sign = (mPosition.getPercentChanged() > 0 ? "+" : "");
-            String format = "%s%s (%s%%)";
-            return String.format(format, sign, df.format(mPosition.getChange()), df.format(mPosition.getPercentChanged()) );
-        }
-
-        return "";
-    }
-
-    public int dayChangeColor() {
-        if (hasQuote())
-            return getColor( mPosition.getOneDayChange() );
-
-        return 0;
-    }
-
-    public int totalChangeColor() {
-        if (hasQuote())
-            return getColor( mPosition.getPercentChanged() );
-
-        return 0;
-    }
-
-    public String profit() {
-        if (hasQuote()) {
-            double profit = mPosition.getProfit();
-            double dividendProfit = mPosition.getDividendProfit();
-            String profit_str = "$" + df.format(profit);
-            if(dividendProfit > 0)
-                profit_str += " (+" + df.format(dividendProfit) + ")";
-
-            return profit_str;
-        }
-
-        return "";
-    }
-
-    private boolean hasQuote() {
-        return mPosition.getCurrPrice() > 0;
-    }
-
-    private int getColor(double diff) {
-        if(diff == 0)
-            return Color.BLACK;
-        else
-            return diff > 0 ? mColorGreen : mColorRed;
     }
 }

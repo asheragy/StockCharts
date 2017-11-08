@@ -53,6 +53,7 @@ public class PositionDetailActivity extends AppCompatActivity implements Observe
         vm = new PositionDetailViewModel(this);
         vm.addObserver(this);
 
+        /*
         if (mRetainFragment.data != null && mRetainFragment.data.getCurrPrice() != 0) {
             Log.d(TAG, "using retained Position object");
             vm.setPosition(mRetainFragment.data);
@@ -64,6 +65,7 @@ public class PositionDetailActivity extends AppCompatActivity implements Observe
             vm.setPosition(position);
             vm.load();
         }
+        */
     }
 
     @Override
@@ -89,6 +91,7 @@ public class PositionDetailActivity extends AppCompatActivity implements Observe
         Position position = vm.getPosition();
         mRetainFragment.data = position;
 
+        /*
         // Core static fields
         setText(R.id.symbol,         position.getSymbol());
         setText(R.id.count,          vm.getCount() );
@@ -141,6 +144,7 @@ public class PositionDetailActivity extends AppCompatActivity implements Observe
                 setText(R.id.next_dividend, Utils.dateFormatLong.format(position.getNextDividendEstimate()));
             }
         }
+        */
     }
 
     private void setText(int id, String text) {

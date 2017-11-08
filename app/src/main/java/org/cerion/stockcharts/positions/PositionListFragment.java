@@ -1,9 +1,10 @@
 package org.cerion.stockcharts.positions;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,33 +19,39 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import org.cerion.stockcharts.R;
+import org.cerion.stockcharts.common.ViewModelFragment;
 import org.cerion.stockcharts.databinding.FragmentPositionsBinding;
 import org.cerion.stockcharts.databinding.ListItemPositionBinding;
 import org.cerion.stocklist.model.Position;
 
 import java.util.List;
 
-public class PositionListFragment extends ListFragment implements PositionsViewModel.IView {
+public class PositionListFragment extends ViewModelFragment<PositionsViewModel> {
     private static final String TAG = PositionListFragment.class.getSimpleName();
 
     private PositionListAdapter mAdapter;
     private SwipeRefreshLayout mSwipeRefresh;
     private PositionsViewModel vm;
-    private FragmentPositionsBinding bindingFrag;
+    private FragmentPositionsBinding binding;
+
+    @Override
+    protected PositionsViewModel newViewModel() {
+        return new PositionsViewModel(getContext());
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = new PositionsViewModel(getContext(), this);
+        //vm = new PositionsViewModel(getContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        bindingFrag = FragmentPositionsBinding.inflate(inflater, container, false);
-
+        binding = FragmentPositionsBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
+        vm = getViewModel();
 
-        return bindingFrag.getRoot();
+        return binding.getRoot();
     }
 
     @Override
@@ -52,29 +59,37 @@ public class PositionListFragment extends ListFragment implements PositionsViewM
         super.onActivityCreated(savedInstanceState);
 
         //Swipe Refresh
-        mSwipeRefresh = bindingFrag.swipeRefresh;
+        mSwipeRefresh = binding.swipeRefresh;
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefresh.setRefreshing(true);
                 vm.update();
             }
         });
 
         mAdapter = new PositionListAdapter(getContext(), R.layout.list_item_position, vm.positions);
-        setListAdapter(mAdapter);
 
-        registerForContextMenu(getListView());
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.list.setAdapter(mAdapter);
+        binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Position p = mAdapter.getItem(position);
-                Intent intent = PositionDetailActivity.newIntent(getContext(), p.getId());
+                PositionItemViewModel p = mAdapter.getItem(position);
+                Intent intent = PositionDetailActivity.newIntent(getContext(), p.getPosition().getId());
                 startActivity(intent);
             }
         });
 
-        vm.load();
+        registerForContextMenu(binding.list);
+
+        vm.loading.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                mSwipeRefresh.setRefreshing(vm.loading.get());
+            }
+        });
+
+        if (!isRetained())
+            vm.load();
     }
 
     @Override
@@ -89,14 +104,15 @@ public class PositionListFragment extends ListFragment implements PositionsViewM
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Position p = vm.positions.get(info.position);
+        PositionItemViewModel p = vm.positions.get(info.position);
+        // TODO add this back
 
         switch(item.getItemId()) {
             case R.id.edit:
-                onEdit(p);
+                onEdit(p.getPosition());
                 break;
             case R.id.delete:
-                vm.delete(p);
+                vm.delete(p.getPosition());
                 break;
             default:
                 return super.onContextItemSelected(item);
@@ -138,18 +154,12 @@ public class PositionListFragment extends ListFragment implements PositionsViewM
         vm.load();
     }
 
-    @Override
-    public void onNewData() {
-        mAdapter.notifyDataSetChanged();
-        mSwipeRefresh.setRefreshing(false);
-    }
-
-    private static class PositionListAdapter extends ArrayAdapter<Position> {
+    private static class PositionListAdapter extends ArrayAdapter<PositionItemViewModel> {
         private int mColorGreen;
         private int mColorRed;
         private LayoutInflater inflater;
 
-        public PositionListAdapter(Context context, int resource, List<Position> objects) {
+        public PositionListAdapter(Context context, int resource, List<PositionItemViewModel> objects) {
             super(context, resource, objects);
 
             mColorGreen = context.getResources().getColor(R.color.positive_green);
@@ -160,7 +170,7 @@ public class PositionListFragment extends ListFragment implements PositionsViewM
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Position p = getItem(position);
+            PositionItemViewModel p = getItem(position);
 
             ListItemPositionBinding binding;
 
@@ -172,8 +182,8 @@ public class PositionListFragment extends ListFragment implements PositionsViewM
                 binding = DataBindingUtil.getBinding(convertView);
             }
 
-            final PositionItemViewModel vm = new PositionItemViewModel(p, mColorGreen, mColorRed);
-            binding.setViewmodel(vm);
+            //final PositionItemViewModel vm = new PositionItemViewModel(p, mColorGreen, mColorRed);
+            binding.setViewmodel(p);
 
             return binding.getRoot();
         }

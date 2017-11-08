@@ -53,6 +53,7 @@ public class PositionDetailViewModel extends Observable {
             public void run() {
                 final String symbol = mPosition.getSymbol();
 
+                /*
                 // Add dividends to position
                 mPosition.addDividends( api.getDividends(symbol) );
 
@@ -70,6 +71,7 @@ public class PositionDetailViewModel extends Observable {
                     Quote q = api.getQuote(symbol);
                     mPosition.setQuote(q);
                 }
+                */
             }
 
             @Override

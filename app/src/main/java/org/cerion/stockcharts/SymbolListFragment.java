@@ -24,8 +24,7 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stockcharts.viewmodel.SymbolListViewModel;
-import org.cerion.stockcharts.viewmodel.SymbolListViewModel.SymbolItem;
+import org.cerion.stockcharts.SymbolListViewModel.SymbolItem;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 
