@@ -38,7 +38,7 @@ public abstract class ViewModelActivity<T> extends AppCompatActivity {
         }
     }
 
-    protected boolean IsRetained() {
+    protected boolean isRetained() {
         return mIsRetained;
     }
 

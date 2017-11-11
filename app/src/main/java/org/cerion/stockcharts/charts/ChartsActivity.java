@@ -80,7 +80,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         });
 
         // Restore previous charts
-        if (IsRetained()) {
+        if (isRetained()) {
             for(ChartViewModel vm : getViewModel().charts) {
                 ChartView view = new ChartView(this, vm);
                 mCharts.addView(view);

@@ -35,7 +35,7 @@ public class PositionEditActivity extends ViewModelActivity<PositionEditViewMode
         ActivityPositionEditBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_position_edit);
         binding.setViewmodel(getViewModel());
 
-        if (!IsRetained() && getIntent().hasExtra(EXTRA_POSITION_ID)) {
+        if (!isRetained() && getIntent().hasExtra(EXTRA_POSITION_ID)) {
             int id = getIntent().getIntExtra(EXTRA_POSITION_ID, 0);
             getViewModel().setPosition(id);
         }

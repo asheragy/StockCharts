@@ -1,89 +1,118 @@
 package org.cerion.stockcharts.positions;
 
-import android.content.Context;
+import android.databinding.ObservableField;
 
-import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
+import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.DividendHistory;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocklist.model.PositionValue;
+import org.cerion.stocklist.web.DataAPI;
 
+import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Observable;
 
-public class PositionDetailViewModel extends Observable {
+public class PositionDetailViewModel {
 
-    private Position mPosition;
-    private CachedDataAPI api;
+    private Position purchase;
+    private PositionRepository repo;
+    private DataAPI api;
+    private static DecimalFormat df = new DecimalFormat("0.00");
 
-    public PositionDetailViewModel(Context context) {
-        api = Injection.getAPI(context);
+    public ObservableField<String> currentCount = new ObservableField<>();
+    public ObservableField<String> currentPrice = new ObservableField<>();
+    public ObservableField<String> currentValue = new ObservableField<>();
+
+    public ObservableField<String> dividends = new ObservableField<>();
+    public ObservableField<String> lastDividendPaid = new ObservableField<>();
+    public ObservableField<String> lastDividendDate = new ObservableField<>();
+    public ObservableField<String> nextDividendEst = new ObservableField<>();
+
+    public ObservableField<String> change = new ObservableField<>();
+    public ObservableField<String> profit = new ObservableField<>();
+
+    public ObservableField<String> changeWithDividends = new ObservableField<>();
+    public ObservableField<String> profitWithDividends = new ObservableField<>();
+
+    public ObservableField<Boolean> showDividendFields = new ObservableField<>();
+
+    public PositionDetailViewModel(DataAPI api, PositionRepository repo) {
+        this.api = api;
+        this.repo = repo;
     }
 
-    public Position getPosition() {
-        return mPosition;
+    public void load(int id) {
+        purchase = repo.get(id);
     }
 
-    public void setPosition(Position position) {
-        mPosition = position;
-        onChange();
+    public String getSymbol() {
+        return purchase.getSymbol();
     }
 
     public String getCount() {
-        return Utils.getDecimalFormat3(mPosition.getCount());
+        return Utils.getDecimalFormat3(purchase.getCount());
     }
 
     public String getPurchasePrice() {
-        return Utils.decimalFormat.format(mPosition.getOrigPrice());
+        return Utils.decimalFormat.format(purchase.getOrigPrice());
     }
 
     public String getPurchaseDate() {
-        return Utils.dateFormatLong.format(mPosition.getDate());
+        return Utils.dateFormatLong.format(purchase.getDate());
     }
 
     public String getPurchaseCost() {
-        return "$" + Utils.decimalFormat.format(mPosition.getOrigValue());
+        return "$" + Utils.decimalFormat.format(purchase.getOrigValue());
     }
 
-    public void load() {
+    public String getDividendsReinvested() {
+        return purchase.IsDividendsReinvested() ? "Yes" : "No";
+    }
+
+    public void update() {
         new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                final String symbol = mPosition.getSymbol();
+                final String symbol = purchase.getSymbol();
+                List<Dividend> dividendList = api.getDividends(symbol);
+                PriceList list = api.getPrices(symbol, Interval.DAILY, 500);
 
-                /*
-                // Add dividends to position
-                mPosition.addDividends( api.getDividends(symbol) );
+                PositionValue position = new PositionValue(purchase, list);
+                position.addDividends(dividendList);
 
-                if(mPosition.IsDividendsReinvested())
-                {
-                    try {
-                        mPosition.setPriceHistory(api.getPrices(symbol, Interval.DAILY, 500));
-                    } catch (Exception e) {
-                        // Failed to load
-                    }
+                currentPrice.set( df.format(position.getCurrPrice()) );
+                currentValue.set("$" + df.format(position.getCurrValue()));
+                currentCount.set( Utils.getDecimalFormat3(position.getCurrCount())); // TODO hide if no dividends reinvested
+
+                change.set(df.format(position.getPercentChanged()) + "%");
+                profit.set("$" + df.format(position.getProfit()));
+                dividends.set("$" + df.format(position.getDividendProfit()));
+
+                DividendHistory hist = position.getDividendHistory();
+                if (dividends != null) {
+                    lastDividendPaid.set( df.format(hist.getLastDividend()));
+                    lastDividendDate.set( Utils.dateFormatLong.format(hist.getLastDividendDate()) );
+                    nextDividendEst.set( Utils.dateFormatLong.format(hist.getNextDividendEstimate()) );
                 }
 
-                // Get most recent quote
-                if(mPosition.getCurrPrice() == 0) {
-                    Quote q = api.getQuote(symbol);
-                    mPosition.setQuote(q);
-                }
-                */
+                changeWithDividends.set(df.format(position.getPercentChangedWithDividends()) + "%");
+                profitWithDividends.set("$" + df.format(position.getProfit() + position.getDividendProfit()));
+
+                // If dividends are reinvested they are treated as part of the normal stock changes so don't show extra info on them
+                if (purchase.IsDividendsReinvested())
+                    showDividendFields.set(false);
+                else
+                    showDividendFields.set(true);
             }
 
             @Override
             public void onFinish() {
-                onChange();
             }
+
         }).execute();
     }
-
-    private void onChange() {
-        setChanged();
-        notifyObservers();
-    }
-
 }
