@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewmodel" type="org.cerion.stockcharts.positions.PositionEditViewModel"/>
+        <variable name="viewModel" type="org.cerion.stockcharts.positions.PositionEditViewModel"/>
+        <import type="android.view.View"/>
+
     </data>
 
     <LinearLayout
@@ -27,7 +30,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/symbol"
             android:inputType="textCapCharacters"
-            android:text="@={viewmodel.symbol}"
+            android:text="@={viewModel.symbol}"
             android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
 
         <TextView
@@ -39,7 +42,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/count"
-            android:text="@={viewmodel.count}"
+            android:text="@={viewModel.count}"
             android:inputType="numberDecimal" />
 
         <TextView
@@ -51,7 +54,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/price"
-            android:text="@={viewmodel.price}"
+            android:text="@={viewModel.price}"
             android:inputType="numberDecimal" />
 
         <LinearLayout
@@ -66,8 +69,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewmodel.convertDateLabel(viewmodel.date)}"
-                android:onClick="@{() -> viewmodel.selectDate()}"
+                android:text="@{viewModel.convertDateLabel(viewModel.date)}"
+                android:onClick="@{() -> viewModel.selectDate()}"
                 android:id="@+id/date" />
         </LinearLayout>
 
@@ -76,21 +79,29 @@
             android:layout_height="wrap_content"
             android:text="Dividends Reinvested"
             android:id="@+id/dividends_reinvested"
-            android:checked="@={viewmodel.dividendsReinvested}"
+            android:checked="@={viewModel.dividendsReinvested}"
             android:paddingBottom="20dp"/>
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:selectedItemPosition="@={viewModel.accountIndex}"
+            app:selection="@{viewModel.accountIndex}"
+            android:entries="@{viewModel.accounts}">
+        </Spinner>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
-            android:onClick="@{() -> viewmodel.save()}"
+            android:onClick="@{() -> viewModel.save()}"
             android:id="@+id/save"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:onClick="@{() -> viewmodel.cancel()}"
+            android:onClick="@{() -> viewModel.cancel()}"
             android:id="@+id/cancel" />
 
     </LinearLayout>

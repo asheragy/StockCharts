@@ -3,16 +3,16 @@ package org.cerion.stockcharts.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 import android.util.Log;
 
+import org.cerion.stockcharts.database.Tables.Dividends;
+import org.cerion.stockcharts.database.Tables.Positions;
 import org.cerion.stocklist.model.Interval;
-import org.cerion.stockcharts.database.Tables.*;
 
 public class StockDBOpenHelper extends SQLiteOpenHelper {
 
     private static final String TAG = StockDBOpenHelper.class.getSimpleName();
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     private static final String DATABASE_NAME = "stocks.db";
 
     //Singleton class
@@ -131,24 +131,6 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static class Positions implements BaseColumns {
-        public static final String TABLE_NAME = "positions";
-        public static final String _SYMBOL = "symbol";
-        public static final String _COUNT = "count";
-        public static final String _PRICE = "price";
-        public static final String _DATE = "date";
-        public static final String _DR = "dividendsReinvested";
-
-        public static final String SQL_CREATE = "create table " + TABLE_NAME + "("
-                + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + _SYMBOL + " TEXT NOT NULL, "
-                + _COUNT + " REAL NOT NULL, "
-                + _PRICE + " REAL NOT NULL, "
-                + _DATE + " INTEGER NOT NULL, "
-                + _DR + " INTEGER NOT NULL DEFAULT 0"
-                + ")";
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db)
     {
@@ -183,6 +165,8 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
                 onCreate(db);
             case 9:
                 db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS));
+            case 10:
+                db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT 0", Positions.TABLE_NAME, Positions._ACCOUNTID));
         }
     }
 

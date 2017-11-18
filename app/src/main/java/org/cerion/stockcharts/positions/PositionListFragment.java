@@ -1,6 +1,5 @@
 package org.cerion.stockcharts.positions;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -8,6 +7,7 @@ import android.databinding.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,8 +67,23 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
             }
         });
 
-        mAdapter = new PositionListAdapter(getContext(), R.layout.list_item_position, vm.positions);
+        mAdapter = new PositionListAdapter(getContext(), R.layout.list_item_position, vm.positions.get());
 
+        vm.positions.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                Log.d(TAG, "thread ID = " + Thread.currentThread().getName());
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
+        binding.setViewModel(getViewModel());
         binding.list.setAdapter(mAdapter);
         binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -94,7 +109,7 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId() == android.R.id.list) {
+        if (v.getId() == binding.list.getId()) {
             super.onCreateContextMenu(menu, v, menuInfo);
             MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.position_list_context_menu, menu);
@@ -104,7 +119,7 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        PositionItemViewModel p = vm.positions.get(info.position);
+        PositionItemViewModel p = vm.positions.get().get(info.position);
         // TODO add this back
 
         switch(item.getItemId()) {

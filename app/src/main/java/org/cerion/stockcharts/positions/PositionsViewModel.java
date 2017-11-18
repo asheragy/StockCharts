@@ -1,9 +1,8 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Context;
-import android.databinding.ObservableArrayList;
+import android.databinding.Observable;
 import android.databinding.ObservableField;
-import android.databinding.ObservableList;
 import android.util.Log;
 
 import org.cerion.stockcharts.Injection;
@@ -15,13 +14,16 @@ import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.web.CachedDataAPI;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PositionsViewModel {
     private static final String TAG = PositionsViewModel.class.getSimpleName();
 
-    public ObservableList<PositionItemViewModel> positions = new ObservableArrayList<>();
     public ObservableField<Boolean> loading = new ObservableField<>(false);
+    public List<String> accounts = new ArrayList<>();
+    public final ObservableField<Integer> accountIndex = new ObservableField<>(0);
+    public final ObservableField<List<PositionItemViewModel>> positions = new ObservableField<>();
 
     private PositionRepository repo;
     private CachedDataAPI api;
@@ -29,6 +31,20 @@ public class PositionsViewModel {
     public PositionsViewModel(Context context) {
         repo = new PositionRepository(context);
         api = Injection.getAPI(context);
+
+        positions.set(new ArrayList<PositionItemViewModel>());
+        accounts.add("Brokerage");
+        accounts.add("Roth");
+        accounts.add("IRA");
+        accounts.add("401k");
+        accounts.add("Account 5");
+
+        accountIndex.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                load();
+            }
+        });
     }
 
     public void delete(Position position) {
@@ -44,16 +60,25 @@ public class PositionsViewModel {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                positions.clear();
+                positions.get().clear();
 
                 List<Position> list = repo.getAll();
-                for(Position p : list)
-                    positions.add(new PositionItemViewModel(p));
+
+                for(Position p : list) {
+                    if(p.getAccountId() == accountIndex.get()) {
+                        Log.d(TAG,"adding " + p);
+                        positions.get().add(new PositionItemViewModel(p));
+                    }
+                }
+
+                positions.notifyChange();
             }
 
             @Override
             public void onFinish() {
                 loading.set(false);
+
+                update();
             }
         });
 
@@ -77,7 +102,7 @@ private Map<String,Quote> getQuotes() {
             @Override
             public void run() {
                 //Map<String,Quote> quotes = getQuotes();
-                for(PositionItemViewModel vm : positions) {
+                for(PositionItemViewModel vm : positions.get()) {
                     String symbol = vm.symbol();
 
                     //Quote q = quotes.get(symbol);
@@ -98,6 +123,8 @@ private Map<String,Quote> getQuotes() {
                         }
                     }
                 }
+
+                positions.notifyChange();
             }
 
             @Override

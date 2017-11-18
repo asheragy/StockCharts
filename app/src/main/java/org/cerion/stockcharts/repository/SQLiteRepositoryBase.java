@@ -170,8 +170,8 @@ public abstract class SQLiteRepositoryBase {
             c.close();
         }
 
-        Log.d(TAG, StockDBOpenHelper.Positions.TABLE_NAME);
-        c = db.rawQuery(String.format("SELECT count(*) FROM %s", StockDBOpenHelper.Positions.TABLE_NAME), null);
+        Log.d(TAG, Tables.Positions.TABLE_NAME);
+        c = db.rawQuery(String.format("SELECT count(*) FROM %s", Tables.Positions.TABLE_NAME), null);
         if (c != null) {
             if(c.moveToNext()) {
                 Log.d(TAG, "  count=" + c.getInt(0));

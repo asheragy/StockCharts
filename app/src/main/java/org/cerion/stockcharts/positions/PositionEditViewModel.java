@@ -11,7 +11,9 @@ import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stocklist.model.Position;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class PositionEditViewModel {
@@ -28,6 +30,9 @@ public class PositionEditViewModel {
     public final ObservableField<Boolean> dividendsReinvested = new ObservableField<>(false);
     public final ObservableField<Date> date = new ObservableField<>();
 
+    public List<String> accounts = new ArrayList<>();
+    public final ObservableField<Integer> accountIndex = new ObservableField<>();
+
     public interface IView {
         void onFinish();
         void onError(Exception e);
@@ -38,6 +43,12 @@ public class PositionEditViewModel {
         mContext = context;
         mListener = listener;
         repo = new PositionRepository(context);
+
+        accounts.add("Account 1");
+        accounts.add("Account 2");
+        accounts.add("Account 3");
+        accounts.add("Account 4");
+        accounts.add("Account 5");
     }
 
     public void setPosition(int id) {
@@ -52,6 +63,7 @@ public class PositionEditViewModel {
         count.set( Utils.getDecimalFormat3(position.getCount()) );
         price.set( Utils.getDecimalFormat3(position.getOrigPrice()) );
         dividendsReinvested.set(position.IsDividendsReinvested());
+        accountIndex.set(position.getAccountId());
     }
 
     public void selectDate() {
@@ -85,13 +97,15 @@ public class PositionEditViewModel {
                     double d_price = Double.parseDouble(price.get());
 
                     Position p = new Position(symbol.get(), d_count, d_price, date.get(), dividendsReinvested.get());
+                    p.setAccountId(accountIndex.get());
 
+                    String log = p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate() + "\t" + p.getAccountId();
                     if (mId > 0) {
-                        Log.d(TAG, "UPDATE position " + p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate());
+                        Log.d(TAG, "UPDATE position " + log);
                         p.setId(mId);
                         repo.update(p);
                     } else {
-                        Log.d(TAG, "ADD position " + p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate());
+                        Log.d(TAG, "ADD position " + log);
                         repo.add(p);
                     }
 
