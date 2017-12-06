@@ -25,9 +25,9 @@ public class WatchListViewModel {
     public WatchListViewModel(DataAPI api) {
         this.api = api;
         // TODO save in database
-        items.get().add(new WatchItemViewModel(new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
-        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(35), Condition.BELOW, new SimpleMovingAverage(225)), "^GSPC"));
-        items.get().add(new WatchItemViewModel(new IndicatorCondition(new SimpleMovingAverage(35), Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(api, new PriceCondition(Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(api, new IndicatorCondition(new SimpleMovingAverage(35), Condition.BELOW, new SimpleMovingAverage(225)), "^GSPC"));
+        items.get().add(new WatchItemViewModel(api, new IndicatorCondition(new SimpleMovingAverage(35), Condition.ABOVE, new SimpleMovingAverage(225)), "^GSPC"));
     }
 
     public void load() {
@@ -39,7 +39,7 @@ public class WatchListViewModel {
                 List<WatchItemViewModel> list = items.get();
                 for(int i = 0; i < list.size(); i++) {
                     WatchItemViewModel item = list.get(i);
-                    PriceList prices = api.getPrices(item.getSymbol(), Interval.DAILY, Constants.MAX_DAILY);
+                    PriceList prices = new PriceList(item.getSymbol(), api.getPrices(item.getSymbol(), Interval.DAILY, Constants.START_DATE_DAILY));
                     item.apply(prices);
                 }
             }

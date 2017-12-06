@@ -16,6 +16,7 @@ public class PositionItemViewModel {
     private Position mPosition;
     private DecimalFormat df = Utils.decimalFormat;
 
+    public ObservableField<String> symbol = new ObservableField<>("");
     public ObservableField<Float> dayChange = new ObservableField<>(0.0f);
     public ObservableField<Float> totalChange = new ObservableField<>(0.0f);
     public ObservableField<String> dayChangeStr = new ObservableField<>("0.00 (0.00%)");
@@ -25,6 +26,11 @@ public class PositionItemViewModel {
 
     PositionItemViewModel(Position p) {
         mPosition = p;
+        this.symbol.set(p.getSymbol());
+    }
+
+    public void setDescription(String description) {
+        this.symbol.set(mPosition.getSymbol() + " - " + description);
     }
 
     public void setData(PriceList list, List<Dividend> dividends) {
@@ -61,10 +67,6 @@ public class PositionItemViewModel {
 
     public Position getPosition() {
         return mPosition;
-    }
-
-    public String symbol() {
-        return mPosition.getSymbol();
     }
 
     public String purchaseDate() {

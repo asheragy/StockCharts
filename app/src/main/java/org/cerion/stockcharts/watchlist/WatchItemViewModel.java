@@ -6,9 +6,11 @@ import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.functions.conditions.ICondition;
+import org.cerion.stocklist.web.DataAPI;
 
 public class WatchItemViewModel {
 
+    private DataAPI api;
     private ICondition condition;
     private String symbol;
 
@@ -18,7 +20,8 @@ public class WatchItemViewModel {
     public final ObservableField<Integer> yearPosition = new ObservableField<>(0);
     public final ObservableField<Boolean> isTrue = new ObservableField<>(false);
 
-    public WatchItemViewModel(ICondition condition, String symbol) {
+    public WatchItemViewModel(DataAPI api, ICondition condition, String symbol) {
+        this.api = api;
         this.condition = condition;
         this.symbol = symbol;
     }
@@ -59,15 +62,21 @@ public class WatchItemViewModel {
         float percent = diff / range;
         weekPosition.set((int)(percent * 100));
 
+        // TODO add function to get highest high in given range to PriceList
+
         // Year
+        int start = 250;
+        if (list.size() < start)
+            start = 0;
+
         low = list.low(size - 1);
-        for(int j = size - 250; j < size; j++) {
+        for(int j = size - start; j < size; j++) {
             if (list.low(j) < low)
                 low = list.low(j);
         }
 
         high = list.high(size - 1);
-        for(int j = size - 250; j < size; j++) {
+        for(int j = size - start; j < size; j++) {
             if (list.high(j) > high)
                 high = list.high(j);
         }

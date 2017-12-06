@@ -3,8 +3,10 @@ package org.cerion.stockcharts.charts;
 import android.databinding.Observable;
 import android.databinding.ObservableField;
 
+import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.FloatingActionButtonGroup;
 import org.cerion.stockcharts.common.GenericAsyncTask;
+import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.web.CachedDataAPI;
@@ -48,12 +50,18 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
             PriceList result;
             @Override
             public void run() {
+                List<Price> prices = null;
                 switch (interval.get()) {
-                    case DAILY: result = api.getPrices(symbol, Interval.DAILY, 250 * 5); break;
-                    case WEEKLY: result = api.getPrices(symbol, Interval.WEEKLY, 52 * 10); break;
-                    case MONTHLY: result = api.getPrices(symbol, Interval.MONTHLY, 12 * 20); break;
-                    case QUARTERLY: result = api.getPrices(symbol, Interval.MONTHLY, 12 * 50).toQuarterly(); break;
+                    case DAILY: prices = api.getPrices(symbol,     Interval.DAILY, Constants.START_DATE_DAILY); break;
+                    case WEEKLY: prices = api.getPrices(symbol,    Interval.WEEKLY, Constants.START_DATE_WEEKLY); break;
+                    case MONTHLY: prices = api.getPrices(symbol,   Interval.MONTHLY, Constants.START_DATE_MONTHLY); break;
+                    case QUARTERLY: prices = api.getPrices(symbol, Interval.MONTHLY, Constants.START_DATE_MONTHLY); break;
                 }
+
+                result = new PriceList(symbol, prices);
+
+                if (interval.get() == Interval.QUARTERLY)
+                    result = result.toQuarterly();
             }
 
             @Override

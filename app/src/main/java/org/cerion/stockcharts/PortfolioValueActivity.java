@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stocklist.PriceList;
@@ -75,7 +76,7 @@ public class PortfolioValueActivity extends AppCompatActivity {
         for(Position position : list) {
             String symbol = position.getSymbol();
 
-            PriceList pl = api.getPrices(symbol, Interval.DAILY, 500);
+            PriceList pl = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
             if (pl.getDates().length > dates.length)
                 dates=  pl.getDates();
 

@@ -54,8 +54,36 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
 
     @Override
     public PriceList get(String symbol, Interval interval, int max) {
-        List<Price> prices = getPrices(symbol, interval, max);
-        return new PriceList(symbol,prices);
+        throw new RuntimeException("not implemented");
+        //List<Price> prices = get(symbol, interval);
+        ///return new PriceList(symbol,prices);
+    }
+
+    @Override
+    public List<Price> get(String symbol, Interval interval) {
+        SQLiteDatabase db = openReadOnly();
+
+        String where = String.format(StockDBOpenHelper.Prices._SYMBOL + "='%s'", symbol);
+        Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, StockDBOpenHelper.Prices._DATE + " ASC");
+        List<Price> prices = new ArrayList<>();
+
+        if(c != null) {
+            while (c.moveToNext()) {
+                Date date = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._DATE)));
+                float open = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._OPEN));
+                float high = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._HIGH));
+                float low = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._LOW));
+                float close = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._CLOSE));
+                long volume = c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._VOLUME));
+
+                Price p = new Price(date,open,high,low,close,volume);
+                prices.add(p);
+            }
+            c.close();
+        }
+
+        db.close();
+        return prices;
     }
 
     @Override
@@ -128,32 +156,6 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         deleteAll(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_MONTHLY);
 
         optimize();
-    }
-
-    private List<Price> getPrices(String symbol, Interval interval, int max) {
-        SQLiteDatabase db = openReadOnly();
-
-        String where = String.format(StockDBOpenHelper.Prices._SYMBOL + "='%s'", symbol);
-        Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, StockDBOpenHelper.Prices._DATE + " DESC", max + "");
-        List<Price> prices = new ArrayList<>();
-
-        if(c != null) {
-            while (c.moveToNext()) {
-                Date date = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._DATE)));
-                float open = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._OPEN));
-                float high = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._HIGH));
-                float low = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._LOW));
-                float close = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._CLOSE));
-                long volume = c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._VOLUME));
-
-                Price p = new Price(date,open,high,low,close,volume);
-                prices.add(p);
-            }
-            c.close();
-        }
-
-        db.close();
-        return prices;
     }
 
     /*

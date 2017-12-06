@@ -2,6 +2,7 @@ package org.cerion.stockcharts.positions;
 
 import android.databinding.ObservableField;
 
+import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.repository.PositionRepository;
@@ -79,7 +80,7 @@ public class PositionDetailViewModel {
             public void run() {
                 final String symbol = purchase.getSymbol();
                 List<Dividend> dividendList = api.getDividends(symbol);
-                PriceList list = api.getPrices(symbol, Interval.DAILY, 500);
+                PriceList list = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
 
                 PositionValue position = new PositionValue(purchase, list);
                 position.addDividends(dividendList);
