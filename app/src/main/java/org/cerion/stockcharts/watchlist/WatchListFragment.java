@@ -2,6 +2,9 @@ package org.cerion.stockcharts.watchlist;
 
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -16,6 +19,8 @@ import org.cerion.stockcharts.databinding.FragmentWatchlistBinding;
 public class WatchListFragment extends ViewModelFragment<WatchListViewModel> implements View.OnClickListener {
     RecyclerViewAdapter adapter;
     FragmentWatchlistBinding binding;
+    private Handler handler;
+    private HandlerThread handlerThread;
 
     @Nullable
     @Override
@@ -45,7 +50,14 @@ public class WatchListFragment extends ViewModelFragment<WatchListViewModel> imp
 
     @Override
     protected WatchListViewModel newViewModel() {
-        return new WatchListViewModel(Injection.getAPI(getContext()));
+        if (handler == null) {
+            handlerThread = new HandlerThread("watchListLoader");
+            handlerThread.start();
+            Looper looper = handlerThread.getLooper();
+            handler = new Handler(looper);
+        }
+
+        return new WatchListViewModel(handler, Injection.getAPI(getContext()));
     }
 
     @Override
@@ -54,5 +66,11 @@ public class WatchListFragment extends ViewModelFragment<WatchListViewModel> imp
         WatchItemViewModel item = getViewModel().items.get().get(position);
 
         Toast.makeText(getContext(), item.getCondition(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handlerThread.quit();
     }
 }

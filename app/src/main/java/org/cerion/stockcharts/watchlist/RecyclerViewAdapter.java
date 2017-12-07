@@ -3,7 +3,6 @@ package org.cerion.stockcharts.watchlist;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
 
     @Override
     public void onBindViewHolder(ListItemViewHolder holder, int position) {
-        Log.d("TEMP", "onBindViewHolder " + position);
         holder.bind(items.get(position));
     }
 
@@ -53,6 +51,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
         }
 
         public void bind(WatchItemViewModel item) {
+            item.load();
             binding.setViewModel(item);
             binding.executePendingBindings();
         }

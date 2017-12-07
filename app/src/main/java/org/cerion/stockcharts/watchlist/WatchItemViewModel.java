@@ -1,11 +1,14 @@
 package org.cerion.stockcharts.watchlist;
 
 import android.databinding.ObservableField;
+import android.os.Handler;
 
+import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.functions.conditions.ICondition;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.web.DataAPI;
 
 public class WatchItemViewModel {
@@ -13,17 +16,32 @@ public class WatchItemViewModel {
     private DataAPI api;
     private ICondition condition;
     private String symbol;
+    private Handler handler;
 
     public final ObservableField<String> price = new ObservableField<>("--");
     public final ObservableField<String> change = new ObservableField<>("--");
     public final ObservableField<Integer> weekPosition = new ObservableField<>(0);
     public final ObservableField<Integer> yearPosition = new ObservableField<>(0);
     public final ObservableField<Boolean> isTrue = new ObservableField<>(false);
+    public final ObservableField<Boolean> loading = new ObservableField<>(true);
 
-    public WatchItemViewModel(DataAPI api, ICondition condition, String symbol) {
+    public WatchItemViewModel(Handler handler, DataAPI api, ICondition condition, String symbol) {
+        this.handler = handler;
         this.api = api;
         this.condition = condition;
         this.symbol = symbol;
+    }
+
+    public void load() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                loading.set(true);
+                PriceList prices = new PriceList(getSymbol(), api.getPrices(getSymbol(), Interval.DAILY, Constants.START_DATE_DAILY));
+                apply(prices);
+                loading.set(false);
+            }
+        });
     }
 
     public String getSymbol() {
@@ -38,7 +56,7 @@ public class WatchItemViewModel {
         return condition.getChart();
     }
 
-    public void apply(PriceList list) {
+    private void apply(PriceList list) {
 
         int size = list.size();
         float price = list.getLast().close;
