@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewmodel" type="org.cerion.stockcharts.positions.PositionItemViewModel"/>
+        <variable name="viewModel" type="org.cerion.stockcharts.positions.PositionItemViewModel"/>
+        <import type="android.view.View"/>
     </data>
 
     <!--
@@ -32,9 +33,15 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:paddingEnd="10dp"
-                android:text="@{viewmodel.symbol}"
+                android:text="@{viewModel.symbol}"
                 tools:text="Symbol"/>
 
+            <ProgressBar
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:indeterminateOnly="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"/>
             <!--
             <TextView
                 android:id="@+id/purchase_lot"
@@ -51,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 tools:text="Purchase Date"
-                android:text="@{viewmodel.purchaseDate()}"
+                android:text="@{viewModel.purchaseDate()}"
                 android:textAppearance="?android:attr/textAppearanceListItemSecondary"
                 android:textAlignment="viewEnd" />
         </LinearLayout>
@@ -72,7 +79,7 @@
                 android:paddingEnd="10dp"
                 android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceListItem"
-                android:text="@{viewmodel.currentPrice}"
+                android:text="@{viewModel.currentPrice}"
                 android:layout_weight="1"
                 tools:text="43.61"/>
 
@@ -81,8 +88,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingEnd="15dp"
-                android:text="@{viewmodel.dayChangeStr}"
-                android:textColor="@{viewmodel.dayChange == 0 ? @color/black : viewmodel.dayChange > 0 ? @color/positive_green : @color/negative_red}"
+                android:text="@{viewModel.dayChangeStr}"
+                android:textColor="@{viewModel.dayChange == 0 ? @color/black : viewModel.dayChange > 0 ? @color/positive_green : @color/negative_red}"
                 android:layout_weight="2"
                 tools:text="+1.42 (0.76%)"/>
 
@@ -91,8 +98,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingEnd="10dp"
-                android:text="@{viewmodel.totalChangeStr}"
-                android:textColor="@{viewmodel.totalChange == 0 ? @color/black : viewmodel.totalChange > 0 ? @color/positive_green : @color/negative_red}"
+                android:text="@{viewModel.totalChangeStr}"
+                android:textColor="@{viewModel.totalChange == 0 ? @color/black : viewModel.totalChange > 0 ? @color/positive_green : @color/negative_red}"
                 android:layout_weight="2.5"
                 tools:text="+5.34 (8.23%)"/>
 
@@ -100,7 +107,7 @@
                 android:id="@+id/profit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewmodel.dividendProfit}"
+                android:text="@{viewModel.dividendProfit}"
                 android:layout_weight="1"
                 tools:text="$0.00"/>
 

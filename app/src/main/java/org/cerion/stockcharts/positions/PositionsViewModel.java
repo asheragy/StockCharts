@@ -6,14 +6,9 @@ import android.databinding.ObservableField;
 import android.util.Log;
 
 import org.cerion.stockcharts.Injection;
-import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocklist.Price;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.model.Dividend;
-import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.Symbol;
 import org.cerion.stocklist.web.CachedDataAPI;
@@ -85,7 +80,7 @@ public class PositionsViewModel {
                 for(Position p : list) {
                     if(p.getAccountId() == accountIndex.get()) {
                         //Log.d(TAG,"adding " + p);
-                        PositionItemViewModel vm = new PositionItemViewModel(p);
+                        PositionItemViewModel vm = new PositionItemViewModel(api, p);
 
                         Symbol s = lookupSymbol(p.getSymbol());
                         if(s != null)
@@ -102,19 +97,20 @@ public class PositionsViewModel {
             public void onFinish() {
                 loading.set(false);
 
-                update();
+                //update();
             }
         });
 
         task.execute();
     }
 
+    /*
     public void update() {
         loading.set(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
 
-            /*
+
 private Map<String,Quote> getQuotes() {
     Set<String> symbols = new HashSet<>();
     for(Position p : positions)
@@ -122,7 +118,7 @@ private Map<String,Quote> getQuotes() {
 
     return api.getQuotes(symbols);
 }
-*/
+
             @Override
             public void run() {
                 //Map<String,Quote> quotes = getQuotes();
@@ -156,4 +152,5 @@ private Map<String,Quote> getQuotes() {
 
         task.execute();
     }
+    */
 }

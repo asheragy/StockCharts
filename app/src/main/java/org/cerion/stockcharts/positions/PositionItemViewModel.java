@@ -2,11 +2,16 @@ package org.cerion.stockcharts.positions;
 
 import android.databinding.ObservableField;
 
+import org.cerion.stockcharts.common.Constants;
+import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
+import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.Dividend;
+import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.PositionValue;
+import org.cerion.stocklist.web.DataAPI;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -15,6 +20,7 @@ public class PositionItemViewModel {
 
     private Position mPosition;
     private DecimalFormat df = Utils.decimalFormat;
+    private DataAPI api;
 
     public ObservableField<String> symbol = new ObservableField<>("");
     public ObservableField<Float> dayChange = new ObservableField<>(0.0f);
@@ -23,17 +29,51 @@ public class PositionItemViewModel {
     public ObservableField<String> totalChangeStr = new ObservableField<>("0.00 (0.00%)");
     public ObservableField<String> currentPrice = new ObservableField<>("...");
     public ObservableField<String> dividendProfit = new ObservableField<>("");
+    public ObservableField<Boolean> loading = new ObservableField<>(false);
 
-    PositionItemViewModel(Position p) {
+    PositionItemViewModel(DataAPI api, Position p) {
+        this.api = api;
         mPosition = p;
         this.symbol.set(p.getSymbol());
+    }
+
+    public void load() {
+        loading.set(true);
+        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
+            @Override
+            public void run() {
+                String symbol = getPosition().getSymbol();
+
+                //Quote q = quotes.get(symbol);
+                // Always do this since quotes not working
+                // if(p.IsDividendsReinvested())
+
+                try {
+                    List<Price> list = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY);
+                    //p.setPriceHistory(list);
+
+                    List<Dividend> dividends = api.getDividends(symbol);
+
+                    setData(new PriceList(symbol, list), dividends);
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                loading.set(false);
+            }
+        });
+
+        task.execute();
     }
 
     public void setDescription(String description) {
         this.symbol.set(mPosition.getSymbol() + " - " + description);
     }
 
-    public void setData(PriceList list, List<Dividend> dividends) {
+    private void setData(PriceList list, List<Dividend> dividends) {
         PositionValue value = new PositionValue(mPosition, list);
         value.addDividends(dividends);
 

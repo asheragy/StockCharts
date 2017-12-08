@@ -51,9 +51,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
         }
 
         public void bind(WatchItemViewModel item) {
-            item.load();
             binding.setViewModel(item);
             binding.executePendingBindings();
+            item.load();
         }
 
         @Override
