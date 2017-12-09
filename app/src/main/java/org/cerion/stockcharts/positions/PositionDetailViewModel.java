@@ -80,7 +80,14 @@ public class PositionDetailViewModel {
             public void run() {
                 final String symbol = purchase.getSymbol();
                 List<Dividend> dividendList = api.getDividends(symbol);
-                PriceList list = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
+                PriceList list;
+
+                try {
+                    list = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
+                } catch (Exception e) {
+                    // TODO set some error state
+                    return;
+                }
 
                 PositionValue position = new PositionValue(purchase, list);
                 position.addDividends(dividendList);

@@ -42,6 +42,14 @@
                 android:indeterminateOnly="true"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ff0000"
+                android:src="@android:drawable/stat_notify_error"
+                android:visibility="@{viewModel.hasError ? View.VISIBLE : View.GONE}"/>
+
             <!--
             <TextView
                 android:id="@+id/purchase_lot"

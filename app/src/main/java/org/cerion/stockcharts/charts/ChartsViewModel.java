@@ -18,6 +18,7 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
 
     private String symbol;
     private CachedDataAPI api;
+    private ChartsView view;
 
     public final ObservableField<Interval> interval = new ObservableField<>(Interval.DAILY);
     public final ObservableField<PriceList> priceList = new ObservableField<>();
@@ -25,9 +26,14 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
     public final ObservableField<Boolean> loading = new ObservableField<>();
     public final ObservableField<Boolean> fabOpen = new ObservableField<>(false);
 
-    public ChartsViewModel(String symbol, CachedDataAPI api) {
+    public interface ChartsView {
+        void onErrorLoading(String error);
+    }
+
+    public ChartsViewModel(String symbol, CachedDataAPI api, ChartsView view) {
         this.symbol = symbol;
         this.api = api;
+        this.view = view;
 
         loadData();
 
@@ -48,25 +54,46 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             PriceList result;
+            Exception error;
             @Override
             public void run() {
                 List<Price> prices = null;
-                switch (interval.get()) {
-                    case DAILY: prices = api.getPrices(symbol,     Interval.DAILY, Constants.START_DATE_DAILY); break;
-                    case WEEKLY: prices = api.getPrices(symbol,    Interval.WEEKLY, Constants.START_DATE_WEEKLY); break;
-                    case MONTHLY: prices = api.getPrices(symbol,   Interval.MONTHLY, Constants.START_DATE_MONTHLY); break;
-                    case QUARTERLY: prices = api.getPrices(symbol, Interval.MONTHLY, Constants.START_DATE_MONTHLY); break;
+
+                try {
+                    if (true)
+                        throw new Exception("TODO handle exception");
+
+                    switch (interval.get()) {
+                        case DAILY:
+                            prices = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY);
+                            break;
+                        case WEEKLY:
+                            prices = api.getPrices(symbol, Interval.WEEKLY, Constants.START_DATE_WEEKLY);
+                            break;
+                        case MONTHLY:
+                            prices = api.getPrices(symbol, Interval.MONTHLY, Constants.START_DATE_MONTHLY);
+                            break;
+                        case QUARTERLY:
+                            prices = api.getPrices(symbol, Interval.MONTHLY, Constants.START_DATE_MONTHLY);
+                            break;
+                    }
+
+                    result = new PriceList(symbol, prices);
+                    if (interval.get() == Interval.QUARTERLY)
+                        result = result.toQuarterly();
                 }
-
-                result = new PriceList(symbol, prices);
-
-                if (interval.get() == Interval.QUARTERLY)
-                    result = result.toQuarterly();
+                catch (Exception e) {
+                    error = e;
+                }
             }
 
             @Override
             public void onFinish() {
-                priceList.set(result);
+                if (error == null)
+                    priceList.set(result);
+                else
+                    view.onErrorLoading(error.getMessage());
+
                 loading.set(false);
             }
         });

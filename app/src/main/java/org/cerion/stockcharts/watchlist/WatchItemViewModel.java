@@ -37,8 +37,12 @@ public class WatchItemViewModel {
             @Override
             public void run() {
                 loading.set(true);
-                PriceList prices = new PriceList(getSymbol(), api.getPrices(getSymbol(), Interval.DAILY, Constants.START_DATE_DAILY));
-                apply(prices);
+                try {
+                    PriceList prices = new PriceList(getSymbol(), api.getPrices(getSymbol(), Interval.DAILY, Constants.START_DATE_DAILY));
+                    apply(prices);
+                } catch (Exception e) {
+                    // TODO set error state
+                }
                 loading.set(false);
             }
         });

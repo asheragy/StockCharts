@@ -7,14 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import org.cerion.stockcharts.common.Constants;
@@ -29,8 +26,6 @@ import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -76,18 +71,24 @@ public class PortfolioValueActivity extends AppCompatActivity {
         for(Position position : list) {
             String symbol = position.getSymbol();
 
-            PriceList pl = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
-            if (pl.getDates().length > dates.length)
-                dates=  pl.getDates();
+            try {
+                if (true)
+                    throw new Exception("TODO handle exception");
+                PriceList pl = new PriceList(symbol, api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY));
+                if (pl.getDates().length > dates.length)
+                    dates=  pl.getDates();
 
-            PositionValue p = new PositionValue(position, pl);
-            //p.setPriceHistory(pl);
-            p.addDividends( api.getDividends(symbol) );
+                PositionValue p = new PositionValue(position, pl);
+                //p.setPriceHistory(pl);
+                p.addDividends( api.getDividends(symbol) );
 
-            // Get most recent quote
-            if(p.getCurrPrice() == 0) {
-                Quote q = api.getQuote(symbol);
-                p.setQuote(q);
+                // Get most recent quote
+                if(p.getCurrPrice() == 0) {
+                    Quote q = api.getQuote(symbol);
+                    p.setQuote(q);
+                }
+            } catch (Exception e) {
+                break;
             }
         }
 

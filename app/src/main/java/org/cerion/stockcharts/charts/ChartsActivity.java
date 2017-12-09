@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.edmodo.rangebar.RangeBar;
 
@@ -23,13 +24,12 @@ import org.cerion.stocklist.charts.StockChart;
 import org.cerion.stocklist.charts.VolumeChart;
 import org.cerion.stocklist.indicators.MACD;
 
-public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
+public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implements ChartsViewModel.ChartsView {
     private static final String TAG = ChartsActivity.class.getSimpleName();
     private static final String EXTRA_SYMBOL = "symbol";
 
     // TODO pass chart via intent when it can be made to/from string
     private static StockChart nextChart;
-
     private LinearLayout mCharts;
     private RangeBar rangeBar;
 
@@ -46,7 +46,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
 
     @Override
     protected ChartsViewModel newViewModel() {
-        return new ChartsViewModel(getIntent().getStringExtra(EXTRA_SYMBOL), Injection.getAPI(this));
+        return new ChartsViewModel(getIntent().getStringExtra(EXTRA_SYMBOL), Injection.getAPI(this), this);
     }
 
     @Override
@@ -124,6 +124,11 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> {
         PriceChart chart = new PriceChart();
         chart.candleData = false;
         onAddChart(chart);
+    }
+
+    @Override
+    public void onErrorLoading(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
     private void onAddChart(StockChart chart) {
