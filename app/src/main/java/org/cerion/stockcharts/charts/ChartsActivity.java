@@ -16,6 +16,7 @@ import com.edmodo.rangebar.RangeBar;
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
+import org.cerion.stockcharts.charts.views.SummaryPanelView;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
 import org.cerion.stocklist.charts.IndicatorChart;
@@ -78,6 +79,8 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
                 rangeBar.setThumbIndices(0, size-1);
             }
         });
+
+        addInfoPanel();
 
         // Restore previous charts
         if (isRetained()) {
@@ -148,5 +151,10 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
 
         if (chart instanceof IndicatorChart)
             view.edit();
+    }
+
+    private void addInfoPanel() {
+        final SummaryPanelView view = new SummaryPanelView(this);
+        mCharts.addView(view);
     }
 }

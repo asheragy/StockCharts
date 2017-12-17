@@ -61,6 +61,13 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
             }
         });
 
+        vm.allocations.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                binding.chart.setAllocations(vm.allocations.get());
+            }
+        });
+
         if (!isRetained())
             vm.load();
     }

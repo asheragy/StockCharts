@@ -19,10 +19,19 @@
             android:entries="@{viewModel.accounts}">
         </Spinner>
 
+        <org.cerion.stockcharts.positions.PortfolioPieChart
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/chart"
+            android:layout_weight="1">
+
+        </org.cerion.stockcharts.positions.PortfolioPieChart>
+
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             app:onRefreshListener="@{() -> viewModel.load()}"
             app:refreshing="@{viewModel.loading}">
 

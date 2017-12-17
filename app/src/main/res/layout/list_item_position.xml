@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:paddingEnd="10dp"
-                android:text="@{viewModel.symbol}"
+                android:text="@{viewModel.getSymbolDescription()}"
                 tools:text="Symbol"/>
 
             <ProgressBar

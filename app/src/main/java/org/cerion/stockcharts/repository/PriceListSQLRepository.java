@@ -24,8 +24,8 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
     }
 
     /*
-    public PriceList getLatest(String symbol, Interval interval) throws Exception {
-        HistoricalDates dates = getHistoricalDates(symbol, interval);
+    public PriceList getLatest(String symbolDescription, Interval interval) throws Exception {
+        HistoricalDates dates = getHistoricalDates(symbolDescription, interval);
         boolean update = false;
 
         if(dates == null) {
@@ -34,7 +34,7 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
             Date now = new Date();
             long diff = now.getTime() - dates.LastUpdated.getTime();
             diff /= 1000 * 60 * 60 * 24;
-            Log.d(TAG, symbol + " " + interval.name() + " last updated " + dates.LastUpdated + " (" + diff + " days ago)");
+            Log.d(TAG, symbolDescription + " " + interval.name() + " last updated " + dates.LastUpdated + " (" + diff + " days ago)");
 
             // TODO, smarter updates based on last price obtained and weekends
             if(interval == Interval.DAILY && diff >= 1)
@@ -46,23 +46,21 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         }
 
         if(update)
-            updatePrices(symbol, interval);
+            updatePrices(symbolDescription, interval);
 
-        return get(symbol, interval);
+        return get(symbolDescription, interval);
     }
     */
 
     @Override
     public PriceList get(String symbol, Interval interval, int max) {
         throw new RuntimeException("not implemented");
-        //List<Price> prices = get(symbol, interval);
-        ///return new PriceList(symbol,prices);
+        //List<Price> prices = get(symbolDescription, interval);
+        ///return new PriceList(symbolDescription,prices);
     }
 
     @Override
     public List<Price> get(String symbol, Interval interval) {
-        SQLiteDatabase db = openReadOnly();
-
         String where = String.format(StockDBOpenHelper.Prices._SYMBOL + "='%s'", symbol);
         Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, StockDBOpenHelper.Prices._DATE + " ASC");
         List<Price> prices = new ArrayList<>();
@@ -82,18 +80,16 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
             c.close();
         }
 
-        db.close();
         return prices;
     }
 
     @Override
     public void add(PriceList list) {
-        SQLiteDatabase db = open();
         db.beginTransaction();
 
         String table = StockDBOpenHelper.Prices.getTableName(list.getInterval());
         //Delete current data before re-adding new
-        delete(db, table, String.format("%s='%s'", StockDBOpenHelper.Prices._SYMBOL, list.mSymbol));
+        delete(table, String.format("%s='%s'", StockDBOpenHelper.Prices._SYMBOL, list.mSymbol));
 
         for(Price p : list) {
             ContentValues values = new ContentValues();
@@ -104,7 +100,7 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
             values.put(StockDBOpenHelper.Prices._LOW, p.low);
             values.put(StockDBOpenHelper.Prices._CLOSE, p.close);
             values.put(StockDBOpenHelper.Prices._VOLUME, p.volume);
-            insert(db, table, values);
+            insert(table, values);
         }
 
         //Add dates
@@ -121,13 +117,10 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
 
         db.setTransactionSuccessful();
         db.endTransaction();
-        db.close();
     }
 
     @Override
     public HistoricalDates getHistoricalDates(String symbol, Interval interval) {
-        SQLiteDatabase db = openReadOnly();
-
         String where = String.format(StockDBOpenHelper.HistoricalDates._SYMBOL + "='%s'", symbol);
         Cursor c = db.query(StockDBOpenHelper.HistoricalDates.getTableName(interval), null, where, null, null, null, null);
         HistoricalDates result = null;
@@ -142,7 +135,6 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
             c.close();
         }
 
-        db.close();
         return result;
     }
 
@@ -159,15 +151,15 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
     }
 
     /*
-    private void updatePrices(String symbol, Interval interval) throws Exception {
+    private void updatePrices(String symbolDescription, Interval interval) throws Exception {
         PriceList list = null;
         try
         {
             Calendar cal = Calendar.getInstance();
             cal.set(1990, Calendar.JANUARY, 1);
-            //PriceList list = YahooFinance.getPrices(symbol, interval, cal);
+            //PriceList list = YahooFinance.getPrices(symbolDescription, interval, cal);
             //TODO limit for now
-            list = mYahooFinance.getPrices(symbol, interval, 500);
+            list = mYahooFinance.getPrices(symbolDescription, interval, 500);
         }
         catch(Exception e)
         {
@@ -176,11 +168,11 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
 
         if (list != null && list.size() > 0) {
             add(list);
-            Log.d(TAG, "Updated prices for " + symbol);
+            Log.d(TAG, "Updated prices for " + symbolDescription);
             //mDb.log();
         }
         else {
-            throw new Exception("Failed to get updated prices for " + symbol);
+            throw new Exception("Failed to get updated prices for " + symbolDescription);
         }
     }
     */

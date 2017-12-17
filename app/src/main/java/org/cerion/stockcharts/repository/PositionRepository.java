@@ -3,7 +3,6 @@ package org.cerion.stockcharts.repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables.Positions;
@@ -30,8 +29,6 @@ public class PositionRepository extends SQLiteRepositoryBase {
     }
 
     public List<Position> getAll() {
-        SQLiteDatabase db = openReadOnly();
-
         Cursor c = db.query(Positions.TABLE_NAME, null, null, null, null, null, Positions._DATE); //order by date
         List<Position> result = new ArrayList<>();
 
@@ -43,7 +40,6 @@ public class PositionRepository extends SQLiteRepositoryBase {
             c.close();
         }
 
-        //db.close();
         return result;
     }
 
@@ -55,8 +51,6 @@ public class PositionRepository extends SQLiteRepositoryBase {
     }
 
     public Position get(int id) {
-        SQLiteDatabase db = openReadOnly();
-
         String where = String.format(Positions._ID + "=%d", id);
         Cursor c = db.query(Positions.TABLE_NAME, null, where, null, null, null, null);
         Position result = null;
@@ -69,7 +63,6 @@ public class PositionRepository extends SQLiteRepositoryBase {
             c.close();
         }
 
-        //db.close();
         return result;
     }
 

@@ -1,7 +1,6 @@
 package org.cerion.stockcharts.repository;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -11,48 +10,24 @@ import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables;
 import org.cerion.stocklist.model.Interval;
 
-import java.io.File;
 import java.util.Date;
 
 public abstract class SQLiteRepositoryBase {
-
-    private SQLiteOpenHelper mOpenHelper;
     private static final String TAG = SQLiteRepositoryBase.class.getSimpleName();
-
-    public SQLiteRepositoryBase(Context context) {
-        this(StockDBOpenHelper.getInstance(context));
-    }
+    protected SQLiteDatabase db;
 
     public SQLiteRepositoryBase(SQLiteOpenHelper openHelper) {
-        mOpenHelper = openHelper;
-    }
-
-    protected SQLiteDatabase open() {
-        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        //db.execSQL("PRAGMA foreign_keys = ON;");
-        return db;
-    }
-
-    protected SQLiteDatabase openReadOnly() {
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        //db.execSQL("PRAGMA foreign_keys = ON;");
-        return db;
+        db = openHelper.getWritableDatabase();
     }
 
     public void insert(String sTable, ContentValues values) {
-        SQLiteDatabase db = open();
-        insert(db,sTable,values);
-        db.close();
-    }
-
-    public void insert(SQLiteDatabase db, String sTable, ContentValues values) {
         long result = db.insert(sTable, null, values);
         if(result < 0)
             Log.e(TAG, "insert: " + values.toString());
     }
 
     protected void update(String table, ContentValues values, String whereField, Object whereValue) {
-        String where = null;
+        String where;
         if (whereValue instanceof Integer)
             where = String.format("%s=%d", whereField, (int)whereValue);
         else
@@ -62,12 +37,6 @@ public abstract class SQLiteRepositoryBase {
     }
 
     protected void update(String sTable, ContentValues values, String sWhere) {
-        SQLiteDatabase db = open();
-        update(db,sTable,values,sWhere);
-        db.close();
-    }
-
-    protected void update(SQLiteDatabase db, String sTable, ContentValues values, String sWhere) {
         long result = db.update(sTable, values, sWhere, null);
         if(result < 0)
             Log.e(TAG, "update: " + values.toString() + " where: " + sWhere);
@@ -76,12 +45,6 @@ public abstract class SQLiteRepositoryBase {
     }
 
     protected void delete(String sTable, String sWhere) {
-        SQLiteDatabase db = open();
-        delete(db,sTable,sWhere);
-        db.close();
-    }
-
-    protected void delete(SQLiteDatabase db, String sTable, String sWhere) {
         long result = db.delete(sTable, sWhere, null);
         if(result < 0)
             Log.e(TAG, "delete: " + sWhere);
@@ -90,19 +53,14 @@ public abstract class SQLiteRepositoryBase {
     }
 
     protected void deleteAll(String table) {
-        SQLiteDatabase db = open();
         db.execSQL("delete from "+ table);
-        db.close();
     }
 
     protected void optimize() {
-        SQLiteDatabase db = open();
         db.execSQL("VACUUM");
-        db.close();
     }
 
     public void log() {
-        SQLiteDatabase db = openReadOnly();
         Cursor c = db.rawQuery("SELECT count(*) FROM " + StockDBOpenHelper.Symbols.TABLE_NAME, null);
 
         if(c != null)
@@ -144,9 +102,9 @@ public abstract class SQLiteRepositoryBase {
             c = db.rawQuery(String.format("SELECT %s,%s FROM %s", StockDBOpenHelper.HistoricalDates._SYMBOL, StockDBOpenHelper.HistoricalDates._UPDATED, StockDBOpenHelper.HistoricalDates.getTableName(interval)), null);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String symbol = c.getString(0);
+                    String symbolDescription = c.getString(0);
                     long date = c.getLong(1);
-                    Log.d(TAG, "  " + symbol + ":\t" + new Date(date));
+                    Log.d(TAG, "  " + symbolDescription + ":\t" + new Date(date));
                 }
                 c.close();
             }
@@ -178,8 +136,6 @@ public abstract class SQLiteRepositoryBase {
             }
             c.close();
         }
-
-        db.close();
     }
 
     private void logHistoryTable(SQLiteDatabase db, String tableName) {
@@ -194,20 +150,5 @@ public abstract class SQLiteRepositoryBase {
             }
             c.close();
         }
-    }
-
-    protected long getDbSize() {
-        return new File(getPath()).length();
-    }
-
-    private String mPath = null;
-    private String getPath() {
-        if (mPath == null) {
-            SQLiteDatabase db = openReadOnly();
-            mPath = db.getPath();
-            db.close();
-        }
-
-        return mPath;
     }
 }

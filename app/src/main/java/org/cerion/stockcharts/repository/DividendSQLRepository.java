@@ -26,31 +26,29 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
 
     @Override
     public void add(String symbol, List<Dividend> list) {
-        SQLiteDatabase db = open();
         db.beginTransaction();
 
         String table = Dividends.TABLE_NAME;
         //Delete current data before re-adding new
-        delete(db, table, String.format("%s='%s'", Dividends._SYMBOL, symbol));
+        delete(table, String.format("%s='%s'", Dividends._SYMBOL, symbol));
 
         for(Dividend d : list) {
             ContentValues values = new ContentValues();
             values.put(Dividends._SYMBOL, symbol);
             values.put(Dividends._DATE, d.mDate.getTime());
             values.put(Dividends._AMOUNT, d.mDividend);
-            insert(db, table, values);
+            insert(table, values);
         }
 
         addHistory(db, symbol, list);
 
         db.setTransactionSuccessful();
         db.endTransaction();
-        //db.close();
     }
 
     /*
-    public List<Dividend> getLatest(String symbol) {
-        HistoricalDates dates = getHistoricalDates(symbol);
+    public List<Dividend> getLatest(String symbolDescription) {
+        HistoricalDates dates = getHistoricalDates(symbolDescription);
         boolean update = false;
 
         if(dates == null) {
@@ -59,7 +57,7 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
             Date now = new Date();
             long diff = now.getTime() - dates.LastUpdated.getTime();
             diff /= 1000 * 60 * 60 * 24;
-            //Log.d(TAG, symbol + " " + interval.name() + " last updated " + dates.LastUpdated + " (" + diff + " days ago)");
+            //Log.d(TAG, symbolDescription + " " + interval.name() + " last updated " + dates.LastUpdated + " (" + diff + " days ago)");
 
             // TODO based it on the following
             // IF most recent dividend is less than 30 days old, check at most once a week
@@ -71,18 +69,16 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
 
         if(update) {
             // TODO API should fail if it doesn't get a valid response, difference between error and success
-            List<Dividend> dividends = mYahooFinance.getDividends(symbol);
-            add(symbol, dividends); //updatePrices(symbol, interval);
+            List<Dividend> dividends = mYahooFinance.getDividends(symbolDescription);
+            add(symbolDescription, dividends); //updatePrices(symbolDescription, interval);
         }
 
-        return get(symbol);
+        return get(symbolDescription);
     }
     */
 
     @Override
     public List<Dividend> get(String symbol) {
-        SQLiteDatabase db = openReadOnly();
-
         String where = String.format(Dividends._SYMBOL + "='%s'", symbol);
         Cursor c = db.query(Dividends.TABLE_NAME, null, where, null, null, null, null);
         List<Dividend> result = new ArrayList<>();
@@ -98,14 +94,11 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
             c.close();
         }
 
-        //db.close();
         return result;
     }
 
     @Override
     public HistoricalDates getHistoricalDates(String symbol) {
-        SQLiteDatabase db = openReadOnly();
-
         String where = String.format(StockDBOpenHelper.HistoricalDates._SYMBOL + "='%s'", symbol);
         Cursor c = db.query(StockDBOpenHelper.HistoricalDates.TABLE_HISTORICAL_DATES_DIVIDENDS, null, where, null, null, null, null);
         HistoricalDates result = null;
@@ -120,7 +113,6 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
             c.close();
         }
 
-        //db.close();
         return result;
     }
 

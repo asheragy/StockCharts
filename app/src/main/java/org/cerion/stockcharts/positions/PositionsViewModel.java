@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.Observable;
 import android.databinding.ObservableField;
 import android.util.Log;
+import android.util.Pair;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
@@ -23,6 +24,7 @@ public class PositionsViewModel {
     public List<String> accounts = new ArrayList<>();
     public final ObservableField<Integer> accountIndex = new ObservableField<>(0);
     public final ObservableField<List<PositionItemViewModel>> positions = new ObservableField<>();
+    public final ObservableField<List<Pair<String,Float>>> allocations = new ObservableField<>();
 
     private PositionRepository repo;
     private SymbolRepository symbolRepo;
@@ -34,6 +36,7 @@ public class PositionsViewModel {
         api = Injection.getAPI(context);
 
         positions.set(new ArrayList<PositionItemViewModel>());
+        allocations.set(new ArrayList<Pair<String,Float>>());
         accounts.add("Brokerage");
         accounts.add("Roth");
         accounts.add("IRA");
@@ -59,8 +62,8 @@ public class PositionsViewModel {
         loading.set(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-
             private List<Symbol> symbols;
+            List<PositionItemViewModel> items = new ArrayList<>();
 
             private Symbol lookupSymbol(String symbol) {
                 for(Symbol s : symbols) {
@@ -73,35 +76,60 @@ public class PositionsViewModel {
 
             @Override
             public void run() {
-                positions.get().clear();
                 symbols = symbolRepo.getAll();
                 List<Position> list = repo.getAll();
 
                 for(Position p : list) {
                     if(p.getAccountId() == accountIndex.get()) {
                         //Log.d(TAG,"adding " + p);
-                        PositionItemViewModel vm = new PositionItemViewModel(api, p);
-
+                        String desc = p.getSymbol();
                         Symbol s = lookupSymbol(p.getSymbol());
                         if(s != null)
-                            vm.setDescription(s.getName());
+                            desc = desc + " - " + s.getName();
 
-                        positions.get().add(vm);
+                        PositionItemViewModel vm = new PositionItemViewModel(api, p, desc);
+                        items.add(vm);
+
+                        vm.totalValue.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+                            @Override
+                            public void onPropertyChanged(Observable sender, int propertyId) {
+                                updateAllocations();
+                            }
+                        });
                     }
                 }
-
-                positions.notifyChange();
             }
 
             @Override
             public void onFinish() {
-                loading.set(false);
+                positions.get().clear();
+                positions.get().addAll(items);
+                positions.notifyChange();
 
-                //update();
+                updateAllocations();
+                loading.set(false);
             }
         });
 
         task.execute();
+    }
+
+    private void updateAllocations() {
+        List<PositionItemViewModel> items = positions.get();
+
+        allocations.get().clear();
+        float cash = 0;
+        for(PositionItemViewModel item : items) {
+            Pair<String,Float> a = new Pair<>(item.getPosition().getSymbol(), item.totalValue.get());
+            allocations.get().add(a);
+
+            cash += item.getCash();
+        }
+
+        if (cash > 0)
+            allocations.get().add( new Pair<>("Cash", cash));
+
+        allocations.notifyChange();
     }
 
     /*
@@ -123,19 +151,19 @@ private Map<String,Quote> getQuotes() {
             public void run() {
                 //Map<String,Quote> quotes = getQuotes();
                 for(PositionItemViewModel vm : positions.get()) {
-                    String symbol = vm.getPosition().getSymbol();
+                    String symbolDescription = vm.getPosition().getSymbol();
 
-                    //Quote q = quotes.get(symbol);
+                    //Quote q = quotes.get(symbolDescription);
                     // Always do this since quotes not working
                     // if(p.IsDividendsReinvested())
 
                     try {
-                        List<Price> list = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY);
+                        List<Price> list = api.getPrices(symbolDescription, Interval.DAILY, Constants.START_DATE_DAILY);
                         //p.setPriceHistory(list);
 
-                        List<Dividend> dividends = api.getDividends(symbol);
+                        List<Dividend> dividends = api.getDividends(symbolDescription);
 
-                        vm.setData(new PriceList(symbol, list), dividends);
+                        vm.setData(new PriceList(symbolDescription, list), dividends);
                     } catch (Exception e){
 
                     }

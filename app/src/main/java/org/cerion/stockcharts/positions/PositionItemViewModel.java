@@ -18,11 +18,12 @@ import java.util.List;
 
 public class PositionItemViewModel {
 
-    private Position mPosition;
+    private Position position;
     private DecimalFormat df = Utils.decimalFormat;
     private DataAPI api;
+    private String symbolDescription;
+    private float cash;
 
-    public ObservableField<String> symbol = new ObservableField<>("");
     public ObservableField<Float> dayChange = new ObservableField<>(0.0f);
     public ObservableField<Float> totalChange = new ObservableField<>(0.0f);
     public ObservableField<String> dayChangeStr = new ObservableField<>("0.00 (0.00%)");
@@ -31,11 +32,17 @@ public class PositionItemViewModel {
     public ObservableField<String> dividendProfit = new ObservableField<>("");
     public ObservableField<Boolean> loading = new ObservableField<>(false);
     public ObservableField<Boolean> hasError = new ObservableField<>(false);
+    public ObservableField<Float> totalValue = new ObservableField<>(0.0f);
 
-    PositionItemViewModel(DataAPI api, Position p) {
+    PositionItemViewModel(DataAPI api, Position p, String symbolDescription) {
         this.api = api;
-        mPosition = p;
-        this.symbol.set(p.getSymbol());
+        position = p;
+        this.symbolDescription = symbolDescription;
+        this.totalValue.set((float)p.getOrigValue());
+    }
+
+    public String getSymbolDescription() {
+        return symbolDescription;
     }
 
     public void load() {
@@ -46,7 +53,7 @@ public class PositionItemViewModel {
             @Override
             public void doInBackground() throws Exception {
                 String symbol = getPosition().getSymbol();
-                //Quote q = quotes.get(symbol);
+                //Quote q = quotes.get(symbolDescription);
                 // Always do this since quotes not working
                 // if(p.IsDividendsReinvested())
 
@@ -68,12 +75,8 @@ public class PositionItemViewModel {
         });
     }
 
-    public void setDescription(String description) {
-        this.symbol.set(mPosition.getSymbol() + " - " + description);
-    }
-
     private void setData(PriceList list, List<Dividend> dividends) {
-        PositionValue value = new PositionValue(mPosition, list);
+        PositionValue value = new PositionValue(position, list);
         value.addDividends(dividends);
 
         float change = list.getChange();
@@ -102,18 +105,26 @@ public class PositionItemViewModel {
             dividendProfit.set("$" + df.format(profit));
         } else
             dividendProfit.set("");
+
+        cash = profit;
+
+        totalValue.set((float)value.getCurrValue());
+    }
+
+    public float getCash() {
+        return cash;
     }
 
     public Position getPosition() {
-        return mPosition;
+        return position;
     }
 
     public String purchaseDate() {
-        return Utils.dateFormatShort.format(mPosition.getDate());
+        return Utils.dateFormatShort.format(position.getDate());
     }
 
     // TODO this needs to be dynamic
     public String purchaseLot() {
-        return Utils.getDecimalFormat3(mPosition.getCount()) + " @ " + df.format(mPosition.getOrigPrice());
+        return Utils.getDecimalFormat3(position.getCount()) + " @ " + df.format(position.getOrigPrice());
     }
 }

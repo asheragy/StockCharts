@@ -25,8 +25,6 @@ public class SymbolRepository extends SQLiteRepositoryBase {
     }
 
     public List<Symbol> getAll() {
-        SQLiteDatabase db = openReadOnly();
-
         Cursor c = db.query(StockDBOpenHelper.Symbols.TABLE_NAME, null, null, null, null, null, StockDBOpenHelper.Symbols._NAME); //order by name
         List<Symbol> result = new ArrayList<>();
 
@@ -40,7 +38,6 @@ public class SymbolRepository extends SQLiteRepositoryBase {
             c.close();
         }
 
-        db.close();
         return result;
     }
 
@@ -58,15 +55,12 @@ public class SymbolRepository extends SQLiteRepositoryBase {
     }
 
     public void add(Symbol symbol) {
-        SQLiteDatabase db = open();
-
         ContentValues values = new ContentValues();
         values.put(StockDBOpenHelper.Symbols._SYMBOL, symbol.getSymbol());
         values.put(StockDBOpenHelper.Symbols._NAME, symbol.getName());
         values.put(StockDBOpenHelper.Symbols._EXCHANGE, symbol.getExchange());
 
         db.insertWithOnConflict(StockDBOpenHelper.Symbols.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
     }
 
         /*
