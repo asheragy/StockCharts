@@ -22,4 +22,13 @@ public class Utils {
         else
             return decimalFormat3.format(num);
     }
+
+    // TODO in stocklib add function to get this directly in list and quote for several ranges
+    public static int highLowRange(float current, float high, float low) {
+        float range = high - low;
+        float diff = current - low;
+        float percent = diff / range;
+
+        return (int)(percent * 100);
+    }
 }

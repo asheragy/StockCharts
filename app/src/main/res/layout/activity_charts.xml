@@ -40,6 +40,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <fragment android:name="org.cerion.stockcharts.charts.InfoPanelFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/info_fragment"
+                        tools:layout="@layout/fragment_summary_panel">
+                    </fragment>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

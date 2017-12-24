@@ -74,20 +74,24 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        PositionItemViewModel p = vm.positions.get().get(item.getOrder());
+        if (getUserVisibleHint()) {
+            PositionItemViewModel p = vm.positions.get().get(item.getOrder());
 
-        switch(item.getItemId()) {
-            case RecyclerViewAdapter.CONTEXT_MENU_EDIT:
-                onEdit(p.getPosition());
-                break;
-            case RecyclerViewAdapter.CONTEXT_MENU_DELETE:
-                vm.delete(p.getPosition());
-                break;
-            default:
-                return super.onContextItemSelected(item);
+            switch (item.getItemId()) {
+                case RecyclerViewAdapter.CONTEXT_MENU_EDIT:
+                    onEdit(p.getPosition());
+                    break;
+                case RecyclerViewAdapter.CONTEXT_MENU_DELETE:
+                    vm.delete(p.getPosition());
+                    break;
+                default:
+                    return super.onContextItemSelected(item);
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private void onEdit(Position p) {

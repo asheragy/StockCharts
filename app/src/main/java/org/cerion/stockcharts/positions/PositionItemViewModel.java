@@ -11,7 +11,7 @@ import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
 import org.cerion.stocklist.model.PositionValue;
-import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocklist.web.CachedDataAPI;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -20,7 +20,7 @@ public class PositionItemViewModel {
 
     private Position position;
     private DecimalFormat df = Utils.decimalFormat;
-    private DataAPI api;
+    private CachedDataAPI api;
     private String symbolDescription;
     private float cash;
 
@@ -33,8 +33,9 @@ public class PositionItemViewModel {
     public ObservableField<Boolean> loading = new ObservableField<>(false);
     public ObservableField<Boolean> hasError = new ObservableField<>(false);
     public ObservableField<Float> totalValue = new ObservableField<>(0.0f);
+    public boolean forceUpdate = false;
 
-    PositionItemViewModel(DataAPI api, Position p, String symbolDescription) {
+    PositionItemViewModel(CachedDataAPI api, Position p, String symbolDescription) {
         this.api = api;
         position = p;
         this.symbolDescription = symbolDescription;
@@ -50,17 +51,22 @@ public class PositionItemViewModel {
         hasError.set(false);
 
         BackgroundTask.run(new BackgroundTask() {
+
+            List<Price> list;
+            List<Dividend> dividends;
+            String symbol = getPosition().getSymbol();
+
             @Override
             public void doInBackground() throws Exception {
-                String symbol = getPosition().getSymbol();
+
                 //Quote q = quotes.get(symbolDescription);
                 // Always do this since quotes not working
                 // if(p.IsDividendsReinvested())
 
-                List<Price> list = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY);
+                list = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY, forceUpdate);
                 //p.setPriceHistory(list);
-                List<Dividend> dividends = api.getDividends(symbol);
-                setData(new PriceList(symbol, list), dividends);
+                dividends = api.getDividends(symbol);
+
             }
 
             @Override
@@ -71,6 +77,9 @@ public class PositionItemViewModel {
             @Override
             public void onFinish() {
                 loading.set(false);
+                forceUpdate = false;
+
+                setData(new PriceList(symbol, list), dividends);
             }
         });
     }

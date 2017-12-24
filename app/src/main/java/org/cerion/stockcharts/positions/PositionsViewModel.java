@@ -59,6 +59,10 @@ public class PositionsViewModel {
     }
 
     public void load() {
+        load(false);
+    }
+
+    public void load(final boolean forceUpdate) {
         loading.set(true);
 
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
@@ -88,6 +92,7 @@ public class PositionsViewModel {
                             desc = desc + " - " + s.getName();
 
                         PositionItemViewModel vm = new PositionItemViewModel(api, p, desc);
+                        vm.forceUpdate = forceUpdate;
                         items.add(vm);
 
                         vm.totalValue.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
@@ -102,6 +107,7 @@ public class PositionsViewModel {
 
             @Override
             public void onFinish() {
+                // TODO use asynctask doInBackground return result for this
                 positions.get().clear();
                 positions.get().addAll(items);
                 positions.notifyChange();

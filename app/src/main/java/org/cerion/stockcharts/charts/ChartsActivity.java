@@ -16,7 +16,6 @@ import com.edmodo.rangebar.RangeBar;
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
-import org.cerion.stockcharts.charts.views.SummaryPanelView;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
 import org.cerion.stocklist.charts.IndicatorChart;
@@ -65,8 +64,11 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
             public void onIndexChangeListener(RangeBar rangeBar, int i, int i1) {
                 Log.d(TAG, i + " " + i1);
                 for(int n = 0; n < mCharts.getChildCount(); n++) {
-                    ChartView cv = (ChartView)mCharts.getChildAt(n);
-                    cv.setRange(i, i1);
+                    View v = mCharts.getChildAt(n);
+                    if (v instanceof ChartView) {
+                        ChartView cv = (ChartView) v;
+                        cv.setRange(i, i1);
+                    }
                 }
             }
         });
@@ -79,8 +81,6 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
                 rangeBar.setThumbIndices(0, size-1);
             }
         });
-
-        addInfoPanel();
 
         // Restore previous charts
         if (isRetained()) {
@@ -119,6 +119,9 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
             }
         });
 
+        InfoPanelFragment fragment = (InfoPanelFragment)getFragmentManager().findFragmentById(R.id.info_fragment);
+        fragment.load(getViewModel().getSymbol());
+
         if (getViewModel().fabOpen.get())
             binding.fabGroup.open();
     }
@@ -151,10 +154,5 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
 
         if (chart instanceof IndicatorChart)
             view.edit();
-    }
-
-    private void addInfoPanel() {
-        final SummaryPanelView view = new SummaryPanelView(this);
-        mCharts.addView(view);
     }
 }

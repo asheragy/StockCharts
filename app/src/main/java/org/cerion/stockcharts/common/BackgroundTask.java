@@ -7,13 +7,14 @@ public abstract class BackgroundTask {
     public static void run(final BackgroundTask worker) {
 
         AsyncTask task = new AsyncTask() {
+            Exception error;
 
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
                     worker.doInBackground();
                 } catch(Exception e) {
-                    worker.onError(e);
+                    error = e;
                 }
                 return null;
             }
@@ -22,6 +23,8 @@ public abstract class BackgroundTask {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 worker.onFinish();
+                if (error != null)
+                    worker.onError(error);
             }
         };
 

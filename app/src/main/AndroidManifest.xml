@@ -24,7 +24,7 @@
             android:name=".PortfolioValueActivity"
             android:label="" />
         <activity
-            android:name=".PriceListActivity"
+            android:name=".ui.PriceListActivity"
             android:label="" />
         <activity
             android:name=".charts.ChartsActivity"

@@ -17,13 +17,8 @@ import android.widget.Toast;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.positions.PositionListFragment;
-import org.cerion.stockcharts.repository.SymbolRepository;
+import org.cerion.stockcharts.ui.symbols.SymbolsFragment;
 import org.cerion.stockcharts.watchlist.WatchListFragment;
-import org.cerion.stocklist.model.Symbol;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -109,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(PortfolioValueActivity.getIntent(this));
     }
 
+    /*
     private void onImportSP500()
     {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
@@ -136,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                SymbolListFragment frag = (SymbolListFragment)mSectionsPagerAdapter.getFragment(0);
+                SymbolsFragment frag = (SymbolsFragment)mSectionsPagerAdapter.getFragment(0);
                 frag.refresh();
                 Toast.makeText(MainActivity.this,"Finished import",Toast.LENGTH_LONG).show();
             }
@@ -145,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         task.execute();
         //List<String> symbols = Symbols.getSP500List();
     }
+    */
 
     private void onClearCache() {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
@@ -177,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
 
             if(position == 0)
-                return new SymbolListFragment();
+                return new SymbolsFragment();
             else if(position == 1)
                 return new PositionListFragment();
             else if (position == 2)
@@ -265,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    mFragments[0] = new SymbolListFragment();
+                    mFragments[0] = new SymbolsFragment();
                     break;
                 case 1:
                     mFragments[1] = new PositionListFragment();

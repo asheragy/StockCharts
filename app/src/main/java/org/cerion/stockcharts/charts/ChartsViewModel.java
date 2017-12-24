@@ -26,6 +26,8 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
     public final ObservableField<Boolean> loading = new ObservableField<>();
     public final ObservableField<Boolean> fabOpen = new ObservableField<>(false);
 
+    public final ObservableField<String> fullName = new ObservableField<>("");
+
     public interface ChartsView {
         void onErrorLoading(String error);
     }
@@ -60,9 +62,6 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
                 List<Price> prices = null;
 
                 try {
-                    if (true)
-                        throw new Exception("TODO handle exception");
-
                     switch (interval.get()) {
                         case DAILY:
                             prices = api.getPrices(symbol, Interval.DAILY, Constants.START_DATE_DAILY);

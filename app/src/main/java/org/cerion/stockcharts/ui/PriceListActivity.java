@@ -1,4 +1,4 @@
-package org.cerion.stockcharts;
+package org.cerion.stockcharts.ui;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -14,6 +14,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.database.StockDBOpenHelper.Prices;
