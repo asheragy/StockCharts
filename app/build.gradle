@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "org.cerion.stockcharts"
         minSdkVersion 23
-        targetSdkVersion 25
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -23,17 +23,25 @@ android {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
 repositories {
     maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-v13:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
-    compile 'com.edmodo:rangebar:1.0.0'
-    compile project(':stocklist')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:support-v13:28.0.0'
+    //implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    implementation 'com.google.android.gms:play-services-appindexing:9.8.0'
+    implementation 'com.edmodo:rangebar:1.0.0'
+    implementation project(':stocklist')
 }

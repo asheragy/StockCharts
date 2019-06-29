@@ -32,51 +32,61 @@ public class InfoPanelViewModel {
 
     }
 
+    private class InfoTask extends AsyncTask<Void, Void, Quote> {
+
+        private String symbol;
+        public InfoTask(String symbol) {
+            this.symbol = symbol;
+        }
+
+        @Override
+        protected Quote doInBackground(Void... params) {
+            Quote q = api.getQuote(symbol);
+            return q;
+        }
+
+        @Override
+        protected void onPostExecute(Quote quote) {
+            if (quote == null)
+                return;
+
+            fullName.set(quote.name);
+            symbolExchange.set(quote.exchange + ": " + quote.symbol);
+            currentPrice.set("" + quote.lastTrade);
+
+            String changeStr = Math.abs(quote.change) + " (" + Math.abs(quote.changePercent) + "%)";
+            if (quote.change > 0)
+                changeStr = "▲" + changeStr;
+            else if (quote.change < 0)
+                changeStr = "▼" + changeStr;
+            priceChange.set(changeStr);
+
+            if (quote.change > 0)
+                change.set(1);
+            else if (quote.change < 0)
+                change.set(-1);
+
+            marketCap.set(quote.marketCap);
+            peRatio.set(getString(quote.peRatio));
+            yield.set("" + quote.dividendYield);
+            beta.set(getString(quote.beta));
+            sector.set("" + quote.sector);
+            eps.set("" + quote.eps);
+
+            if (quote.volume > 1000000) {
+                double v = quote.volume;
+                v /= 1000000;
+                volume.set(Utils.decimalFormat.format(v));
+            }
+            else
+                volume.set("" + quote.volume);
+
+            yearRange.set( Utils.highLowRange(quote.lastTrade, quote.high52, quote.low52));
+        }
+    }
+
     public void load(final String symbol) {
-        AsyncTask<Void, Void, Quote>  task = new AsyncTask<Void, Void, Quote>() {
-            @Override
-            protected Quote doInBackground(Void... params) {
-                Quote q = api.getQuote(symbol);
-                return q;
-            }
-
-            @Override
-            protected void onPostExecute(Quote quote) {
-                fullName.set(quote.name);
-                symbolExchange.set(quote.exchange + ": " + quote.symbol);
-                currentPrice.set("" + quote.lastTrade);
-
-                String changeStr = Math.abs(quote.change) + " (" + Math.abs(quote.changePercent) + "%)";
-                if (quote.change > 0)
-                    changeStr = "▲" + changeStr;
-                else if (quote.change < 0)
-                    changeStr = "▼" + changeStr;
-                priceChange.set(changeStr);
-
-                if (quote.change > 0)
-                    change.set(1);
-                else if (quote.change < 0)
-                    change.set(-1);
-
-                marketCap.set(quote.marketCap);
-                peRatio.set(getString(quote.peRatio));
-                yield.set("" + quote.dividendYield);
-                beta.set(getString(quote.beta));
-                sector.set("" + quote.sector);
-                eps.set("" + quote.eps);
-
-                if (quote.volume > 1000000) {
-                    double v = quote.volume;
-                    v /= 1000000;
-                    volume.set(Utils.decimalFormat.format(v));
-                }
-                else
-                    volume.set("" + quote.volume);
-
-                yearRange.set( Utils.highLowRange(quote.lastTrade, quote.high52, quote.low52));
-            }
-        };
-
+        InfoTask task = new InfoTask(symbol);
         task.execute();
     }
 

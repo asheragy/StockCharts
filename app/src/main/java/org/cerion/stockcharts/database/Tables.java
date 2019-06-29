@@ -31,7 +31,7 @@ public class Tables {
 
         public static final String SQL_CREATE = "create table " + TABLE_NAME + "("
                 + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + _ACCOUNTID + " INTEGER NOT NULL DEFAULT 0"
+                + _ACCOUNTID + " INTEGER NOT NULL DEFAULT 0, "
                 + _SYMBOL + " TEXT NOT NULL, "
                 + _COUNT + " REAL NOT NULL, "
                 + _PRICE + " REAL NOT NULL, "

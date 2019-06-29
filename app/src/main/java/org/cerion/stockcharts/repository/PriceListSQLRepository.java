@@ -98,7 +98,7 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
             values.put(StockDBOpenHelper.Prices._OPEN, p.open);
             values.put(StockDBOpenHelper.Prices._HIGH, p.high);
             values.put(StockDBOpenHelper.Prices._LOW, p.low);
-            values.put(StockDBOpenHelper.Prices._CLOSE, p.close);
+            values.put(StockDBOpenHelper.Prices._CLOSE, p.getClose());
             values.put(StockDBOpenHelper.Prices._VOLUME, p.volume);
             insert(table, values);
         }

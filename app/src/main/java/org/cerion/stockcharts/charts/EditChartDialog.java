@@ -20,6 +20,8 @@ import org.cerion.stocklist.functions.IIndicator;
 import org.cerion.stocklist.functions.IOverlay;
 import org.cerion.stocklist.functions.ISimpleOverlay;
 
+import java.util.List;
+
 public class EditChartDialog extends DialogFragment implements EditChartViewModel.OnFunctionChangeListener {
 
     private EditChartViewModel viewModel;
@@ -152,7 +154,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         }
 
         // Add parameters
-        final Number[] params = instance.params();
+        final List<Number> params = instance.getParams();
         getParametersControl().setParameters(params);
     }
 

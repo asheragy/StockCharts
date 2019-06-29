@@ -53,7 +53,7 @@ public class OverlayEditControl extends LinearLayout {
                 //EditText[] fields = new EditText[o.params().length];
 
                 // Add parameters
-                parameters.setParameters(o.params());
+                parameters.setParameters(o.getParams());
                 /*
                 LinearLayout layout = (LinearLayout)findViewById(R.id.parameters);
                 layout.removeAllViews();

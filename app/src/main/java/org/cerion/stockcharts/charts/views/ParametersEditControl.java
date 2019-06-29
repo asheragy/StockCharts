@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import org.cerion.stockcharts.R;
 
+import java.util.List;
+
 public class ParametersEditControl extends LinearLayout {
 
     private Number[] defaultParameters;
@@ -21,16 +23,16 @@ public class ParametersEditControl extends LinearLayout {
         super(context, attributeSet);
     }
 
-    public void setParameters(final Number params[]) {
+    public void setParameters(final List<Number> params) {
 
         // TODO add binding so EditText updates corresponding array at all times
 
-        defaultParameters = params;
+        defaultParameters = params.toArray(new Number[0]);
         //final EditText[] fields = new EditText[params.length];
 
         removeAllViews();
-        for(int i = 0; i < params.length; i++) {
-            Number n = params[i];
+        for(int i = 0; i < params.size(); i++) {
+            Number n = params.get(i);
             final int pos = i;
             EditText et = getInputField(n);
 
@@ -44,7 +46,9 @@ public class ParametersEditControl extends LinearLayout {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     // TryParse
                     Number defValue = defaultParameters[pos];
-                    params[pos] = tryParseNumber(s.toString(), defValue);
+                    Number newValue = tryParseNumber(s.toString(), defValue);
+
+                    params.set(pos, newValue);
                 }
 
                 @Override

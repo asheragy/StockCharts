@@ -63,7 +63,7 @@ public class WatchItemViewModel {
     private void apply(PriceList list) {
 
         int size = list.size();
-        float price = list.getLast().close;
+        float price = list.getLast().getClose();
         float change = list.getLast().getPercentDiff(list.get(size - 2));
 
         // TODO include current quote since its not in pricelist
@@ -80,7 +80,7 @@ public class WatchItemViewModel {
         }
 
         float range = high - low;
-        float diff = list.getLast().close - low;
+        float diff = list.getLast().getClose() - low;
         float percent = diff / range;
         weekPosition.set((int)(percent * 100));
 
@@ -104,7 +104,7 @@ public class WatchItemViewModel {
         }
 
         range = high - low;
-        diff = list.getLast().close - low;
+        diff = list.getLast().getClose() - low;
         percent = diff / range;
         yearPosition.set((int)(percent * 100));
 
