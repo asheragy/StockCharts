@@ -10,13 +10,13 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDirs = ['C:\\Data\\Dev\\Java\\Stocks\\stocklist\\src\\main\\java']
+            srcDirs = ['C:\\Data\\Dev\\Java\\Stocks\\stocklist\\src\\main\\java', 'C:\\Data\\Dev\\Java\\Stocks\\stocklist\\src\\main\\kotlin']
         }
     }
 
     test {
         java {
-            srcDirs = ['C:\\Data\\Dev\\Java\\Stocks\\stocklist\\src\\test\\java']
+            srcDirs = ['C:\\Data\\Dev\\Java\\Stocks\\stocklist\\src\\test\\kotlin']
         }
 
         resources {
@@ -31,5 +31,5 @@ task copyTestResources(type: Copy) {
 }
 processTestResources.dependsOn copyTestResources
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

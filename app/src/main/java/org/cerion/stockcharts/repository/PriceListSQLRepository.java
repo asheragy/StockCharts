@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
+import org.cerion.stocklist.IPrice;
 import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
 import org.cerion.stocklist.model.HistoricalDates;
@@ -91,15 +92,15 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         //Delete current data before re-adding new
         delete(table, String.format("%s='%s'", StockDBOpenHelper.Prices._SYMBOL, list.mSymbol));
 
-        for(Price p : list) {
+        for(IPrice p : list) {
             ContentValues values = new ContentValues();
             values.put(StockDBOpenHelper.Prices._SYMBOL, list.mSymbol);
-            values.put(StockDBOpenHelper.Prices._DATE, p.date.getTime());
-            values.put(StockDBOpenHelper.Prices._OPEN, p.open);
-            values.put(StockDBOpenHelper.Prices._HIGH, p.high);
-            values.put(StockDBOpenHelper.Prices._LOW, p.low);
+            values.put(StockDBOpenHelper.Prices._DATE, p.getDate().getTime());
+            values.put(StockDBOpenHelper.Prices._OPEN, p.getOpen());
+            values.put(StockDBOpenHelper.Prices._HIGH, p.getHigh());
+            values.put(StockDBOpenHelper.Prices._LOW, p.getLow());
             values.put(StockDBOpenHelper.Prices._CLOSE, p.getClose());
-            values.put(StockDBOpenHelper.Prices._VOLUME, p.volume);
+            values.put(StockDBOpenHelper.Prices._VOLUME, p.getVolume());
             insert(table, values);
         }
 

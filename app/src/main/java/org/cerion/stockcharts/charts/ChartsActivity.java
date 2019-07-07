@@ -128,7 +128,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
 
     public void addPriceChart() {
         PriceChart chart = new PriceChart();
-        chart.candleData = false;
+        chart.setCandleData(false);
         onAddChart(chart);
     }
 

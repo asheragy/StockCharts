@@ -38,7 +38,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/build/classes/java/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/java/test" />
     <exclude-output />
@@ -52,8 +52,11 @@
     <content url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/main/java">
       <sourceFolder url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/main/java" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/java">
-      <sourceFolder url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/java" isTestSource="true" />
+    <content url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/main/kotlin">
+      <sourceFolder url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/main/kotlin" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/kotlin">
+      <sourceFolder url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/kotlin" isTestSource="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/resources">
       <sourceFolder url="file://$MODULE_DIR$/../../../Java/Stocks/stocklist/src/test/resources" type="java-test-resource" />

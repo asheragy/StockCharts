@@ -60,14 +60,14 @@ public class EditChartViewModel {
             VolumeChart c = (VolumeChart)chart;
             mType = EditChartViewModel.ChartType.Volume;
 
-            logScale.set(c.logScale);
+            logScale.set(c.getLogScale());
         }
         else if (chart instanceof PriceChart) {
             PriceChart c = (PriceChart)chart;
             mType = EditChartViewModel.ChartType.Price;
 
-            logScale.set(c.logScale);
-            lineChart.set(!c.candleData);
+            logScale.set(c.getLogScale());
+            lineChart.set(!c.getCandleData());
         }
         else {
             mType = EditChartViewModel.ChartType.Indicator;
@@ -82,10 +82,10 @@ public class EditChartViewModel {
 
     public StockChart getChart() {
         if (mChart instanceof PriceChart) {
-            ((PriceChart) mChart).logScale = logScale.get();
-            ((PriceChart) mChart).candleData = !lineChart.get();
+            ((PriceChart) mChart).setLogScale( logScale.get() );
+            ((PriceChart) mChart).setCandleData( !lineChart.get() );
         } else if (mChart instanceof VolumeChart) {
-            ((VolumeChart) mChart).logScale = logScale.get();
+            ((VolumeChart) mChart).setLogScale( logScale.get() );
         } else if (mChart instanceof IndicatorChart) {
             // TODO this clears overlays, need to have those in VM too
             //final IIndicator instance = viewModel.getFunction();

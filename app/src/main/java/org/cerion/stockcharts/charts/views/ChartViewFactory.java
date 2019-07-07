@@ -62,15 +62,13 @@ class ChartViewFactory {
     }
 
     Chart getChart(StockChart chart, PriceList list) {
-        chart.setPriceList(list);
-
         if (chart instanceof PriceChart)
-            return getPriceChart((PriceChart) chart);
+            return getPriceChart((PriceChart) chart, list);
 
         if (chart instanceof IndicatorChart)
-            return getLineChart((IndicatorChart) chart);
+            return getLineChart((IndicatorChart) chart, list);
 
-        return getVolumeChart((VolumeChart) chart);
+        return getVolumeChart((VolumeChart) chart, list);
     }
 
     Chart getEmptyChart() {
@@ -81,11 +79,11 @@ class ChartViewFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private Chart getPriceChart(PriceChart pchart) {
+    private Chart getPriceChart(PriceChart pchart, PriceList list) {
         BarLineChartBase chart;
-        List<IDataSet> sets = getDataSets(pchart);
+        List<IDataSet> sets = getDataSets(pchart, list);
 
-        if(pchart.candleData && pchart.canShowCandleData()) {
+        if(pchart.getCandleData() && pchart.canShowCandleData(list)) {
             chart = new CombinedChart(mContext);
             CombinedData data = new CombinedData();
             CandleData candleData = getCandleData(sets);
@@ -101,10 +99,10 @@ class ChartViewFactory {
             chart.setData(lineData);
         }
 
-        setChartDefaults(chart, pchart);
+        setChartDefaults(chart, pchart, list);
         chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT_PRICE);
 
-        if(pchart.logScale) {
+        if(pchart.getLogScale()) {
             YAxis axis = chart.getAxisRight();
             axis.setValueFormatter(getLogScaleYAxis());
         }
@@ -113,28 +111,28 @@ class ChartViewFactory {
         return chart;
     }
 
-    private Chart getLineChart(IndicatorChart ichart) {
+    private Chart getLineChart(IndicatorChart ichart, PriceList list) {
         LineChart chart = new LineChart(mContext);
-        setChartDefaults(chart, ichart);
+        setChartDefaults(chart, ichart, list);
         chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
 
-        List<IDataSet> sets = getDataSets(ichart);
+        List<IDataSet> sets = getDataSets(ichart, list);
         chart.setData(getLineData(sets));
 
         setLegend(chart, sets);
         return chart;
     }
 
-    private Chart getVolumeChart(VolumeChart vchart) {
+    private Chart getVolumeChart(VolumeChart vchart, PriceList list) {
         CombinedChart chart = new CombinedChart(mContext);
-        setChartDefaults(chart, vchart);
+        setChartDefaults(chart, vchart, list);
 
-        if(vchart.logScale) {
+        if(vchart.getLogScale()) {
             YAxis axis = chart.getAxisRight();
             axis.setValueFormatter(getLogScaleYAxis());
         }
 
-        List<IDataSet> dataSets = getDataSets(vchart);
+        List<IDataSet> dataSets = getDataSets(vchart, list);
         CombinedData data = new CombinedData();
         data.setData(getBarData(dataSets));
         data.setData(getLineData(dataSets));
@@ -144,7 +142,7 @@ class ChartViewFactory {
         return chart;
     }
 
-    private void setChartDefaults(BarLineChartBase chart, StockChart stockchart) {
+    private void setChartDefaults(BarLineChartBase chart, StockChart stockchart, PriceList list) {
         chart.setDescription(mDesc);
         chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
 
@@ -154,7 +152,7 @@ class ChartViewFactory {
         chart.getAxisRight().setLabelCount(3, false);
 
         XAxis xaxis = chart.getXAxis();
-        xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates(), stockchart.interval));
+        xaxis.setValueFormatter(getAxisFormatter(stockchart.getDates(list), list.getInterval()));
         xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
         // Always start at position 0 even if data set starts after that
@@ -195,10 +193,10 @@ class ChartViewFactory {
         legend.setWordWrapEnabled(false);
     }
 
-    private List<IDataSet> getDataSets(StockChart chart) {
+    private List<IDataSet> getDataSets(StockChart chart, PriceList list) {
         chart.setPrimaryColors(Colors.CHART_PRIMARY);
         chart.setSecondaryColors(Colors.CHART_SECONDARY);
-        return chart.getDataSets();
+        return chart.getDataSets(list);
     }
 
     private BarData getBarData(List<IDataSet> sets) {
@@ -208,7 +206,7 @@ class ChartViewFactory {
             if(curr.getLineType() == LineType.BAR) {
                 DataSet set = (DataSet)curr;
                 ArrayList<BarEntry> entries = new ArrayList<>();
-                for (int i = 0; i < set.size(); i++)
+                for (int i = 0; i < set.getSize(); i++)
                     entries.add(new BarEntry(i, set.get(i)));
 
                 BarDataSet dataSet = new BarDataSet(entries, set.getLabel());
@@ -227,7 +225,7 @@ class ChartViewFactory {
             if(curr.getLineType() == LineType.LINE || curr.getLineType() == LineType.DOTTED) {
                 DataSet set = (DataSet)curr;
                 ArrayList<Entry> entries = new ArrayList<>();
-                for (int i = 0; i < set.size(); i++) {
+                for (int i = 0; i < set.getSize(); i++) {
                     float point = set.get(i);
                     if(!Float.isNaN(point))
                         entries.add(new Entry(i, point));
@@ -262,7 +260,7 @@ class ChartViewFactory {
                 ArrayList<CandleEntry> entries = new ArrayList<>();
                 org.cerion.stocklist.charts.CandleDataSet cds = (org.cerion.stocklist.charts.CandleDataSet)set;
 
-                for (int i = 0; i < set.size(); i++) {
+                for (int i = 0; i < set.getSize(); i++) {
                     entries.add(new CandleEntry(i, cds.getHigh(i), cds.getLow(i), cds.getOpen(i), cds.getClose(i))); // order is high, low, open, close
                 }
 
