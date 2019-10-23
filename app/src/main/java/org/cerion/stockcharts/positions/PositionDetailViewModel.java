@@ -71,7 +71,7 @@ public class PositionDetailViewModel {
     }
 
     public String getDividendsReinvested() {
-        return purchase.IsDividendsReinvested() ? "Yes" : "No";
+        return purchase.getDividendsReinvested() ? "Yes" : "No";
     }
 
     public void update() {
@@ -111,7 +111,7 @@ public class PositionDetailViewModel {
                 profitWithDividends.set("$" + df.format(position.getProfit() + position.getDividendProfit()));
 
                 // If dividends are reinvested they are treated as part of the normal stock changes so don't show extra info on them
-                if (purchase.IsDividendsReinvested())
+                if (purchase.getDividendsReinvested())
                     showDividendFields.set(false);
                 else
                     showDividendFields.set(true);

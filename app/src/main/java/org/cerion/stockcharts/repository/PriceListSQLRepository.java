@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stocklist.IPrice;
-import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.PriceRow;
 import org.cerion.stocklist.model.HistoricalDates;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.repository.PriceListRepository;
@@ -61,10 +61,10 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
     }
 
     @Override
-    public List<Price> get(String symbol, Interval interval) {
+    public List<PriceRow> get(String symbol, Interval interval) {
         String where = String.format(StockDBOpenHelper.Prices._SYMBOL + "='%s'", symbol);
         Cursor c = db.query(StockDBOpenHelper.Prices.getTableName(interval), null, where, null, null, null, StockDBOpenHelper.Prices._DATE + " ASC");
-        List<Price> prices = new ArrayList<>();
+        List<PriceRow> prices = new ArrayList<>();
 
         if(c != null) {
             while (c.moveToNext()) {
@@ -75,7 +75,7 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
                 float close = c.getFloat(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._CLOSE));
                 long volume = c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.Prices._VOLUME));
 
-                Price p = new Price(date,open,high,low,close,volume);
+                PriceRow p = new PriceRow(date,open,high,low,close,volume);
                 prices.add(p);
             }
             c.close();
@@ -90,11 +90,11 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
 
         String table = StockDBOpenHelper.Prices.getTableName(list.getInterval());
         //Delete current data before re-adding new
-        delete(table, String.format("%s='%s'", StockDBOpenHelper.Prices._SYMBOL, list.mSymbol));
+        delete(table, String.format("%s='%s'", StockDBOpenHelper.Prices._SYMBOL, list.getSymbol()));
 
         for(IPrice p : list) {
             ContentValues values = new ContentValues();
-            values.put(StockDBOpenHelper.Prices._SYMBOL, list.mSymbol);
+            values.put(StockDBOpenHelper.Prices._SYMBOL, list.getSymbol());
             values.put(StockDBOpenHelper.Prices._DATE, p.getDate().getTime());
             values.put(StockDBOpenHelper.Prices._OPEN, p.getOpen());
             values.put(StockDBOpenHelper.Prices._HIGH, p.getHigh());
@@ -110,7 +110,7 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         Date last = list.getDates()[list.size() - 1];
         table = StockDBOpenHelper.HistoricalDates.getTableName(list.getInterval());
         ContentValues values = new ContentValues();
-        values.put(StockDBOpenHelper.HistoricalDates._SYMBOL, list.mSymbol);
+        values.put(StockDBOpenHelper.HistoricalDates._SYMBOL, list.getSymbol());
         values.put(StockDBOpenHelper.HistoricalDates._FIRST, first.getTime());
         values.put(StockDBOpenHelper.HistoricalDates._LAST, last.getTime());
         values.put(StockDBOpenHelper.HistoricalDates._UPDATED, new Date().getTime());
@@ -128,10 +128,10 @@ public class PriceListSQLRepository extends SQLiteRepositoryBase implements Pric
         if(c != null) {
             if (c.moveToFirst()) {
                 result = new HistoricalDates();
-                result.Symbol = symbol;
-                result.FirstDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._FIRST)));
-                result.LastDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._LAST)));
-                result.LastUpdated = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._UPDATED)));
+                result.setSymbol(symbol);
+                result.setFirstDate(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._FIRST))));
+                result.setLastDate(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._LAST))));
+                result.setLastUpdated(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._UPDATED))));
             }
             c.close();
         }

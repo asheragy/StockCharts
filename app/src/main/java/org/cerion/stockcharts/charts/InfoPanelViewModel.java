@@ -50,38 +50,38 @@ public class InfoPanelViewModel {
             if (quote == null)
                 return;
 
-            fullName.set(quote.name);
-            symbolExchange.set(quote.exchange + ": " + quote.symbol);
-            currentPrice.set("" + quote.lastTrade);
+            fullName.set(quote.getName());
+            symbolExchange.set(quote.getExchange() + ": " + quote.getSymbol());
+            currentPrice.set("" + quote.getLastTrade());
 
-            String changeStr = Math.abs(quote.change) + " (" + Math.abs(quote.changePercent) + "%)";
-            if (quote.change > 0)
+            String changeStr = Math.abs(quote.getChange()) + " (" + Math.abs(quote.getChangePercent()) + "%)";
+            if (quote.getChange() > 0)
                 changeStr = "▲" + changeStr;
-            else if (quote.change < 0)
+            else if (quote.getChange() < 0)
                 changeStr = "▼" + changeStr;
             priceChange.set(changeStr);
 
-            if (quote.change > 0)
+            if (quote.getChange() > 0)
                 change.set(1);
-            else if (quote.change < 0)
+            else if (quote.getChange() < 0)
                 change.set(-1);
 
-            marketCap.set(quote.marketCap);
-            peRatio.set(getString(quote.peRatio));
-            yield.set("" + quote.dividendYield);
-            beta.set(getString(quote.beta));
-            sector.set("" + quote.sector);
-            eps.set("" + quote.eps);
+            marketCap.set(quote.getMarketCap());
+            peRatio.set(getString(quote.getPeRatio()));
+            yield.set("" + quote.getDividendYield());
+            beta.set(getString(quote.getBeta()));
+            sector.set("" + quote.getSector());
+            eps.set("" + quote.getEps());
 
-            if (quote.volume > 1000000) {
-                double v = quote.volume;
+            if (quote.getVolume() > 1000000) {
+                double v = quote.getVolume();
                 v /= 1000000;
                 volume.set(Utils.decimalFormat.format(v));
             }
             else
-                volume.set("" + quote.volume);
+                volume.set("" + quote.getVolume());
 
-            yearRange.set( Utils.highLowRange(quote.lastTrade, quote.high52, quote.low52));
+            yearRange.set( Utils.highLowRange(quote.getLastTrade(), quote.getHigh52(), quote.getLow52()));
         }
     }
 

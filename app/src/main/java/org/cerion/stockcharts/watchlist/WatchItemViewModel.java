@@ -67,16 +67,16 @@ public class WatchItemViewModel {
         float change = list.getLast().getPercentDiff(list.get(size - 2));
 
         // TODO include current quote since its not in pricelist
-        float low = list.low(size - 1);
+        float low = list.getLow().get(size - 1);
         for(int j = size - 5; j < size; j++) {
-            if (list.low(j) < low)
-                low = list.low(j);
+            if (list.getLow().get(j) < low)
+                low = list.getLow().get(j);
         }
 
-        float high = list.high(size - 1);
+        float high = list.getHigh().get(size - 1);
         for(int j = size - 5; j < size; j++) {
-            if (list.high(j) > high)
-                high = list.high(j);
+            if (list.getHigh().get(j) > high)
+                high = list.getHigh().get(j);
         }
 
         float range = high - low;
@@ -91,16 +91,16 @@ public class WatchItemViewModel {
         if (list.size() < start)
             start = 0;
 
-        low = list.low(size - 1);
+        low = list.getLow().get(size - 1);
         for(int j = size - start; j < size; j++) {
-            if (list.low(j) < low)
-                low = list.low(j);
+            if (list.getLow().get(j) < low)
+                low = list.getLow().get(j);
         }
 
-        high = list.high(size - 1);
+        high = list.getHigh().get(size - 1);
         for(int j = size - start; j < size; j++) {
-            if (list.high(j) > high)
-                high = list.high(j);
+            if (list.getHigh().get(j) > high)
+                high = list.getHigh().get(j);
         }
 
         range = high - low;

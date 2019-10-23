@@ -72,7 +72,7 @@ public class PositionRepository extends SQLiteRepositoryBase {
         values.put(Positions._DATE, position.getDate().getTime());
         values.put(Positions._PRICE, position.getOrigPrice());
         values.put(Positions._COUNT, position.getCount());
-        values.put(Positions._DR, position.IsDividendsReinvested());
+        values.put(Positions._DR, position.getDividendsReinvested());
         values.put(Positions._ACCOUNTID, position.getAccountId());
 
         return values;

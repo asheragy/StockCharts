@@ -6,8 +6,8 @@ import android.databinding.ObservableField;
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.FloatingActionButtonGroup;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.PriceRow;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.web.CachedDataAPI;
 
@@ -59,7 +59,7 @@ public class ChartsViewModel implements FloatingActionButtonGroup.FabStateListen
             Exception error;
             @Override
             public void run() {
-                List<Price> prices = null;
+                List<PriceRow> prices = null;
 
                 try {
                     switch (interval.get()) {

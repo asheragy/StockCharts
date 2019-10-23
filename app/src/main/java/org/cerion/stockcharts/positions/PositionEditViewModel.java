@@ -62,7 +62,7 @@ public class PositionEditViewModel {
         symbol.set(position.getSymbol());
         count.set( Utils.getDecimalFormat3(position.getCount()) );
         price.set( Utils.getDecimalFormat3(position.getOrigPrice()) );
-        dividendsReinvested.set(position.IsDividendsReinvested());
+        dividendsReinvested.set(position.getDividendsReinvested());
         accountIndex.set(position.getAccountId());
     }
 

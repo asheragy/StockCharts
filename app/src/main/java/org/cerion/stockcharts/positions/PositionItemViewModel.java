@@ -5,8 +5,8 @@ import android.databinding.ObservableField;
 import org.cerion.stockcharts.common.BackgroundTask;
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stocklist.Price;
 import org.cerion.stocklist.PriceList;
+import org.cerion.stocklist.PriceRow;
 import org.cerion.stocklist.model.Dividend;
 import org.cerion.stocklist.model.Interval;
 import org.cerion.stocklist.model.Position;
@@ -52,7 +52,7 @@ public class PositionItemViewModel {
 
         BackgroundTask.run(new BackgroundTask() {
 
-            List<Price> list;
+            List<PriceRow> list;
             List<Dividend> dividends;
             String symbol = getPosition().getSymbol();
 

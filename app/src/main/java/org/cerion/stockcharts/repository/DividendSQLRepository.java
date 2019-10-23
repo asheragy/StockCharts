@@ -35,8 +35,8 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
         for(Dividend d : list) {
             ContentValues values = new ContentValues();
             values.put(Dividends._SYMBOL, symbol);
-            values.put(Dividends._DATE, d.mDate.getTime());
-            values.put(Dividends._AMOUNT, d.mDividend);
+            values.put(Dividends._DATE, d.getDate().getTime());
+            values.put(Dividends._AMOUNT, d.getDividend());
             insert(table, values);
         }
 
@@ -105,10 +105,10 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
         if(c != null) {
             if (c.moveToFirst()) {
                 result = new HistoricalDates();
-                result.Symbol = symbol;
-                result.FirstDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._FIRST)));
-                result.LastDate = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._LAST)));
-                result.LastUpdated = new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._UPDATED)));
+                result.setSymbol(symbol);
+                result.setFirstDate(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._FIRST))));
+                result.setLastDate(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._LAST))));
+                result.setLastUpdated(new Date(c.getLong(c.getColumnIndexOrThrow(StockDBOpenHelper.HistoricalDates._UPDATED))));
             }
             c.close();
         }
@@ -128,7 +128,7 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
         Collections.sort(list, new Comparator<Dividend>() {
             @Override
             public int compare(Dividend o1, Dividend o2) {
-                return o1.mDate.compareTo(o2.mDate);
+                return o1.getDate().compareTo(o2.getDate());
             }
 
             @Override
@@ -140,8 +140,8 @@ public class DividendSQLRepository extends SQLiteRepositoryBase implements Divid
         Date first = new Date(0);
         Date last = new Date(0);
         if (list.size() > 0) {
-            first = list.get(0).mDate;
-            last = list.get(list.size() - 1).mDate;
+            first = list.get(0).getDate();
+            last = list.get(list.size() - 1).getDate();
         }
 
         ContentValues values = new ContentValues();
