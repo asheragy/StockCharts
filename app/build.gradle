@@ -47,5 +47,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.edmodo:rangebar:1.0.0'
+
+    //implementation 'com.github.asheragy:stocklist-library:-SNAPSHOT'
     implementation project(':stocklist')
 }
