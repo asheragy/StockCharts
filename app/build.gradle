@@ -45,7 +45,7 @@ dependencies {
     //implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    implementation 'com.google.android.gms:play-services-appindexing:9.8.0'
+    implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.edmodo:rangebar:1.0.0'
     implementation project(':stocklist')
 }
