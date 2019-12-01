@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.ui.symbols;
 
-import org.cerion.stocklist.model.Symbol;
+import org.cerion.stocks.core.model.Symbol;
 
 public class SymbolItemViewModel {
 

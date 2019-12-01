@@ -10,9 +10,9 @@ import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.Symbol;
-import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.Symbol;
+import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +82,12 @@ public class PositionsViewModel {
             public void run() {
                 symbols = symbolRepo.getAll();
                 List<Position> list = repo.getAll();
+                //List<Position> list = Temp.getPositions();
 
                 for(Position p : list) {
-                    if(p.getAccountId() == accountIndex.get()) {
+                    // TODO filter on account
+                    //if(p.getAccountId() == accountIndex.get())
+                    {
                         //Log.d(TAG,"adding " + p);
                         String desc = p.getSymbol();
                         Symbol s = lookupSymbol(p.getSymbol());

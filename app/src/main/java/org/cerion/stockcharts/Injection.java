@@ -5,9 +5,9 @@ import android.content.Context;
 import org.cerion.stockcharts.repository.DividendSQLRepository;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.PriceListSQLRepository;
-import org.cerion.stocklist.web.CachedDataAPI;
-import org.cerion.stocklist.web.CombinedDataAPI;
-import org.cerion.stocklist.web.RepositoryCachedAPI;
+import org.cerion.stocks.core.web.CachedDataAPI;
+import org.cerion.stocks.core.web.CombinedDataAPI;
+import org.cerion.stocks.core.web.RepositoryCachedAPI;
 
 public class Injection {
 

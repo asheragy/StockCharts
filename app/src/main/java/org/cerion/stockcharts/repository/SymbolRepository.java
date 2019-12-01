@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
-import org.cerion.stocklist.model.Symbol;
+import org.cerion.stocks.core.model.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;

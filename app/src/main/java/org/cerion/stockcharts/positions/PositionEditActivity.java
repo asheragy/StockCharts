@@ -11,7 +11,7 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.DatePickerFragment;
 import org.cerion.stockcharts.databinding.ActivityPositionEditBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
-import org.cerion.stocklist.model.Position;
+import org.cerion.stocks.core.model.Position;
 
 import java.util.Date;
 

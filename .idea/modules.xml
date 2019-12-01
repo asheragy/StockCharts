@@ -4,7 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StockCharts.iml" filepath="$PROJECT_DIR$/StockCharts.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/stocklist/stocklist.iml" filepath="$PROJECT_DIR$/stocklist/stocklist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Java/TestProject/Module1/mod1.iml" filepath="$PROJECT_DIR$/../../Java/TestProject/Module1/mod1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Java/Stocks/core/stocks-core.iml" filepath="$PROJECT_DIR$/../../Java/Stocks/core/stocks-core.iml" />
     </modules>
   </component>
 </project>

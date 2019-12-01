@@ -5,11 +5,11 @@ import android.os.Handler;
 
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.functions.conditions.ICondition;
-import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocks.core.PriceList;
+import org.cerion.stocks.core.charts.StockChart;
+import org.cerion.stocks.core.functions.conditions.ICondition;
+import org.cerion.stocks.core.model.Interval;
+import org.cerion.stocks.core.web.DataAPI;
 
 public class WatchItemViewModel {
 

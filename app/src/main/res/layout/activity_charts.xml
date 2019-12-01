@@ -10,7 +10,7 @@
             type="org.cerion.stockcharts.charts.ChartsViewModel" />
 
         <import type="android.view.View"/>
-        <import type="org.cerion.stocklist.model.Interval"/>
+        <import type="org.cerion.stocks.core.model.Interval"/>
     </data>
 
     <RelativeLayout

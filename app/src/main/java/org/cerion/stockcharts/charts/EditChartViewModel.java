@@ -3,15 +3,15 @@ package org.cerion.stockcharts.charts;
 import android.databinding.Observable;
 import android.databinding.ObservableField;
 
-import org.cerion.stocklist.arrays.FloatArray;
-import org.cerion.stocklist.charts.IndicatorChart;
-import org.cerion.stocklist.charts.PriceChart;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.functions.IFunction;
-import org.cerion.stocklist.functions.IIndicator;
-import org.cerion.stocklist.functions.types.IFunctionEnum;
-import org.cerion.stocklist.functions.types.Indicator;
+import org.cerion.stocks.core.arrays.FloatArray;
+import org.cerion.stocks.core.charts.IndicatorChart;
+import org.cerion.stocks.core.charts.PriceChart;
+import org.cerion.stocks.core.charts.StockChart;
+import org.cerion.stocks.core.charts.VolumeChart;
+import org.cerion.stocks.core.functions.IFunction;
+import org.cerion.stocks.core.functions.IIndicator;
+import org.cerion.stocks.core.functions.types.IFunctionEnum;
+import org.cerion.stocks.core.functions.types.Indicator;
 
 import java.util.ArrayList;
 import java.util.Collections;

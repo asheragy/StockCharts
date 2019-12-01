@@ -6,7 +6,7 @@ import android.database.Cursor;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables.Positions;
-import org.cerion.stocklist.model.Position;
+import org.cerion.stocks.core.model.Position;
 
 import java.util.ArrayList;
 import java.util.Date;

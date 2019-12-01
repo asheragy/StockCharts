@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocklist.model.Symbol;
-import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocks.core.model.Symbol;
+import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.util.ArrayList;
 import java.util.List;

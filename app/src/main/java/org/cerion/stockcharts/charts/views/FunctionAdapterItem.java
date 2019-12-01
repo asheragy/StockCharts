@@ -3,8 +3,8 @@ package org.cerion.stockcharts.charts.views;
 
 import android.support.annotation.NonNull;
 
-import org.cerion.stocklist.functions.IFunction;
-import org.cerion.stocklist.functions.types.IFunctionEnum;
+import org.cerion.stocks.core.functions.IFunction;
+import org.cerion.stocks.core.functions.types.IFunctionEnum;
 
 
 import java.util.ArrayList;

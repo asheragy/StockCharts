@@ -6,10 +6,10 @@ import android.databinding.ObservableField;
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.FloatingActionButtonGroup;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.PriceRow;
-import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocks.core.PriceList;
+import org.cerion.stocks.core.PriceRow;
+import org.cerion.stocks.core.model.Interval;
+import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.util.ArrayList;
 import java.util.List;

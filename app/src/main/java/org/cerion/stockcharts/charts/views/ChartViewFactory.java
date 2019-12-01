@@ -28,15 +28,15 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.charts.DataSet;
-import org.cerion.stocklist.charts.IDataSet;
-import org.cerion.stocklist.charts.IndicatorChart;
-import org.cerion.stocklist.charts.LineType;
-import org.cerion.stocklist.charts.PriceChart;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.model.Interval;
+import org.cerion.stocks.core.PriceList;
+import org.cerion.stocks.core.charts.DataSet;
+import org.cerion.stocks.core.charts.IDataSet;
+import org.cerion.stocks.core.charts.IndicatorChart;
+import org.cerion.stocks.core.charts.LineType;
+import org.cerion.stocks.core.charts.PriceChart;
+import org.cerion.stocks.core.charts.StockChart;
+import org.cerion.stocks.core.charts.VolumeChart;
+import org.cerion.stocks.core.model.Interval;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -258,7 +258,7 @@ class ChartViewFactory {
         for(IDataSet set : sets) {
             if(set.getLineType() == LineType.CANDLE) {
                 ArrayList<CandleEntry> entries = new ArrayList<>();
-                org.cerion.stocklist.charts.CandleDataSet cds = (org.cerion.stocklist.charts.CandleDataSet)set;
+                org.cerion.stocks.core.charts.CandleDataSet cds = (org.cerion.stocks.core.charts.CandleDataSet)set;
 
                 for (int i = 0; i < set.getSize(); i++) {
                     entries.add(new CandleEntry(i, cds.getHigh(i), cds.getLow(i), cds.getOpen(i), cds.getClose(i))); // order is high, low, open, close

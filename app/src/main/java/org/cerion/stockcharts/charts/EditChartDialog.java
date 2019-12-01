@@ -13,12 +13,12 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.OverlayEditControl;
 import org.cerion.stockcharts.charts.views.ParametersEditControl;
 import org.cerion.stockcharts.databinding.DialogChartEditBinding;
-import org.cerion.stocklist.charts.IndicatorChart;
-import org.cerion.stocklist.charts.PriceChart;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.functions.IIndicator;
-import org.cerion.stocklist.functions.IOverlay;
-import org.cerion.stocklist.functions.ISimpleOverlay;
+import org.cerion.stocks.core.charts.IndicatorChart;
+import org.cerion.stocks.core.charts.PriceChart;
+import org.cerion.stocks.core.charts.StockChart;
+import org.cerion.stocks.core.functions.IIndicator;
+import org.cerion.stocks.core.functions.IOverlay;
+import org.cerion.stocks.core.functions.ISimpleOverlay;
 
 import java.util.List;
 

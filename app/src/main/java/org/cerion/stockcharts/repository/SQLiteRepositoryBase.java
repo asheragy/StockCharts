@@ -8,7 +8,7 @@ import android.util.Log;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables;
-import org.cerion.stocklist.model.Interval;
+import org.cerion.stocks.core.model.Interval;
 
 import java.util.Date;
 

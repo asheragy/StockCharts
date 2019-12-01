@@ -8,7 +8,7 @@ import android.widget.Toast;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stocklist.model.Position;
+import org.cerion.stocks.core.model.Position;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

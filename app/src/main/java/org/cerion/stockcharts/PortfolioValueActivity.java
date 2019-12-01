@@ -17,12 +17,12 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.PositionValue;
-import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.CachedDataAPI;
+import org.cerion.stocks.core.PriceList;
+import org.cerion.stocks.core.model.Interval;
+import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionValue;
+import org.cerion.stocks.core.model.Quote;
+import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

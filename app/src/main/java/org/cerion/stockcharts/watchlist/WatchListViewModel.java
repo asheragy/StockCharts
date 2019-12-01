@@ -4,11 +4,11 @@ package org.cerion.stockcharts.watchlist;
 import android.databinding.ObservableField;
 import android.os.Handler;
 
-import org.cerion.stocklist.functions.conditions.Condition;
-import org.cerion.stocklist.functions.conditions.IndicatorCondition;
-import org.cerion.stocklist.functions.conditions.PriceCondition;
-import org.cerion.stocklist.overlays.SimpleMovingAverage;
-import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocks.core.functions.conditions.Condition;
+import org.cerion.stocks.core.functions.conditions.IndicatorCondition;
+import org.cerion.stocks.core.functions.conditions.PriceCondition;
+import org.cerion.stocks.core.overlays.SimpleMovingAverage;
+import org.cerion.stocks.core.web.DataAPI;
 
 import java.util.ArrayList;
 

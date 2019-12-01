@@ -7,7 +7,7 @@ import android.util.Log;
 
 import org.cerion.stockcharts.database.Tables.Dividends;
 import org.cerion.stockcharts.database.Tables.Positions;
-import org.cerion.stocklist.model.Interval;
+import org.cerion.stocks.core.model.Interval;
 
 public class StockDBOpenHelper extends SQLiteOpenHelper {
 

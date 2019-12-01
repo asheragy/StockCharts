@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import org.cerion.stockcharts.database.StockDBOpenHelper;
 import org.cerion.stockcharts.database.Tables;
 import org.cerion.stockcharts.database.Tables.Dividends;
-import org.cerion.stocklist.model.Dividend;
-import org.cerion.stocklist.model.HistoricalDates;
-import org.cerion.stocklist.repository.DividendRepository;
+import org.cerion.stocks.core.model.Dividend;
+import org.cerion.stocks.core.model.HistoricalDates;
+import org.cerion.stocks.core.repository.DividendRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -6,12 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.cerion.stockcharts.database.StockDBOpenHelper;
-import org.cerion.stocklist.IPrice;
-import org.cerion.stocklist.PriceList;
-import org.cerion.stocklist.PriceRow;
-import org.cerion.stocklist.model.HistoricalDates;
-import org.cerion.stocklist.model.Interval;
-import org.cerion.stocklist.repository.PriceListRepository;
+import org.cerion.stocks.core.IPrice;
+import org.cerion.stocks.core.PriceList;
+import org.cerion.stocks.core.PriceRow;
+import org.cerion.stocks.core.model.HistoricalDates;
+import org.cerion.stocks.core.model.Interval;
+import org.cerion.stocks.core.repository.PriceListRepository;
 
 import java.util.ArrayList;
 import java.util.Date;

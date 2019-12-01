@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stocklist.model.Quote;
-import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocks.core.model.Quote;
+import org.cerion.stocks.core.web.DataAPI;
 
 public class InfoPanelViewModel {
 

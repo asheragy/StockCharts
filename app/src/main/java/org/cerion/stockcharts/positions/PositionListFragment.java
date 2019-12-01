@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.ViewModelFragment;
 import org.cerion.stockcharts.databinding.FragmentPositionsBinding;
-import org.cerion.stocklist.model.Position;
+import org.cerion.stocks.core.model.Position;
 
 public class PositionListFragment extends ViewModelFragment<PositionsViewModel> {
     private static final String TAG = PositionListFragment.class.getSimpleName();

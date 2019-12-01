@@ -18,11 +18,11 @@ import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
 import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
-import org.cerion.stocklist.charts.IndicatorChart;
-import org.cerion.stocklist.charts.PriceChart;
-import org.cerion.stocklist.charts.StockChart;
-import org.cerion.stocklist.charts.VolumeChart;
-import org.cerion.stocklist.indicators.MACD;
+import org.cerion.stocks.core.charts.IndicatorChart;
+import org.cerion.stocks.core.charts.PriceChart;
+import org.cerion.stocks.core.charts.StockChart;
+import org.cerion.stocks.core.charts.VolumeChart;
+import org.cerion.stocks.core.indicators.MACD;
 
 public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implements ChartsViewModel.ChartsView {
     private static final String TAG = ChartsActivity.class.getSimpleName();

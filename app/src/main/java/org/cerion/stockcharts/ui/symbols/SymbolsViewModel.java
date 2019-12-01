@@ -9,9 +9,9 @@ import android.widget.Toast;
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocklist.model.Position;
-import org.cerion.stocklist.model.Symbol;
-import org.cerion.stocklist.web.DataAPI;
+import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.Symbol;
+import org.cerion.stocks.core.web.DataAPI;
 
 import java.util.List;
 

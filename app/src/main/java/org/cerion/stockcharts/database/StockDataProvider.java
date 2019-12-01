@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import org.cerion.stocklist.model.Interval;
+import org.cerion.stocks.core.model.Interval;
 
 public class StockDataProvider extends ContentProvider {
 
