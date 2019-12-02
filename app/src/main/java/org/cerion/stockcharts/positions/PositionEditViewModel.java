@@ -1,7 +1,7 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Context;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.util.Log;
 import android.widget.Toast;
 

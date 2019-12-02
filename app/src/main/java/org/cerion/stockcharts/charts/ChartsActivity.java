@@ -3,8 +3,8 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
-import android.databinding.Observable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;

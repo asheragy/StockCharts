@@ -1,8 +1,8 @@
 package org.cerion.stockcharts.ui.symbols;
 
 import android.content.Intent;
-import android.databinding.ObservableList;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ObservableList;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;

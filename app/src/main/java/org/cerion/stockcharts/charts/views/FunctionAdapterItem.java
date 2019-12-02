@@ -1,7 +1,7 @@
 package org.cerion.stockcharts.charts.views;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.cerion.stocks.core.functions.IFunction;
 import org.cerion.stocks.core.functions.types.IFunctionEnum;

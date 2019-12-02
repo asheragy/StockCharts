@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.charts;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.graphics.Color;
 import android.os.AsyncTask;
 

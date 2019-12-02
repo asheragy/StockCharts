@@ -1,8 +1,8 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Context;
-import android.databinding.Observable;
-import android.databinding.ObservableField;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 import android.util.Log;
 import android.util.Pair;
 

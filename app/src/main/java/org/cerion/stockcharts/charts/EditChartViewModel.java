@@ -1,7 +1,7 @@
 package org.cerion.stockcharts.charts;
 
-import android.databinding.Observable;
-import android.databinding.ObservableField;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 
 import org.cerion.stocks.core.arrays.FloatArray;
 import org.cerion.stocks.core.charts.IndicatorChart;

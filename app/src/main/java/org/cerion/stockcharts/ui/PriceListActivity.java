@@ -3,16 +3,16 @@ package org.cerion.stockcharts.ui;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.GenericAsyncTask;

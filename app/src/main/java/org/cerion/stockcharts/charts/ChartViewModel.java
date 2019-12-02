@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.charts;
 
-import android.databinding.Observable;
+import androidx.databinding.Observable;
 
 import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.charts.StockChart;

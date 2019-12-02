@@ -1,6 +1,6 @@
 package org.cerion.stockcharts.positions;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;

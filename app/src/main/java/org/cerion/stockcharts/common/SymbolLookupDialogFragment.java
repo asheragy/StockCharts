@@ -6,7 +6,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.InputFilter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;

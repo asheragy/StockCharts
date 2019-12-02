@@ -2,7 +2,7 @@ package org.cerion.stockcharts.common;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public abstract class ViewModelFragment<T> extends Fragment {
 
