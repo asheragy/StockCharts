@@ -25,14 +25,8 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
             Log.i(TAG, "index = $it")
         })
 
-        viewModel.positions.observe(viewLifecycleOwner, Observer { positions ->
-
-            val allocations = positions.map {
-                android.util.Pair(it.symbol, (it.origPrice * it.count).toFloat())
-            }
-
-            // TODO function should take list of positions
-            binding.chart.setAllocations(allocations)
+        viewModel.positions.observe(viewLifecycleOwner, Observer {
+            binding.chart.setPositions(it)
         })
 
         return binding.root

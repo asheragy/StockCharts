@@ -10,7 +10,7 @@ import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.model.Dividend;
 import org.cerion.stocks.core.model.DividendHistory;
 import org.cerion.stocks.core.model.Interval;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.PositionValue;
 import org.cerion.stocks.core.web.DataAPI;
 
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class PositionDetailViewModel {
 
-    private Position purchase;
+    private PositionWithDividends purchase;
     private PositionRepository repo;
     private DataAPI api;
     private static DecimalFormat df = new DecimalFormat("0.00");

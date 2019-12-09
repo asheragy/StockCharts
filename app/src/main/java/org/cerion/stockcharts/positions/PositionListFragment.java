@@ -1,10 +1,7 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Intent;
-import androidx.databinding.Observable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,10 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.Observable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.ViewModelFragment;
 import org.cerion.stockcharts.databinding.FragmentPositionsBinding;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionWithDividends;
 
 public class PositionListFragment extends ViewModelFragment<PositionsViewModel> {
     private static final String TAG = PositionListFragment.class.getSimpleName();
@@ -94,7 +95,7 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
         return false;
     }
 
-    private void onEdit(Position p) {
+    private void onEdit(PositionWithDividends p) {
         Intent intent = PositionEditActivity.newIntent(getContext(), p);
         startActivityForResult(intent, 0);
     }

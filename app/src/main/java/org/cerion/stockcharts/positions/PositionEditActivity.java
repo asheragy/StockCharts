@@ -3,15 +3,16 @@ package org.cerion.stockcharts.positions;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.databinding.DataBindingUtil;
+
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.DatePickerFragment;
-import org.cerion.stockcharts.databinding.ActivityPositionEditBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stockcharts.databinding.ActivityPositionEditBinding;
+import org.cerion.stocks.core.model.PositionWithDividends;
 
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class PositionEditActivity extends ViewModelActivity<PositionEditViewMode
     public static final String TAG = PositionEditActivity.class.getSimpleName();
     private static final String EXTRA_POSITION_ID = "id";
 
-    public static Intent newIntent(Context context, Position p) {
+    public static Intent newIntent(Context context, PositionWithDividends p) {
         Intent intent = new Intent(context, PositionEditActivity.class);
         intent.putExtra(EXTRA_POSITION_ID, p.getId());
         return intent;

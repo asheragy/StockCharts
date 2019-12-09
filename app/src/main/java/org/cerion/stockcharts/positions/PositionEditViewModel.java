@@ -1,14 +1,15 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Context;
-import androidx.databinding.ObservableField;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stockcharts.repository.PositionRepository;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionWithDividends;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,11 +54,11 @@ public class PositionEditViewModel {
 
     public void setPosition(int id) {
         mId = id;
-        Position position = repo.get(id);
+        PositionWithDividends position = repo.get(id);
         setPosition(position);
     }
 
-    private void setPosition(Position position) {
+    private void setPosition(PositionWithDividends position) {
         date.set(position.getDate());
         symbol.set(position.getSymbol());
         count.set( Utils.getDecimalFormat3(position.getCount()) );
@@ -96,7 +97,7 @@ public class PositionEditViewModel {
                     double d_count = Double.parseDouble(count.get());
                     double d_price = Double.parseDouble(price.get());
 
-                    Position p = new Position(symbol.get(), d_count, d_price, date.get(), dividendsReinvested.get());
+                    PositionWithDividends p = new PositionWithDividends(symbol.get(), d_count, d_price, date.get(), dividendsReinvested.get());
                     p.setAccountId(accountIndex.get());
 
                     String log = p.getSymbol() + "\t" + p.getCount() + "\t" + p.getOrigPrice() + "\t" + p.getDate() + "\t" + p.getAccountId();

@@ -9,8 +9,8 @@ import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.PriceRow;
 import org.cerion.stocks.core.model.Dividend;
 import org.cerion.stocks.core.model.Interval;
-import org.cerion.stocks.core.model.Position;
 import org.cerion.stocks.core.model.PositionValue;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.text.DecimalFormat;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class PositionItemViewModel {
 
-    private Position position;
+    private PositionWithDividends position;
     private DecimalFormat df = Utils.decimalFormat;
     private CachedDataAPI api;
     private String symbolDescription;
@@ -35,7 +35,7 @@ public class PositionItemViewModel {
     public ObservableField<Float> totalValue = new ObservableField<>(0.0f);
     public boolean forceUpdate = false;
 
-    PositionItemViewModel(CachedDataAPI api, Position p, String symbolDescription) {
+    PositionItemViewModel(CachedDataAPI api, PositionWithDividends p, String symbolDescription) {
         this.api = api;
         position = p;
         this.symbolDescription = symbolDescription;
@@ -124,7 +124,7 @@ public class PositionItemViewModel {
         return cash;
     }
 
-    public Position getPosition() {
+    public PositionWithDividends getPosition() {
         return position;
     }
 

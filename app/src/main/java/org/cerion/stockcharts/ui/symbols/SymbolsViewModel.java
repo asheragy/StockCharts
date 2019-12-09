@@ -1,15 +1,16 @@
 package org.cerion.stockcharts.ui.symbols;
 
 import android.content.Context;
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Symbol;
 import org.cerion.stocks.core.web.DataAPI;
 
@@ -30,12 +31,12 @@ public class SymbolsViewModel {
 
     public void load() {
         List<Symbol> symbols = repo.getAll();
-        List<Position> positions = positionRepo.getAll();
+        List<PositionWithDividends> positions = positionRepo.getAll();
         items.clear();
 
         for(Symbol s : symbols) {
             boolean position = false;
-            for(Position p : positions) {
+            for(PositionWithDividends p : positions) {
                 if (p.getSymbol().contentEquals(s.getSymbol()))
                     position = true;
             }

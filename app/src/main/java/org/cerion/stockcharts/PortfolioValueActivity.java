@@ -3,9 +3,10 @@ package org.cerion.stockcharts;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.FrameLayout;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.FrameLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -19,8 +20,8 @@ import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.model.Interval;
-import org.cerion.stocks.core.model.Position;
 import org.cerion.stocks.core.model.PositionValue;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Quote;
 import org.cerion.stocks.core.web.CachedDataAPI;
 
@@ -67,8 +68,8 @@ public class PortfolioValueActivity extends AppCompatActivity {
         CachedDataAPI api = Injection.getAPI(this);
 
         this.dates = new Date[0];
-        List<Position> list = repo.getAll();
-        for(Position position : list) {
+        List<PositionWithDividends> list = repo.getAll();
+        for(PositionWithDividends position : list) {
             String symbol = position.getSymbol();
 
             try {

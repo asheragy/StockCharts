@@ -1,16 +1,17 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Context;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableField;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.repository.PositionRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
-import org.cerion.stocks.core.model.Position;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Symbol;
 import org.cerion.stocks.core.web.CachedDataAPI;
 
@@ -51,7 +52,7 @@ public class PositionsViewModel {
         });
     }
 
-    public void delete(Position position) {
+    public void delete(PositionWithDividends position) {
         Log.d(TAG, "removing " + position.getSymbol());
         repo.delete(position);
 
@@ -81,10 +82,10 @@ public class PositionsViewModel {
             @Override
             public void run() {
                 symbols = symbolRepo.getAll();
-                List<Position> list = repo.getAll();
+                List<PositionWithDividends> list = repo.getAll();
                 //List<Position> list = Temp.getPositions();
 
-                for(Position p : list) {
+                for(PositionWithDividends p : list) {
                     // TODO filter on account
                     //if(p.getAccountId() == accountIndex.get())
                     {

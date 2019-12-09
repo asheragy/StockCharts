@@ -9,8 +9,6 @@ import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stocks.core.model.Position
 import org.cerion.stocks.core.web.api.TDAmeritrade
-import org.cerion.stocks.core.web.api.TDPosition
-import java.util.*
 
 class PositionsViewModel : ViewModel() {
 
@@ -44,12 +42,8 @@ class PositionsViewModel : ViewModel() {
     private fun updatePositions() {
 
         scope.launch {
-
             try {
-                val positions = getPositions()
-                _positions.value = positions.map {
-                    Position(it.symbol, 1.0, it.marketValue, Date(), false)
-                }
+                _positions.value = getPositions()
             }
             catch(e: Exception) {
                 Log.e(TAG, e.toString())
@@ -57,8 +51,9 @@ class PositionsViewModel : ViewModel() {
         }
     }
 
-    private suspend fun getPositions(): List<TDPosition> {
-        val td = TDAmeritrade("")
+    private suspend fun getPositions(): List<Position> {
+        val td = TDAmeritrade(
+                "")
         return withContext(Dispatchers.IO) {
             td.getPositions()
         }
