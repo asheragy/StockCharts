@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PositionRepository extends SQLiteRepositoryBase {
+public class PositionWithDividendsRepository extends SQLiteRepositoryBase {
 
-    public PositionRepository(Context context) {
+    public PositionWithDividendsRepository(Context context) {
         super(StockDBOpenHelper.getInstance(context));
     }
 

@@ -5,13 +5,13 @@ import androidx.databinding.ObservableField;
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.model.Dividend;
 import org.cerion.stocks.core.model.DividendHistory;
 import org.cerion.stocks.core.model.Interval;
-import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.PositionValue;
+import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.web.DataAPI;
 
 import java.text.DecimalFormat;
@@ -20,7 +20,7 @@ import java.util.List;
 public class PositionDetailViewModel {
 
     private PositionWithDividends purchase;
-    private PositionRepository repo;
+    private PositionWithDividendsRepository repo;
     private DataAPI api;
     private static DecimalFormat df = new DecimalFormat("0.00");
 
@@ -41,7 +41,7 @@ public class PositionDetailViewModel {
 
     public ObservableField<Boolean> showDividendFields = new ObservableField<>();
 
-    public PositionDetailViewModel(DataAPI api, PositionRepository repo) {
+    public PositionDetailViewModel(DataAPI api, PositionWithDividendsRepository repo) {
         this.api = api;
         this.repo = repo;
     }

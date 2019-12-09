@@ -9,7 +9,7 @@ import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Symbol;
@@ -27,12 +27,12 @@ public class PositionsViewModel {
     public final ObservableField<List<PositionItemViewModel>> positions = new ObservableField<>();
     public final ObservableField<List<Pair<String,Float>>> allocations = new ObservableField<>();
 
-    private PositionRepository repo;
+    private PositionWithDividendsRepository repo;
     private SymbolRepository symbolRepo;
     private CachedDataAPI api;
 
     public PositionsViewModel(Context context) {
-        repo = new PositionRepository(context);
+        repo = new PositionWithDividendsRepository(context);
         symbolRepo = new SymbolRepository(context);
         api = Injection.getAPI(context);
 

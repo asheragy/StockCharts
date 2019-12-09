@@ -17,7 +17,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.model.Interval;
 import org.cerion.stocks.core.model.PositionValue;
@@ -64,7 +64,7 @@ public class PortfolioValueActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        PositionRepository repo = new PositionRepository(this);
+        PositionWithDividendsRepository repo = new PositionWithDividendsRepository(this);
         CachedDataAPI api = Injection.getAPI(this);
 
         this.dates = new Date[0];

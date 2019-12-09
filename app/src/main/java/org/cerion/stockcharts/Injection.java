@@ -3,7 +3,7 @@ package org.cerion.stockcharts;
 import android.content.Context;
 
 import org.cerion.stockcharts.repository.DividendSQLRepository;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stockcharts.repository.PriceListSQLRepository;
 import org.cerion.stocks.core.web.CachedDataAPI;
 import org.cerion.stocks.core.web.CombinedDataAPI;
@@ -19,7 +19,7 @@ public class Injection {
                 new DividendSQLRepository(context));
     }
 
-    public static PositionRepository getPositionRepository(Context context) {
-        return new PositionRepository(context.getApplicationContext());
+    public static PositionWithDividendsRepository getPositionRepository(Context context) {
+        return new PositionWithDividendsRepository(context.getApplicationContext());
     }
 }

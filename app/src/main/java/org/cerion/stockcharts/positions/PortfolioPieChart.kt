@@ -21,11 +21,20 @@ class PortfolioPieChart(context: Context?, attrs: AttributeSet?) : PieChart(cont
     }
 
     fun setPositions(positions: List<Position>) {
-        val total = positions.sumByDouble { it.totalValue }
+        val total = positions.sumByDouble { it.totalValue }.toFloat() / 100
 
         val entries = ArrayList<PieEntry>()
-        for (p in positions) {
-            val value = (100 * p.totalValue / total).toFloat()
+        val colors = ArrayList<Int>()
+
+        val cashPosition = positions.firstOrNull { it.cash }
+        if (cashPosition != null) {
+            // TODO merge or add multiple colors
+            colors.add(Color.GREEN)
+            entries.add(PieEntry(cashPosition.totalValue.toFloat() / total, "Cash"))
+        }
+
+        for (p in positions.filter { !it.cash }) {
+            val value = (p.totalValue / total).toFloat()
             val label = if(p.cash) "Cash" else p.symbol
             entries.add(PieEntry(value, label))
         }
@@ -36,12 +45,9 @@ class PortfolioPieChart(context: Context?, attrs: AttributeSet?) : PieChart(cont
         dataSet.valueTextSize = 12f
         dataSet.valueFormatter = PercentFormatter()
 
-        // TODO reserve green for cash type
-        val colors = ArrayList<Int>()
         colors.add(Color.GRAY)
         colors.add(Color.BLUE)
         colors.add(Color.RED)
-        colors.add(Color.GREEN)
         colors.add(Color.CYAN)
         colors.add(Color.YELLOW)
         colors.add(Color.MAGENTA)

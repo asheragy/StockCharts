@@ -8,7 +8,7 @@ import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.common.Utils;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stocks.core.model.PositionWithDividends;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +22,7 @@ public class PositionEditViewModel {
 
     private Context mContext;
     private IView mListener;
-    private PositionRepository repo;
+    private PositionWithDividendsRepository repo;
     private int mId = 0;
 
     public final ObservableField<String> symbol = new ObservableField<>("");
@@ -43,7 +43,7 @@ public class PositionEditViewModel {
     public PositionEditViewModel(Context context, IView listener) {
         mContext = context;
         mListener = listener;
-        repo = new PositionRepository(context);
+        repo = new PositionWithDividendsRepository(context);
 
         accounts.add("Account 1");
         accounts.add("Account 2");

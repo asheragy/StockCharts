@@ -8,7 +8,7 @@ import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
 import org.cerion.stockcharts.Injection;
-import org.cerion.stockcharts.repository.PositionRepository;
+import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Symbol;
@@ -20,13 +20,13 @@ public class SymbolsViewModel {
 
     private Context context;
     private SymbolRepository repo;
-    private PositionRepository positionRepo;
+    private PositionWithDividendsRepository positionRepo;
     public final ObservableList<SymbolItemViewModel> items = new  ObservableArrayList<>();
 
     public SymbolsViewModel(Context context) {
         this.context = context.getApplicationContext();
         repo = new SymbolRepository(this.context);
-        positionRepo = new PositionRepository(this.context);
+        positionRepo = new PositionWithDividendsRepository(this.context);
     }
 
     public void load() {
