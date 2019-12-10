@@ -10,6 +10,6 @@ class AccountRepository {
     fun getAll(): List<Account> {
         return listOf(
                 Account(2, "TD Ameritrade"),
-                Account(5, "TD Fake Data"))
+                Account(5, "Fake Data"))
     }
 }

@@ -2,11 +2,10 @@ package org.cerion.stockcharts.ui.positions
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.databinding.PositionsFragmentBinding
 
@@ -17,7 +16,7 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = PositionsFragmentBinding.inflate(layoutInflater)
 
-        viewModel = ViewModelProviders.of(this).get(PositionsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(PositionsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
@@ -29,7 +28,13 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
             binding.chart.setPositions(it)
         })
 
+        setHasOptionsMenu(true)
+
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.positions_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 }

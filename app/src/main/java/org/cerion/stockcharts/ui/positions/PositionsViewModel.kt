@@ -1,12 +1,10 @@
 package org.cerion.stockcharts.ui.positions
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
-import org.cerion.stockcharts.common.TAG
+import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import org.cerion.stockcharts.repository.Account
 import org.cerion.stockcharts.repository.AccountRepository
 import org.cerion.stockcharts.repository.PositionRepository
@@ -17,6 +15,7 @@ class PositionsViewModel : ViewModel() {
 
     private val accountRepo = AccountRepository()
     private val positionRepo = PositionRepository()
+
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
 
@@ -24,35 +23,26 @@ class PositionsViewModel : ViewModel() {
     val accounts: LiveData<List<Account>>
         get() = _accounts
 
-    private val _positions = MutableLiveData<List<Position>>()
-    val positions: LiveData<List<Position>>
-        get() = _positions
+    val accountIndex = MutableLiveData(-1)
 
-    val accountIndex = MutableLiveData(0)
+    val positions = accountIndex.switchMap {index ->
+        liveData {
+            emit(emptyList())
+            if (index >= 0)
+                emit(getPositions())
+        }
+    }
 
     val testString: LiveData<String> = Transformations.map(accountIndex) {
-        if (it == null)
+        if (it == null || it < 0)
             "Select Account"
         else {
-            updatePositions() // TODO not sure this goes here
             "AccountId ${_accounts.value!![it].id}"
         }
     }
 
     init {
         _accounts.value = accountRepo.getAll()
-    }
-
-    private fun updatePositions() {
-
-        scope.launch {
-            try {
-                _positions.value = getPositions()
-            }
-            catch(e: Exception) {
-                Log.e(TAG, e.toString())
-            }
-        }
     }
 
     private suspend fun getPositions(): List<Position> {

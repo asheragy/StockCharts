@@ -11,6 +11,9 @@ class GenericPosition(override val symbol: String, override val quantity: Double
 class PositionRepository {
 
     fun getPositionsForAccount(account: Account): List<Position> {
+
+        Thread.sleep(500)
+
         when(account.id) {
             2 -> return listOf(
                     GenericPosition("SPY", 32.0, 314.87),
