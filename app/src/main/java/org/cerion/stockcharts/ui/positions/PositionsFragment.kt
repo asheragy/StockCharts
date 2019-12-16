@@ -1,5 +1,7 @@
 package org.cerion.stockcharts.ui.positions
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -36,5 +38,25 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.positions_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onResume() {
+        val uri = requireActivity().intent.data
+        if (uri != null)
+            viewModel.onAuthCodeResponse(uri)
+
+        super.onResume()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId) {
+            R.id.add -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(viewModel.tdAuth.authUrlEncoded))
+                startActivity(intent)
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

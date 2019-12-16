@@ -1,23 +1,29 @@
 package org.cerion.stockcharts.ui.positions
 
+import android.app.Application
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
-import org.cerion.stockcharts.repository.Account
+import kotlinx.coroutines.*
+import org.cerion.stockcharts.BuildConfig
+import org.cerion.stockcharts.common.TAG
+import org.cerion.stockcharts.database.Account
+import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.AccountRepository
 import org.cerion.stockcharts.repository.PositionRepository
 import org.cerion.stocks.core.model.Position
-import org.cerion.stocks.core.web.api.TDAmeritrade
+import org.cerion.stocks.core.web.api.TDAmeritradeAuth
 
-class PositionsViewModel : ViewModel() {
+class PositionsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val accountRepo = AccountRepository()
-    private val positionRepo = PositionRepository()
+    private val accountDao = getDatabase(getApplication()).accountDao
+    private val accountRepo = AccountRepository(accountDao)
+    private val positionRepo = PositionRepository(accountDao)
 
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
+
+    val tdAuth = TDAmeritradeAuth(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
 
     private val _accounts = MutableLiveData<List<Account>>()
     val accounts: LiveData<List<Account>>
@@ -45,11 +51,35 @@ class PositionsViewModel : ViewModel() {
         _accounts.value = accountRepo.getAll()
     }
 
+    fun onAuthCodeResponse(responseUri: Uri) {
+        if(responseUri.toString().startsWith(BuildConfig.REDIRECT_URI)) {
+            val code = responseUri.getQueryParameter("code")
+            if (code != null) {
+
+                scope.launch {
+                    authorizeWithCode(code)
+                }
+
+            }
+
+            // TODO handle error cases
+        }
+    }
+
+    private suspend fun authorizeWithCode(code: String) {
+        withContext(Dispatchers.IO) {
+            val response = tdAuth.authorize(code)
+            Log.e(TAG, response.toString())
+
+            val dao = getDatabase(getApplication()).accountDao
+            dao.insert(Account("TD", response.refreshToken!!, response.accessToken))
+        }
+    }
+
     private suspend fun getPositions(): List<Position> {
-        val td = TDAmeritrade("")
         return withContext(Dispatchers.IO) {
-            //td.getPositions()
-            positionRepo.getPositionsForAccount(accounts.value!![accountIndex.value!!])
+            val acct = accounts.value!![accountIndex.value!!]
+            positionRepo.getPositionsForAccount(acct)
         }
     }
 

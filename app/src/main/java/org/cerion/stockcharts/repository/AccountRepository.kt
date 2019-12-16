@@ -1,15 +1,21 @@
 package org.cerion.stockcharts.repository
 
+import org.cerion.stockcharts.database.Account
+import org.cerion.stockcharts.database.AccountDao
 
-data class Account(val id: Int, val name: String) {
-    override fun toString() = name
-}
 
-class AccountRepository {
+
+
+class AccountRepository(private val dao: AccountDao) {
 
     fun getAll(): List<Account> {
+
+        return dao.getAll()
+        /*
         return listOf(
-                Account(2, "TD Ameritrade"),
-                Account(5, "Fake Data"))
+                Account("TD Ameritrade", "", ""),
+                Account("Fake Data", "" , ""))
+
+         */
     }
 }
