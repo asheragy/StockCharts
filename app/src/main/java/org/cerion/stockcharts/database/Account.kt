@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.database
 
 import androidx.room.*
+import java.util.*
 
 @Dao
 interface AccountDao {
@@ -19,7 +20,8 @@ interface AccountDao {
 data class Account(
         val name: String,
         val refreshToken: String,
-        var authToken: String) {
+        var authToken: String,
+        var expires: Date) {
 
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

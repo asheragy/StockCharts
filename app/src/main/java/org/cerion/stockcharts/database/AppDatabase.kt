@@ -1,10 +1,14 @@
 package org.cerion.stockcharts.database
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 
-@Database(entities = [Account::class], version = 2)
+@Database(entities = [Account::class], version = 3)
+@TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract val accountDao: AccountDao
 }

@@ -72,7 +72,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
             Log.e(TAG, response.toString())
 
             val dao = getDatabase(getApplication()).accountDao
-            dao.insert(Account("TD", response.refreshToken!!, response.accessToken))
+            dao.insert(Account("TD", response.refreshToken!!, response.accessToken, response.expireDate))
         }
     }
 

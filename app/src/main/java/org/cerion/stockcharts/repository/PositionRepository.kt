@@ -7,6 +7,8 @@ import org.cerion.stocks.core.model.Position
 import org.cerion.stocks.core.web.api.RequestException
 import org.cerion.stocks.core.web.api.TDAmeritrade
 import org.cerion.stocks.core.web.api.TDAmeritradeAuth
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class GenericPosition(override val symbol: String, override val quantity: Double, override val pricePerShare: Double, override val cash: Boolean = false) : Position {
@@ -21,18 +23,22 @@ class PositionRepository(private val dao: AccountDao) {
     fun getPositionsForAccount(account: Account): List<Position> {
 
         try {
-            // TODO this should check for expired key and not rely on the exception
-            val api = TDAmeritrade(account.authToken)
-            return api.getPositions()
+            val diff = account.expires.time - Date().time
+            val diffSeconds=  TimeUnit.MILLISECONDS.toSeconds(diff)
+
+            // Refresh token if expired or close to expiring
+            if (diffSeconds < 60) {
+                val auth = TDAmeritradeAuth(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
+                val response = auth.refreshAuth(account.refreshToken)
+
+                account.authToken = response.accessToken
+                dao.update(account)
+            }
+
+            return TDAmeritrade(account.authToken).getPositions()
         }
         catch (e: RequestException) {
-            val auth = TDAmeritradeAuth(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
-            val response = auth.refreshAuth(account.refreshToken)
-
-            account.authToken = response.accessToken
-            dao.update(account)
-
-            return TDAmeritrade(response.accessToken).getPositions()
+            // TODO certain failure here means re-auth may be needed
         }
 
         return emptyList()
