@@ -52,7 +52,7 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
 
         when(item.itemId) {
             R.id.add -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(viewModel.tdAuth.authUrlEncoded))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(viewModel.tdapi.authUrlEncoded))
                 startActivity(intent)
             }
         }

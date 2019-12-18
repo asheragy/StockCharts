@@ -12,7 +12,7 @@ import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.AccountRepository
 import org.cerion.stockcharts.repository.PositionRepository
 import org.cerion.stocks.core.model.Position
-import org.cerion.stocks.core.web.api.TDAmeritradeAuth
+import org.cerion.stocks.core.web.clients.TDAmeritrade
 
 class PositionsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,7 +23,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
 
-    val tdAuth = TDAmeritradeAuth(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
+    val tdapi = TDAmeritrade(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
 
     private val _accounts = MutableLiveData<List<Account>>()
     val accounts: LiveData<List<Account>>
@@ -68,7 +68,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
 
     private suspend fun authorizeWithCode(code: String) {
         withContext(Dispatchers.IO) {
-            val response = tdAuth.authorize(code)
+            val response = tdapi.authorize(code)
             Log.e(TAG, response.toString())
 
             val dao = getDatabase(getApplication()).accountDao

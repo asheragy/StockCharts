@@ -4,9 +4,8 @@ import org.cerion.stockcharts.BuildConfig
 import org.cerion.stockcharts.database.Account
 import org.cerion.stockcharts.database.AccountDao
 import org.cerion.stocks.core.model.Position
-import org.cerion.stocks.core.web.api.RequestException
-import org.cerion.stocks.core.web.api.TDAmeritrade
-import org.cerion.stocks.core.web.api.TDAmeritradeAuth
+import org.cerion.stocks.core.web.clients.RequestException
+import org.cerion.stocks.core.web.clients.TDAmeritrade
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -18,6 +17,8 @@ class GenericPosition(override val symbol: String, override val quantity: Double
 
 class PositionRepository(private val dao: AccountDao) {
 
+    private val tdapi = TDAmeritrade(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
+
     // TODO add caching
 
     fun getPositionsForAccount(account: Account): List<Position> {
@@ -28,14 +29,14 @@ class PositionRepository(private val dao: AccountDao) {
 
             // Refresh token if expired or close to expiring
             if (diffSeconds < 60) {
-                val auth = TDAmeritradeAuth(BuildConfig.CONSUMER_KEY, BuildConfig.REDIRECT_URI)
-                val response = auth.refreshAuth(account.refreshToken)
+                val response = tdapi.refreshAuth(account.refreshToken)
 
                 account.authToken = response.accessToken
+                account.expires = response.expireDate
                 dao.update(account)
             }
 
-            return TDAmeritrade(account.authToken).getPositions()
+            return tdapi.getPositions(account.authToken)
         }
         catch (e: RequestException) {
             // TODO certain failure here means re-auth may be needed

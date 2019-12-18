@@ -37,11 +37,8 @@
             android:name=".PortfolioValueActivity"
             android:label="" />
         <activity
-            android:name=".ui.PriceListActivity"
-            android:label="" />
-        <activity
             android:name=".charts.ChartsActivity"
-            android:label="@string/title_activity_chart_test"></activity>
+            android:label="@string/title_activity_chart_test"/>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -52,11 +49,6 @@
 
         <activity android:name=".positions.PositionEditActivity" />
         <activity android:name=".positions.PositionDetailActivity" />
-
-        <provider
-            android:name=".database.StockDataProvider"
-            android:authorities="org.cerion.stockcharts.stockdataprovider"
-            android:exported="false"></provider>
     </application>
 
 </manifest>
