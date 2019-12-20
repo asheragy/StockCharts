@@ -7,10 +7,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 
-@Database(entities = [Account::class], version = 3)
+@Database(entities = [Account::class, PriceListEntity::class, PriceRowEntity::class], version = 3)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract val accountDao: AccountDao
+    abstract val priceListDao: PriceListDao
+    abstract val pricesDao: PricesDao
 }
 
 private lateinit var INSTANCE: AppDatabase
