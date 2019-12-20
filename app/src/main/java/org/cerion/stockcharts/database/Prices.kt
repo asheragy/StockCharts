@@ -7,12 +7,21 @@ import java.util.*
 interface PriceListDao {
     @Query("select * from pricelist where symbol=:symbol and interval=:interval")
     fun get(symbol: String, interval: Int): PriceListEntity
+
+    @Insert
+    fun insert(priceList: PriceListEntity)
+
+    @Query("delete from pricelist where symbol=:symbol and interval=:interval")
+    fun delete(symbol: String, interval: Int)
 }
 
 @Dao
 interface PricesDao {
     @Query("select * from prices where symbol=:symbol and interval=:interval")
     fun getAll(symbol: String, interval: Int): List<PriceRowEntity>
+
+    @Insert
+    fun insert(prices: List<PriceRowEntity>)
 }
 
 @Entity(tableName = "pricelist", primaryKeys = ["symbol", "interval"])

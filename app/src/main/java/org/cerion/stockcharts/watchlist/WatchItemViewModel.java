@@ -1,7 +1,8 @@
 package org.cerion.stockcharts.watchlist;
 
-import androidx.databinding.ObservableField;
 import android.os.Handler;
+
+import androidx.databinding.ObservableField;
 
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.Utils;
@@ -42,6 +43,7 @@ public class WatchItemViewModel {
                     apply(prices);
                 } catch (Exception e) {
                     // TODO set error state
+                    e.printStackTrace();
                 }
                 loading.set(false);
             }
