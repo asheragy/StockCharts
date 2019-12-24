@@ -6,10 +6,15 @@
     <string name="indicators">Indicators</string>
     <string name="overlays">Overlays</string>
 
+    <string name="interval_daily">Daily</string>
+    <string name="interval_weekly">Weekly</string>
+    <string name="interval_monthly">Monthly</string>
+    <string name="interval_quarterly">Quarterly</string>
+
     <string-array name="intervals">
-        <item>Daily</item>
-        <item>Weekly</item>
-        <item>Monthly</item>
+        <item>@string/interval_daily</item>
+        <item>@string/interval_weekly</item>
+        <item>@string/interval_monthly</item>
     </string-array>
 
     <string-array name="functions_toolsonly">

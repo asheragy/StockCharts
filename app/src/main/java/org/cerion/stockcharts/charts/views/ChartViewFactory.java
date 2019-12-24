@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-class ChartViewFactory {
+public class ChartViewFactory {
 
     private Context mContext;
 
@@ -56,12 +56,12 @@ class ChartViewFactory {
     private static DateFormat mDateFormatMonthly = new SimpleDateFormat("MMM ''yy");
     private Description mDesc = new Description();
 
-    ChartViewFactory(Context context) {
+    public ChartViewFactory(Context context) {
         mContext = context;
         mDesc.setText("");
     }
 
-    Chart getChart(StockChart chart, PriceList list) {
+    public Chart getChart(StockChart chart, PriceList list) {
         if (chart instanceof PriceChart)
             return getPriceChart((PriceChart) chart, list);
 
@@ -71,7 +71,7 @@ class ChartViewFactory {
         return getVolumeChart((VolumeChart) chart, list);
     }
 
-    Chart getEmptyChart() {
+    public Chart getEmptyChart() {
         Chart chart = new LineChart(mContext);
         chart.setDescription(mDesc);
         chart.setMinimumHeight(ChartViewFactory.CHART_HEIGHT);
