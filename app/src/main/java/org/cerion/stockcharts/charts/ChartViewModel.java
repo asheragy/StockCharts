@@ -20,7 +20,7 @@ public class ChartViewModel {
         this.parent = parent;
         mChart = chart;
 
-        parent.priceList.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        parent.getPriceList().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
                 if (view != null)
@@ -57,6 +57,6 @@ public class ChartViewModel {
     }
 
     public PriceList getList() {
-        return parent.priceList.get();
+        return parent.getPriceList().get();
     }
 }

@@ -3,21 +3,22 @@ package org.cerion.stockcharts.charts;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+
 import com.edmodo.rangebar.RangeBar;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.ChartView;
-import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stockcharts.common.ViewModelActivity;
+import org.cerion.stockcharts.databinding.ActivityChartsBinding;
 import org.cerion.stocks.core.charts.IndicatorChart;
 import org.cerion.stocks.core.charts.PriceChart;
 import org.cerion.stocks.core.charts.StockChart;
@@ -73,10 +74,10 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
             }
         });
 
-        getViewModel().priceList.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        getViewModel().getPriceList().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                int size = getViewModel().priceList.get().size();
+                int size = getViewModel().getPriceList().get().size();
                 rangeBar.setTickCount(size);
                 rangeBar.setThumbIndices(0, size-1);
             }
@@ -84,7 +85,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
 
         // Restore previous charts
         if (isRetained()) {
-            for(ChartViewModel vm : getViewModel().charts) {
+            for(ChartViewModel vm : getViewModel().getCharts()) {
                 ChartView view = new ChartView(this, vm);
                 mCharts.addView(view);
             }
@@ -122,7 +123,7 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
         InfoPanelFragment fragment = (InfoPanelFragment)getFragmentManager().findFragmentById(R.id.info_fragment);
         fragment.load(getViewModel().getSymbol());
 
-        if (getViewModel().fabOpen.get())
+        if (getViewModel().getFabOpen().get())
             binding.fabGroup.open();
     }
 
@@ -142,12 +143,12 @@ public class ChartsActivity extends ViewModelActivity<ChartsViewModel> implement
         final ChartView view = new ChartView(this, vm);
 
         mCharts.addView(view);
-        getViewModel().charts.add(vm);
+        getViewModel().getCharts().add(vm);
 
         vm.setOnRemoveListener(new ChartViewModel.OnRemoveListener() {
             @Override
             public void onRemove() {
-                getViewModel().charts.remove(vm);
+                getViewModel().getCharts().remove(vm);
                 mCharts.removeView(view);
             }
         });

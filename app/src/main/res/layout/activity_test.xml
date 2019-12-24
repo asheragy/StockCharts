@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PositionsActivity">
+    tools:context=".TestActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <fragment
-            android:id="@+id/positions_fragment"
+            android:id="@+id/fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="org.cerion.stockcharts.ui.positions.PositionsFragment">
+            android:name="org.cerion.stockcharts.ui.charts.ChartsFragment">
         </fragment>
 
     </FrameLayout>
