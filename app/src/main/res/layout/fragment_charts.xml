@@ -8,48 +8,67 @@
         <import type="org.cerion.stocks.core.model.Interval"/>
     </data>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.chip.ChipGroup
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:singleSelection="true">
+            android:layout_height="match_parent">
 
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/interval_daily"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
-                android:checked="@{viewmodel.interval == Interval.DAILY}"/>
+                app:singleSelection="true">
 
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_daily"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
+                    android:checked="@{viewmodel.interval == Interval.DAILY}"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_weekly"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
+                    android:checked="@{viewmodel.interval == Interval.WEEKLY}"/>
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <com.edmodo.rangebar.RangeBar
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/interval_weekly"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
-                android:checked="@{viewmodel.interval == Interval.WEEKLY}"/>
+                android:id="@+id/range_bar"/>
 
-        </com.google.android.material.chip.ChipGroup>
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewmodel.symbol}" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <org.cerion.stockcharts.common.FloatingActionButtonGroup
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewmodel.symbol}" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/fab_group">
+        </org.cerion.stockcharts.common.FloatingActionButtonGroup>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
-        </androidx.recyclerview.widget.RecyclerView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-
-    </LinearLayout>
 </layout>
 

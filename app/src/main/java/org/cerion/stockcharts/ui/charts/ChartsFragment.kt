@@ -32,11 +32,28 @@ class ChartsFragment : Fragment() {
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
+        viewModel.range.observe(viewLifecycleOwner, Observer {
+            adapter.setRange(it.first, it.second)
+        })
 
+        viewModel.range.observe(viewLifecycleOwner, Observer {
+            if (viewModel.prices.value != null) {
+                binding.rangeBar.setTickCount(viewModel.prices.value!!.size)
+                binding.rangeBar.setThumbIndices(it.first, it.second)
+            }
+        })
 
         viewModel.interval.observe(viewLifecycleOwner, Observer {
             Toast.makeText(requireContext(), "interval changed", Toast.LENGTH_SHORT).show()
         })
+
+        binding.rangeBar.setOnRangeBarChangeListener { _, start, end ->
+            viewModel.setRange(start, end)
+        }
+
+        binding.fabGroup.add("Price") { viewModel.addPriceChart() }
+        binding.fabGroup.add("Volume") { viewModel.addVolumeChart() }
+        binding.fabGroup.add("Indicator") { viewModel.addIndicatorChart() }
 
         return binding.root
     }
