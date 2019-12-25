@@ -14,8 +14,11 @@ import org.cerion.stockcharts.common.TAG
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.StockChart
 
+class StockChartListener(val clickListener: (chart: StockChart) -> Unit) {
+    fun onClick(chart: StockChart) = clickListener(chart)
+}
 
-class ChartListAdapter(context: Context) : RecyclerView.Adapter<ChartListAdapter.ViewHolder>() {
+class ChartListAdapter(context: Context, private val clickListener: StockChartListener) : RecyclerView.Adapter<ChartListAdapter.ViewHolder>() {
 
     private var charts: List<StockChart> = emptyList()
     private val factory = ChartViewFactory(context)
@@ -48,18 +51,20 @@ class ChartListAdapter(context: Context) : RecyclerView.Adapter<ChartListAdapter
 
     inner class ViewHolder internal constructor(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(chart: StockChart) {
+
             val frame = view.findViewById<FrameLayout>(R.id.chart_frame)
 
-            if (frame.childCount == 0 || frame.tag == "test") {
+            if (frame.childCount == 0 || frame.tag != chart) {
                 frame.removeAllViews()
                 if (prices.isNullOrEmpty()) {
                     frame.addView(factory.emptyChart)
-                    frame.tag = "test"
+                    frame.tag = null
                 }
                 else {
-                    val chart = factory.getChart(chart, prices)
-                    frame.addView(chart)
-                    frame.tag = null
+                    val chartView = factory.getChart(chart, prices)
+                    chartView.setOnClickListener { clickListener.onClick(chart) }
+                    frame.addView(chartView)
+                    frame.tag = chart
                 }
             }
             else if (range != null) {

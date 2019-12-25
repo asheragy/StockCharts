@@ -23,7 +23,13 @@ class ChartsFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
 
-        val adapter = ChartListAdapter(requireContext())
+        val adapter = ChartListAdapter(requireContext(), StockChartListener {
+            //Toast.makeText(requireContext(), "clicked", Toast.LENGTH_SHORT).show()
+            val fm = requireActivity().supportFragmentManager
+            val dialog = EditChartDialog.newInstance(it, viewModel)
+            dialog.show(fm, "editDialog")
+        })
+
         binding.recyclerView.adapter = adapter
 
         val chartsChangedObserver = Observer<Any> {

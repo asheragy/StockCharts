@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="viewmodel"
-            type="org.cerion.stockcharts.charts.EditChartViewModel" />
+        <variable name="viewmodel" type="org.cerion.stockcharts.ui.charts.EditChartViewModel" />
 
         <import type="android.view.View"/>
     </data>

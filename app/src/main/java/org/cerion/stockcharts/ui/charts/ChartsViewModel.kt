@@ -33,7 +33,7 @@ class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
 
     val prices = MediatorLiveData<PriceList>()
 
-    private val _charts = mutableListOf(PriceChart(), VolumeChart())
+    private var _charts = mutableListOf(PriceChart(), VolumeChart())
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
 
     private var job = Job()
@@ -82,6 +82,16 @@ class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
 
     fun addVolumeChart() {
         addChart(VolumeChart())
+    }
+
+    fun removeChart(chart: StockChart) {
+        _charts.remove(chart)
+        charts.value = _charts
+    }
+
+    fun replaceChart(old: StockChart, new: StockChart) {
+        _charts = _charts.map { if(it == old) new else it }.toMutableList()
+        charts.value = _charts
     }
 
     private fun addChart(chart: StockChart) {

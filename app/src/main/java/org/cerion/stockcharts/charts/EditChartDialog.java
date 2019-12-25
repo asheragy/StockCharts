@@ -3,11 +3,12 @@ package org.cerion.stockcharts.charts;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.views.OverlayEditControl;
@@ -48,7 +49,7 @@ public class EditChartDialog extends DialogFragment implements EditChartViewMode
         View view = inflater.inflate(R.layout.dialog_chart_edit, container);
 
         binding = DialogChartEditBinding.bind(view);
-        binding.setViewmodel(viewModel);
+        //binding.setViewmodel(viewModel);
 
         // TODO add as binding
         binding.addOverlay.setOnClickListener(new View.OnClickListener() {
