@@ -124,7 +124,7 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
         }
         // Add parameters
         val params = instance.params
-        parametersControl.setParameters(params)
+        parametersControl.setParameters(params.toMutableList())
     }
 
     private val parametersControl: ParametersEditControl
@@ -134,9 +134,16 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
         }
 
     private fun onAddOverlay(): OverlayEditControl {
-        val control = OverlayEditControl(context, viewModel!!.chart.overlays)
-        control.setOnDelete { overlays!!.removeView(control) }
-        overlays!!.addView(control)
+        val control = OverlayEditControl(requireContext(), viewModel.chart.overlays)
+
+        control.setOnDelete(object : OverlayEditControl.OnDeleteListener {
+            override fun delete() {
+                overlays.removeView(control)
+            }
+
+        })
+
+        overlays.addView(control)
         return control
     }
 }
