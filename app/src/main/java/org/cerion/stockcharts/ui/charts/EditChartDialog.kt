@@ -66,8 +66,8 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
         if (chart is IndicatorChart) {
             setIndicator((chart as IndicatorChart).indicator)
         }
-        for (i in 0 until viewModel!!.chart.overlayCount) {
-            val overlay = viewModel!!.chart.getOverlay(i)
+        for (i in 0 until viewModel.chart.overlayCount) {
+            val overlay = viewModel.chart.getOverlay(i)
             onAddOverlay().overlayFunction = overlay
         }
         return view
@@ -113,7 +113,7 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
     }
 
     override fun onFunctionChanged() {
-        setIndicator(viewModel!!.function)
+        setIndicator(viewModel.function!!)
     }
 
     private fun setIndicator(instance: IIndicator) {

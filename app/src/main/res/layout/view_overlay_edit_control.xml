@@ -13,7 +13,7 @@
         tools:entries="@array/overlays_toolsonly">
     </Spinner>
 
-    <org.cerion.stockcharts.charts.views.ParametersEditControl
+    <org.cerion.stockcharts.charts.ParametersEditControl
         android:id="@+id/parameters"
         android:orientation="horizontal"
         android:layout_weight="1"
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    </org.cerion.stockcharts.charts.views.ParametersEditControl>
+    </org.cerion.stockcharts.charts.ParametersEditControl>
 
     <Button
         android:text="X"
