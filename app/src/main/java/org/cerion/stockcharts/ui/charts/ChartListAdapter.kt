@@ -9,7 +9,7 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.charts.views.ChartViewFactory
+import org.cerion.stockcharts.charts.ChartViewFactory
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.StockChart

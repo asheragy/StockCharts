@@ -1,13 +1,12 @@
 package org.cerion.stockcharts.watchlist;
 
 
-import android.content.Intent;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.cerion.stockcharts.charts.ChartsActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.cerion.stockcharts.databinding.ListItemWatchBinding;
 
 import java.util.List;
@@ -58,8 +57,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
 
         @Override
         public void onClick(View v) {
-            Intent intent = ChartsActivity.newIntent(v.getContext(), binding.getViewModel().getSymbol(), binding.getViewModel().getChart());
-            v.getContext().startActivity(intent);
+            // TODO open charts activity/fragment
+            //Intent intent = ChartsActivity.newIntent(v.getContext(), binding.getViewModel().getSymbol(), binding.getViewModel().getChart());
+            //v.getContext().startActivity(intent);
         }
     }
 }

@@ -1,10 +1,11 @@
-package org.cerion.stockcharts.charts;
+package org.cerion.stockcharts.ui.charts;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.common.ViewModelFragment;
