@@ -22,7 +22,11 @@ class PriceListSQLRepository(context: Context) : SQLiteRepositoryBase(StockDBOpe
         throw RuntimeException("not implemented")
     }
 
+    // TODO should return priceList since
+
     override operator fun get(symbol: String, interval: Interval): List<PriceRow> {
+        // TODO this should handle quarterly/yearly
+
         val dbValues = pricesDao.getAll(symbol, interval.ordinal)
 
         return dbValues.map {

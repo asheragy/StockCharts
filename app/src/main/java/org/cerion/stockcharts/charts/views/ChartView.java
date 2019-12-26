@@ -1,20 +1,18 @@
 package org.cerion.stockcharts.charts.views;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.databinding.DataBindingUtil;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.charts.ChartViewModel;
-import org.cerion.stockcharts.charts.EditChartDialog;
 import org.cerion.stockcharts.charts.IChartView;
 import org.cerion.stockcharts.databinding.ViewChartBinding;
 
@@ -43,9 +41,7 @@ public class ChartView extends LinearLayout implements IChartView {
     }
 
     public void edit() {
-        FragmentManager fm = ((Activity)getContext()).getFragmentManager();
-        EditChartDialog dialog = EditChartDialog.newInstance(viewModel.getChart(), viewModel);
-        dialog.show(fm, "editDialog");
+        // removed
     }
 
     public void setRange(int start, int end) {

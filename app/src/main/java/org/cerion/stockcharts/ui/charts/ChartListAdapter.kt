@@ -51,10 +51,11 @@ class ChartListAdapter(context: Context, private val clickListener: StockChartLi
 
     inner class ViewHolder internal constructor(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(chart: StockChart) {
+            val tag = Pair(chart, prices)
 
             val frame = view.findViewById<FrameLayout>(R.id.chart_frame)
 
-            if (frame.childCount == 0 || frame.tag != chart) {
+            if (frame.childCount == 0 || frame.tag != tag) {
                 frame.removeAllViews()
                 if (prices.isNullOrEmpty()) {
                     frame.addView(factory.emptyChart)
@@ -64,7 +65,7 @@ class ChartListAdapter(context: Context, private val clickListener: StockChartLi
                     val chartView = factory.getChart(chart, prices)
                     chartView.setOnClickListener { clickListener.onClick(chart) }
                     frame.addView(chartView)
-                    frame.tag = chart
+                    frame.tag = tag
                 }
             }
             else if (range != null) {

@@ -19,6 +19,8 @@ import kotlin.math.min
 
 class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
 
+    // TODO only prices should be nullable value
+
     private val _symbol = MutableLiveData("")
     val symbol: LiveData<String>
         get() = _symbol
@@ -49,7 +51,8 @@ class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
         prices.addSource(interval) {
             scope.launch {
                 prices.value = withContext(scope.coroutineContext) {
-                    getPrices(symbol)
+                    val prices = getPrices(symbol)
+                    prices
                 }
             }
         }
@@ -101,8 +104,26 @@ class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
 
     private suspend fun getPrices(symbol: String): PriceList {
         return withContext(Dispatchers.IO) {
-            val list = api.getPrices(symbol, interval.value!!, Constants.START_DATE_DAILY)
-            PriceList(symbol, list)
+            // TODO repository should handle quarterly/monthly conversion
+            val startDate = when(interval.value) {
+                Interval.DAILY -> Constants.START_DATE_DAILY
+                Interval.WEEKLY -> Constants.START_DATE_WEEKLY
+                else -> Constants.START_DATE_MONTHLY
+            }
+
+            val intervalQuery = when(interval.value) {
+                Interval.DAILY -> Interval.DAILY
+                Interval.WEEKLY -> Interval.WEEKLY
+                else -> Interval.MONTHLY
+            }
+
+            val list = api.getPrices(symbol, intervalQuery, startDate)
+
+            when(interval.value) {
+                Interval.QUARTERLY -> PriceList(symbol, list).toQuarterly()
+                Interval.YEARLY -> PriceList(symbol, list).toYearly()
+                else -> PriceList(symbol, list)
+            }
         }
     }
 
