@@ -29,19 +29,6 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
         return mInstance;
     }
 
-    public static class Symbols {
-        public static final String TABLE_NAME = "symbols";
-        public static final String _SYMBOL = "symbol";
-        public static final String _NAME = "name";
-        public static final String _EXCHANGE = "exchange";
-
-        public static final String SQL_CREATE = "create table " + TABLE_NAME + "("
-                + _SYMBOL + " TEXT PRIMARY KEY NOT NULL, "
-                + _NAME + " TEXT NOT NULL DEFAULT '', "
-                + _EXCHANGE + " TEXT NOT NULL DEFAULT ''"
-                + ")";
-    }
-
     public static class HistoricalDates {
         public static final String TABLE_HISTORICAL_DATES_DAILY = "historical_dates_daily";
         public static final String TABLE_HISTORICAL_DATES_WEEKLY = "historical_dates_weekly";
@@ -79,7 +66,6 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db)
     {
         //db.execSQL("PRAGMA foreign_keys=ON;");
-        db.execSQL(Symbols.SQL_CREATE);
         db.execSQL(Dividends.SQL_CREATE);
         db.execSQL(Positions.SQL_CREATE);
         db.execSQL(HistoricalDates.getCreate(HistoricalDates.TABLE_HISTORICAL_DATES_DAILY));
@@ -94,7 +80,6 @@ public class StockDBOpenHelper extends SQLiteOpenHelper {
 
         switch(oldVersion) {
             case 8:
-                db.execSQL("DROP TABLE IF EXISTS " + Symbols.TABLE_NAME);
                 db.execSQL("DROP TABLE IF EXISTS " + Dividends.TABLE_NAME);
                 db.execSQL("DROP TABLE IF EXISTS " + Positions.TABLE_NAME);
                 db.execSQL("DROP TABLE IF EXISTS " + HistoricalDates.TABLE_HISTORICAL_DATES_DAILY);

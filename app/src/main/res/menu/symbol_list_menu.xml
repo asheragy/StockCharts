@@ -5,7 +5,4 @@
     <item android:id="@+id/add_symbol" android:title="Add Symbol"
         android:orderInCategory="100" app:showAsAction="never" />
 
-    <item android:id="@+id/sync_symbols" android:title="Sync Symbols"
-        android:orderInCategory="100" app:showAsAction="never" />
-
 </menu>

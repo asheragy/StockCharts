@@ -11,6 +11,7 @@ interface PriceListDao {
     @Insert
     fun insert(priceList: PriceListEntity)
 
+    // TODO should be able to replace with @Delete depending on usages
     @Query("delete from pricelist where symbol=:symbol and interval=:interval")
     fun delete(symbol: String, interval: Int)
 }

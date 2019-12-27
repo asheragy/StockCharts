@@ -10,7 +10,6 @@ public class Tables {
         public static final String _DATE = "date";
         public static final String _AMOUNT = "amount";
 
-        //public static final String[] ALL_COLUMNS = { _SYMBOL, _DATE, _AMOUNT };
         public static String SQL_CREATE =
                 "create table " + TABLE_NAME + "("
                         + _SYMBOL + " TEXT NOT NULL, "

@@ -4,16 +4,16 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.cerion.stockcharts.R;
 import org.cerion.stockcharts.common.SymbolLookupDialogFragment;
@@ -23,7 +23,6 @@ import org.cerion.stockcharts.common.ViewModelFragment;
 public class SymbolsFragment extends ViewModelFragment<SymbolsViewModel> implements SymbolLookupDialogFragment.OnSymbolListener {
 
     private static final String TAG = SymbolsFragment.class.getSimpleName();
-    private RecyclerViewAdapter adapter;
 
     @Override
     protected SymbolsViewModel newViewModel() {
@@ -34,9 +33,9 @@ public class SymbolsFragment extends ViewModelFragment<SymbolsViewModel> impleme
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_symbols, container, false);
 
-        adapter = new RecyclerViewAdapter(getViewModel().items);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getViewModel().items);
 
-        RecyclerView rv = (RecyclerView)view.findViewById(R.id.recycler_view);
+        RecyclerView rv = view.findViewById(R.id.recycler_view);
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv.setAdapter(adapter);
@@ -82,10 +81,6 @@ public class SymbolsFragment extends ViewModelFragment<SymbolsViewModel> impleme
             case R.id.add_symbol:
                 onAddSymbol();
                 break;
-
-            case R.id.sync_symbols:
-                onSyncSymbols();
-                break;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -109,40 +104,6 @@ public class SymbolsFragment extends ViewModelFragment<SymbolsViewModel> impleme
         DialogFragment dialog = new SymbolLookupDialogFragment();
         dialog.setTargetFragment(this, DIALOG_FRAGMENT);
         dialog.show(getFragmentManager().beginTransaction(), "dialog");
-    }
-
-    private void onSyncSymbols() {
-
-        // FIX symbol add
-        Toast.makeText(getContext(), "Not implemented", Toast.LENGTH_SHORT).show();
-        /*
-        GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
-            @Override
-            public void run() {
-                PositionRepository positionRepo = new PositionRepository(getContext());
-
-                List<Symbol> sList = repo.getAll();
-                Set<String> symbols = new HashSet<>();
-                for(Symbol s : sList)
-                    symbols.add(s.getSymbol());
-
-                List<Position> positions = positionRepo.getAll();
-                for(Position p : positions) {
-                    if (!symbols.contains(p.getSymbol())) {
-                        repo.add(p.getSymbol());
-                        symbols.add(p.getSymbol());
-                    }
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                refresh();
-            }
-        });
-
-        task.execute();
-        */
     }
 
     @Override
