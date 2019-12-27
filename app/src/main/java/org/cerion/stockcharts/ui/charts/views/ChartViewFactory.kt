@@ -10,7 +10,7 @@ import com.github.mikephil.charting.charts.CombinedChart.DrawOrder
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.*
 import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import org.cerion.stocks.core.PriceList
@@ -248,25 +248,26 @@ class ChartViewFactory(private val context: Context) {
         return CandleData()
     }
 
-    private fun getAxisFormatter(dates: Array<Date>, interval: Interval): IAxisValueFormatter {
-        return IAxisValueFormatter { value, _ ->
-            val v = value.toInt()
-            if (interval === Interval.MONTHLY)
-                dateFormatMonthly.format(dates[v])
-            else
-                dateFormat.format(dates[v])
+    private fun getAxisFormatter(dates: Array<Date>, interval: Interval): ValueFormatter {
+        return object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val v = value.toInt()
+                return if (interval === Interval.MONTHLY)
+                    dateFormatMonthly.format(dates[v])
+                else
+                    dateFormat.format(dates[v])
+            }
         }
     }
 
     // Round to 2 significant figures
-    private val logScaleYAxis: IAxisValueFormatter
-        get() = IAxisValueFormatter { value, _ ->
-
+    private val logScaleYAxis: ValueFormatter = object : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
             // Round to 2 significant figures
             val actual = exp(value.toDouble())
             var bd = BigDecimal(actual)
             bd = bd.round(MathContext(2))
-            bd.toPlainString()
+            return bd.toPlainString()
         }
-
+    }
 }

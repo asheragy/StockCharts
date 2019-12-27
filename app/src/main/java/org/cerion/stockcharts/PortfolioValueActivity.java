@@ -9,11 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.GenericAsyncTask;
@@ -133,9 +132,9 @@ public class PortfolioValueActivity extends AppCompatActivity {
             chart.setData(lineData);
 
             XAxis xaxis = chart.getXAxis();
-            xaxis.setValueFormatter(new IAxisValueFormatter() {
+            xaxis.setValueFormatter(new ValueFormatter() {
                 @Override
-                public String getFormattedValue(float value, AxisBase axis) {
+                public String getFormattedValue(float value) {
                     int v = (int)value;
                     return mDateFormat.format(dates[v]);
                 }
