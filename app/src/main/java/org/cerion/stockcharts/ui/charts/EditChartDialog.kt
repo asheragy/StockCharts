@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.charts.OverlayEditControl
-import org.cerion.stockcharts.charts.ParametersEditControl
+import org.cerion.stockcharts.ui.charts.views.OverlayEditControl
+import org.cerion.stockcharts.ui.charts.views.ParametersEditControl
 import org.cerion.stockcharts.databinding.DialogChartEditBinding
 import org.cerion.stocks.core.charts.IndicatorChart
 import org.cerion.stocks.core.charts.PriceChart

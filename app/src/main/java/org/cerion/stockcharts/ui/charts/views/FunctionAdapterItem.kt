@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.charts
+package org.cerion.stockcharts.ui.charts.views
 
 import org.cerion.stocks.core.functions.IFunction
 import org.cerion.stocks.core.functions.types.IFunctionEnum

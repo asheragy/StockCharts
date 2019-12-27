@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.charts
+package org.cerion.stockcharts.ui.charts.views
 
 import android.content.Context
 import android.util.Log
@@ -10,8 +10,8 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Spinner
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.charts.FunctionAdapterItem.Companion.getList
-import org.cerion.stockcharts.charts.FunctionAdapterItem.Companion.indexOf
+import org.cerion.stockcharts.ui.charts.views.FunctionAdapterItem.Companion.getList
+import org.cerion.stockcharts.ui.charts.views.FunctionAdapterItem.Companion.indexOf
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stocks.core.functions.IOverlay
 import org.cerion.stocks.core.functions.types.IFunctionEnum

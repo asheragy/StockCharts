@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.charts
+package org.cerion.stockcharts.ui.charts.views
 
 import android.content.Context
 import android.text.Editable

@@ -49,7 +49,7 @@
                 android:visibility="@{viewmodel.showFunctions ? View.VISIBLE : View.GONE}"
                 tools:entries="@array/functions_toolsonly"/>
 
-            <org.cerion.stockcharts.charts.ParametersEditControl
+            <org.cerion.stockcharts.ui.charts.views.ParametersEditControl
                 android:id="@+id/parameters"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-            </org.cerion.stockcharts.charts.ParametersEditControl>
+            </org.cerion.stockcharts.ui.charts.views.ParametersEditControl>
 
 
             <Button

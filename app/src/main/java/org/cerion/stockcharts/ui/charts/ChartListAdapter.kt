@@ -9,8 +9,8 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.charts.ChartViewFactory
 import org.cerion.stockcharts.common.TAG
+import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.StockChart
 
@@ -58,11 +58,11 @@ class ChartListAdapter(context: Context, private val clickListener: StockChartLi
             if (frame.childCount == 0 || frame.tag != tag) {
                 frame.removeAllViews()
                 if (prices.isNullOrEmpty()) {
-                    frame.addView(factory.emptyChart)
+                    frame.addView(factory.getEmptyChart())
                     frame.tag = null
                 }
                 else {
-                    val chartView = factory.getChart(chart, prices)
+                    val chartView = factory.getChart(chart, prices!!)
                     chartView.setOnClickListener { clickListener.onClick(chart) }
                     frame.addView(chartView)
                     frame.tag = tag
