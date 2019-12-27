@@ -1,5 +1,6 @@
 package org.cerion.stockcharts.ui.symbols;
 
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.cerion.stockcharts.common.OnListAnyChangeCallback;
 import org.cerion.stockcharts.databinding.ListItemSymbolBinding;
+import org.cerion.stockcharts.ui.charts.ChartsActivity;
 
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder> {
 
@@ -63,9 +65,8 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
         @Override
         public void onClick(View v) {
             String symbol = binding.getViewModel().getSymbol();
-            // TODO open activity/fragment
-            //Intent intent = ChartsActivity.newIntent(v.getContext(), symbol);
-            //v.getContext().startActivity(intent);
+            Intent intent = ChartsActivity.Companion.getIntent(v.getContext(), symbol);
+            v.getContext().startActivity(intent);
         }
 
         @Override

@@ -17,11 +17,11 @@ import org.cerion.stocks.core.web.CachedDataAPI
 import kotlin.math.max
 import kotlin.math.min
 
-class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
+class ChartsViewModel(private val api: CachedDataAPI, symbolName: String) : ViewModel() {
 
     // TODO only prices should be nullable value
 
-    private val _symbol = MutableLiveData("")
+    private val _symbol = MutableLiveData(symbolName)
     val symbol: LiveData<String>
         get() = _symbol
 
@@ -44,14 +44,11 @@ class ChartsViewModel(private val api: CachedDataAPI) : ViewModel() {
     init {
         _range.value = Pair(0, 0)
 
-        val symbol = "XLE"
-        _symbol.value = symbol
-
         // TODO add source for symbol too
         prices.addSource(interval) {
             scope.launch {
                 prices.value = withContext(scope.coroutineContext) {
-                    val prices = getPrices(symbol)
+                    val prices = getPrices(symbolName)
                     prices
                 }
             }

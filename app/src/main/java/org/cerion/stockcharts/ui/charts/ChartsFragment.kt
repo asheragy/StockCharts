@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import org.cerion.stockcharts.Injection
@@ -17,8 +16,9 @@ class ChartsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentChartsBinding.inflate(inflater, container, false)
 
-        viewModel = ChartsViewModel(Injection.getAPI(requireContext()))
-                // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
+        // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
+        val symbol = requireActivity().intent.extras!!.getString("symbol")!!
+        viewModel = ChartsViewModel(Injection.getAPI(requireContext()), symbol)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
@@ -47,10 +47,6 @@ class ChartsFragment : Fragment() {
                 binding.rangeBar.setTickCount(viewModel.prices.value!!.size)
                 binding.rangeBar.setThumbIndices(it.first, it.second)
             }
-        })
-
-        viewModel.interval.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(requireContext(), "interval changed", Toast.LENGTH_SHORT).show()
         })
 
         binding.rangeBar.setOnRangeBarChangeListener { _, start, end ->
