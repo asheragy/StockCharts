@@ -2,14 +2,15 @@ package org.cerion.stockcharts.common;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.text.InputFilter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 public class SymbolLookupDialogFragment extends DialogFragment {
 
@@ -34,7 +35,7 @@ public class SymbolLookupDialogFragment extends DialogFragment {
     */
 
     @Override
-    public void setTargetFragment(Fragment fragment, int requestCode) {
+    public void setTargetFragment(@Nullable androidx.fragment.app.Fragment fragment, int requestCode) {
         super.setTargetFragment(fragment, requestCode);
 
         try {
@@ -42,6 +43,7 @@ public class SymbolLookupDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException("Calling fragment must implement interface");
         }
+
     }
 
     @NonNull

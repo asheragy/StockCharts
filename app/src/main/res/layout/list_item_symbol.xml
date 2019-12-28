@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="org.cerion.stockcharts.ui.symbols.SymbolItemViewModel"/>
+        <variable name="item" type="org.cerion.stocks.core.model.Symbol"/>
     </data>
 
     <LinearLayout
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:paddingEnd="10dp"
-                android:text="@{viewModel.symbol}"
+                android:text="@{item.symbol}"
                 tools:text="Symbol"/>
 
             <TextView
@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.exchange}"
+                android:text="@{item.exchange}"
                 tools:text="Exchange"
                 android:textAppearance="?android:attr/textAppearanceListItemSecondary"
                 android:textAlignment="viewEnd" />
@@ -49,17 +49,8 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.name}"
+                android:text="@{item.name}"
                 tools:text="Name"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@{viewModel.uses}"
-                tools:text="WP"
-                android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-                android:textAlignment="viewEnd" />
 
         </LinearLayout>
 

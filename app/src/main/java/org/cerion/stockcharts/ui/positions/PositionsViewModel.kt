@@ -48,6 +48,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     init {
+        // TODO should be background or just change repository/dao to use livedata
         _accounts.value = accountRepo.getAll()
     }
 
