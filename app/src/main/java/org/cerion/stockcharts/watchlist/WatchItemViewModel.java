@@ -4,12 +4,10 @@ import android.os.Handler;
 
 import androidx.databinding.ObservableField;
 
-import org.cerion.stockcharts.common.Constants;
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocks.core.PriceList;
 import org.cerion.stocks.core.charts.StockChart;
 import org.cerion.stocks.core.functions.conditions.ICondition;
-import org.cerion.stocks.core.model.Interval;
 import org.cerion.stocks.core.web.DataAPI;
 
 public class WatchItemViewModel {
@@ -34,6 +32,7 @@ public class WatchItemViewModel {
     }
 
     public void load() {
+        /*
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -48,6 +47,8 @@ public class WatchItemViewModel {
                 loading.set(false);
             }
         });
+
+         */
     }
 
     public String getSymbol() {

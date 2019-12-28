@@ -13,11 +13,11 @@ import org.cerion.stocks.core.charts.StockChart
 import org.cerion.stocks.core.charts.VolumeChart
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.web.CachedDataAPI
+import org.cerion.stocks.core.repository.CachedPriceListRepository
 import kotlin.math.max
 import kotlin.math.min
 
-class ChartsViewModel(private val api: CachedDataAPI, symbolName: String) : ViewModel() {
+class ChartsViewModel(private val repo: CachedPriceListRepository, symbolName: String) : ViewModel() {
 
     // TODO only prices should be nullable value
 
@@ -114,12 +114,12 @@ class ChartsViewModel(private val api: CachedDataAPI, symbolName: String) : View
                 else -> Interval.MONTHLY
             }
 
-            val list = api.getPrices(symbol, intervalQuery, startDate)
+            val list = repo.get(symbol, intervalQuery, startDate)
 
             when(interval.value) {
-                Interval.QUARTERLY -> PriceList(symbol, list).toQuarterly()
-                Interval.YEARLY -> PriceList(symbol, list).toYearly()
-                else -> PriceList(symbol, list)
+                Interval.QUARTERLY -> list.toQuarterly()
+                Interval.YEARLY -> list.toYearly()
+                else -> list
             }
         }
     }

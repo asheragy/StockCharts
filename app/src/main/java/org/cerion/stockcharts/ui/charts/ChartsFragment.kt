@@ -18,7 +18,7 @@ class ChartsFragment : Fragment() {
 
         // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
         val symbol = requireActivity().intent.extras!!.getString("symbol")!!
-        viewModel = ChartsViewModel(Injection.getAPI(requireContext()), symbol)
+        viewModel = ChartsViewModel(Injection.getPriceListRepository(requireContext()), symbol)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel

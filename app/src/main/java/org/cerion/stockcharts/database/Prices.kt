@@ -6,7 +6,7 @@ import java.util.*
 @Dao
 interface PriceListDao {
     @Query("select * from pricelist where symbol=:symbol and interval=:interval")
-    fun get(symbol: String, interval: Int): PriceListEntity
+    fun get(symbol: String, interval: Int): PriceListEntity?
 
     @Insert
     fun insert(priceList: PriceListEntity)

@@ -1,8 +1,9 @@
 package org.cerion.stockcharts.watchlist;
 
 
-import androidx.databinding.ObservableField;
 import android.os.Handler;
+
+import androidx.databinding.ObservableField;
 
 import org.cerion.stocks.core.functions.conditions.Condition;
 import org.cerion.stocks.core.functions.conditions.IndicatorCondition;

@@ -13,6 +13,7 @@ import org.cerion.stockcharts.repository.PositionWithDividendsRepository;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocks.core.model.PositionWithDividends;
 import org.cerion.stocks.core.model.Symbol;
+import org.cerion.stocks.core.repository.CachedPriceListRepository;
 import org.cerion.stocks.core.web.CachedDataAPI;
 
 import java.util.ArrayList;
@@ -30,11 +31,13 @@ public class PositionsViewModel {
     private PositionWithDividendsRepository repo;
     private SymbolRepository symbolRepo;
     private CachedDataAPI api;
+    private CachedPriceListRepository priceRepo;
 
     public PositionsViewModel(Context context) {
         repo = new PositionWithDividendsRepository(context);
         symbolRepo = new SymbolRepository(context);
         api = Injection.getAPI(context);
+        priceRepo = Injection.getPriceListRepository(context);
 
         positions.set(new ArrayList<PositionItemViewModel>());
         allocations.set(new ArrayList<Pair<String,Float>>());
@@ -95,8 +98,8 @@ public class PositionsViewModel {
                         if(s != null)
                             desc = desc + " - " + s.getName();
 
-                        PositionItemViewModel vm = new PositionItemViewModel(api, p, desc);
-                        vm.forceUpdate = forceUpdate;
+                        PositionItemViewModel vm = new PositionItemViewModel(api, p, desc, priceRepo);
+                        //vm.forceUpdate = forceUpdate;
                         items.add(vm);
 
                         vm.totalValue.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {

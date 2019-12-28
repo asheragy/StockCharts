@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
             public void run() {
-                Injection.getAPI(MainActivity.this).clearCache();
+                //Injection.getAPI(MainActivity.this).clearCache();
             }
 
             @Override

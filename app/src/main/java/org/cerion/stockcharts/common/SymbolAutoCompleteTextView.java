@@ -2,9 +2,6 @@ package org.cerion.stockcharts.common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +11,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.SymbolRepository;
