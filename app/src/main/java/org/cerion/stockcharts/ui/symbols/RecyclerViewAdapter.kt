@@ -45,8 +45,8 @@ internal class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.Li
             v.context.startActivity(intent)
         }
 
-        override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo) {
-            menu.add(CONTEXT_MENU_GROUP_ID, CONTEXT_MENU_DELETE, adapterPosition, "Delete")
+        override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenuInfo?) {
+            menu?.add(CONTEXT_MENU_GROUP_ID, CONTEXT_MENU_DELETE, adapterPosition, "Delete")
         }
 
         init {

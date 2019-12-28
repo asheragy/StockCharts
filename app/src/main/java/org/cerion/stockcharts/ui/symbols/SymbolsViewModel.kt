@@ -2,9 +2,9 @@ package org.cerion.stockcharts.ui.symbols
 
 import android.app.Application
 import android.widget.Toast
-import androidx.databinding.ObservableArrayList
-import androidx.databinding.ObservableList
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.repository.SymbolRepository
@@ -18,7 +18,9 @@ class SymbolsViewModel(application: Application) : AndroidViewModel(application)
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
 
-    val items: ObservableList<Symbol> = ObservableArrayList()
+    private val _items = MutableLiveData(emptyList<Symbol>())
+    val items: LiveData<List<Symbol>>
+        get() = _items
 
     init {
         load()
@@ -26,31 +28,32 @@ class SymbolsViewModel(application: Application) : AndroidViewModel(application)
 
     private fun load() {
         scope.launch {
-            val symbols = withContext(Dispatchers.IO) {
+            _items.value = withContext(Dispatchers.IO) {
                 repo.getAll()
             }
-
-            items.clear()
-            items.addAll(symbols)
         }
     }
 
     fun add(symbol: String) {
         scope.launch {
-            val success = withContext(Dispatchers.IO) {
-                val s = dataApi.getSymbol(symbol)
-                if (s != null) {
-                    repo.add(s)
-                    true
+            try {
+                val success = withContext(Dispatchers.IO) {
+                    val s = dataApi.getSymbol(symbol)
+                    if (s != null) {
+                        repo.add(s)
+                        true
+                    } else
+                        false
                 }
-                else
-                    false
-            }
 
-            if(success)
-                load()
-            else
-                Toast.makeText(getApplication(), "Could not find '$symbol'", Toast.LENGTH_SHORT).show()
+                if (success)
+                    load()
+                else
+                    Toast.makeText(getApplication(), "Could not find '$symbol'", Toast.LENGTH_SHORT).show()
+            }
+            catch(e: Exception) {
+                Toast.makeText(getApplication(), e.message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 

@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         // Create the adapter that will return a fragment for each of the three primary sections of the activity.
-        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getFragmentManager());
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getFragmentManager(), getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         ViewPager viewPager = findViewById(R.id.container);
@@ -96,34 +96,63 @@ public class MainActivity extends AppCompatActivity {
         task.execute();
     }
 
+    // TODO fix horrible workaround below once all fragments are from androidx
     private class SectionsPagerAdapter extends PagerAdapter {
         private static final int COUNT = 3;
         private final FragmentManager mFragmentManager;
-        private Fragment[] mFragments;
-        private FragmentTransaction mCurTransaction;
+        private final androidx.fragment.app.FragmentManager mFragmentManagerx;
 
-        private SectionsPagerAdapter(FragmentManager fragmentManager) {
+        private Object[] mFragments;
+        private FragmentTransaction mCurTransaction;
+        private androidx.fragment.app.FragmentTransaction mTransactionx;
+
+        private SectionsPagerAdapter(FragmentManager fragmentManager, androidx.fragment.app.FragmentManager fragmentManagerx) {
             mFragmentManager = fragmentManager;
-            mFragments = new Fragment[COUNT];
+            mFragmentManagerx = fragmentManagerx;
+            mFragments = new Object[COUNT];
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            Fragment fragment = mFragments[position];
 
-            if (fragment == null)
-                fragment = getFragment(position);
+            Object frag = mFragments[position];
 
-            if (fragment == null) {
-                fragment = getItem(position);
-                if (mCurTransaction == null) {
-                    mCurTransaction = mFragmentManager.beginTransaction();
+            if (position > 0) {
+                Fragment fragment = (android.app.Fragment)frag;
+
+                if (fragment == null)
+                    fragment = getFragment(position);
+
+                if (fragment == null) {
+                    fragment = (Fragment)getItem(position);
+                    if (mCurTransaction == null) {
+                        mCurTransaction = mFragmentManager.beginTransaction();
+                    }
+
+                    mCurTransaction.add(container.getId(), fragment, getTag(position));
                 }
 
-                mCurTransaction.add(container.getId(), fragment, getTag(position));
+                frag = fragment;
+            }
+            else {
+                androidx.fragment.app.Fragment fragment = (androidx.fragment.app.Fragment)frag;
+
+                if (fragment == null)
+                    fragment = getFragmentx(position);
+
+                if (fragment == null) {
+                    fragment = (androidx.fragment.app.Fragment)getItem(position);
+                    if (mTransactionx == null) {
+                        mTransactionx = mFragmentManagerx.beginTransaction();
+                    }
+
+                    mTransactionx.add(container.getId(), fragment, getTag(position));
+                }
+
+                frag = fragment;
             }
 
-            return fragment;
+            return frag;
         }
 
         /*
@@ -139,10 +168,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean isViewFromObject(View view, Object fragment) {
+            if (fragment == null)
+                return false;
+
+            if(fragment instanceof androidx.fragment.app.Fragment)
+                return ((androidx.fragment.app.Fragment) fragment).getView() == view;
+
             return ((Fragment) fragment).getView() == view;
         }
 
-        public Fragment getItem(int position) {
+        public Object getItem(int position) {
             switch (position) {
                 case 0:
                     mFragments[0] = new SymbolsFragment();
@@ -179,6 +214,11 @@ public class MainActivity extends AppCompatActivity {
                 mCurTransaction = null;
                 mFragmentManager.executePendingTransactions();
             }
+            if (mTransactionx != null) {
+                mTransactionx.commitAllowingStateLoss();
+                mTransactionx = null;
+                mFragmentManagerx.executePendingTransactions();
+            }
         }
 
         @Override
@@ -189,6 +229,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getFragment(int position) {
             String tag = getTag(position);
             return mFragmentManager.findFragmentByTag(tag);
+        }
+
+        public androidx.fragment.app.Fragment getFragmentx(int position) {
+            String tag = getTag(position);
+            return mFragmentManagerx.findFragmentByTag(tag);
         }
 
         private String getTag(int position) {

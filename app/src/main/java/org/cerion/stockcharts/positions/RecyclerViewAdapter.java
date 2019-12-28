@@ -1,11 +1,12 @@
 package org.cerion.stockcharts.positions;
 
 import android.content.Intent;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.cerion.stockcharts.databinding.ListItemPositionBinding;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder> {
 
+    public static final int CONTEXT_MENU_GROUP_ID = 99;
     public static final int CONTEXT_MENU_EDIT = 0;
     public static final int CONTEXT_MENU_DELETE = 1;
 
@@ -65,8 +67,8 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ListI
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             //menu.setHeaderTitle("Select The Action");
-            menu.add(0, CONTEXT_MENU_EDIT, getAdapterPosition(), "Edit");
-            menu.add(0, CONTEXT_MENU_DELETE, getAdapterPosition(), "Delete");
+            menu.add(CONTEXT_MENU_GROUP_ID, CONTEXT_MENU_EDIT, getAdapterPosition(), "Edit");
+            menu.add(CONTEXT_MENU_GROUP_ID, CONTEXT_MENU_DELETE, getAdapterPosition(), "Delete");
         }
 
     }

@@ -20,6 +20,7 @@ import org.cerion.stockcharts.databinding.FragmentPositionsBinding;
 import org.cerion.stocks.core.model.PositionWithDividends;
 
 public class PositionListFragment extends ViewModelFragment<PositionsViewModel> {
+
     private static final String TAG = PositionListFragment.class.getSimpleName();
     private PositionsViewModel vm;
     private FragmentPositionsBinding binding;
@@ -75,9 +76,9 @@ public class PositionListFragment extends ViewModelFragment<PositionsViewModel> 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (getUserVisibleHint()) {
-            PositionItemViewModel p = vm.positions.get().get(item.getOrder());
+        if (getUserVisibleHint() && item.getGroupId() == RecyclerViewAdapter.CONTEXT_MENU_GROUP_ID) {
 
+            PositionItemViewModel p = vm.positions.get().get(item.getOrder());
             switch (item.getItemId()) {
                 case RecyclerViewAdapter.CONTEXT_MENU_EDIT:
                     onEdit(p.getPosition());
