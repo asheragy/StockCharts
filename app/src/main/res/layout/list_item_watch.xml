@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="org.cerion.stockcharts.watchlist.WatchItemViewModel"/>
+        <variable name="viewModel" type="org.cerion.stockcharts.ui.watchlist.WatchItemViewModel"/>
         <import type="android.view.View"/>
     </data>
 

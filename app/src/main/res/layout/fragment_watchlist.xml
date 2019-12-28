@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="viewModel" type="org.cerion.stockcharts.watchlist.WatchListViewModel" />
+        <variable name="viewModel" type="org.cerion.stockcharts.ui.watchlist.WatchListViewModel" />
         <import type="android.view.View"/>
     </data>
 

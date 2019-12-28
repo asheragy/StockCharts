@@ -19,7 +19,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.cerion.stockcharts.common.GenericAsyncTask;
 import org.cerion.stockcharts.positions.PositionListFragment;
 import org.cerion.stockcharts.ui.symbols.SymbolsFragment;
-import org.cerion.stockcharts.watchlist.WatchListFragment;
+import org.cerion.stockcharts.ui.watchlist.WatchListFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
             Object frag = mFragments[position];
 
-            if (position > 0) {
+            if (position == 1) {
                 Fragment fragment = (android.app.Fragment)frag;
 
                 if (fragment == null)
