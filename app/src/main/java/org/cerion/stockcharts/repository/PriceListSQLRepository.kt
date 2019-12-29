@@ -3,7 +3,6 @@ package org.cerion.stockcharts.repository
 import android.content.Context
 import org.cerion.stockcharts.database.PriceListEntity
 import org.cerion.stockcharts.database.PriceRowEntity
-import org.cerion.stockcharts.database.StockDBOpenHelper
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.PriceRow
@@ -11,7 +10,7 @@ import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.repository.IPriceListRepository
 import java.util.*
 
-class PriceListSQLRepository(context: Context) : SQLiteRepositoryBase(StockDBOpenHelper.getInstance(context)), IPriceListRepository {
+class PriceListSQLRepository(context: Context) : IPriceListRepository {
 
     private val roomDb = getDatabase(context)
     private val priceListDao = roomDb.priceListDao

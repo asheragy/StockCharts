@@ -10,10 +10,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class GenericPosition(override val symbol: String, override val quantity: Double, override val pricePerShare: Double, override val cash: Boolean = false) : Position {
-    override val totalValue: Double
-        get() = quantity * pricePerShare
-}
 
 class PositionRepository(private val dao: AccountDao) {
 

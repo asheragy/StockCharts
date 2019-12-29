@@ -1,12 +1,11 @@
 package org.cerion.stockcharts.repository
 
 import android.content.Context
-import org.cerion.stockcharts.database.StockDBOpenHelper
 import org.cerion.stockcharts.database.SymbolEntity
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.model.Symbol
 
-class SymbolRepository(context: Context) : SQLiteRepositoryBase(StockDBOpenHelper.getInstance(context)) {
+class SymbolRepository(context: Context) {
 
     private val symbolDao = getDatabase(context).symbolsDao
 

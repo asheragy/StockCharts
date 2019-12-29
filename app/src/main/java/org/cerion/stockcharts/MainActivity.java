@@ -1,8 +1,5 @@
 package org.cerion.stockcharts;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,14 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.cerion.stockcharts.common.GenericAsyncTask;
-import org.cerion.stockcharts.positions.PositionListFragment;
+import org.cerion.stockcharts.ui.positions.PositionsFragment;
 import org.cerion.stockcharts.ui.symbols.SymbolsFragment;
 import org.cerion.stockcharts.ui.watchlist.WatchListFragment;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         // Create the adapter that will return a fragment for each of the three primary sections of the activity.
-        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getFragmentManager(), getSupportFragmentManager());
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         ViewPager viewPager = findViewById(R.id.container);
@@ -55,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         if(id == R.id.import_sp500) {
             //onImportSP500();
-            onViewPortfolio();
             return true;
         }
         else if(id == R.id.clear_cache) {
@@ -75,11 +75,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
     }
 
-    private void onViewPortfolio() {
-        startActivity(PortfolioValueActivity.getIntent(this));
-    }
-
-
     private void onClearCache() {
         GenericAsyncTask task = new GenericAsyncTask(new GenericAsyncTask.TaskHandler() {
             @Override
@@ -96,73 +91,46 @@ public class MainActivity extends AppCompatActivity {
         task.execute();
     }
 
-    // TODO fix horrible workaround below once all fragments are from androidx
     private class SectionsPagerAdapter extends PagerAdapter {
         private static final int COUNT = 3;
-        private final FragmentManager mFragmentManager;
-        private final androidx.fragment.app.FragmentManager mFragmentManagerx;
+        private Fragment[] fragments;
+        private final FragmentManager fragmentManager;
+        private FragmentTransaction transaction;
 
-        private Object[] mFragments;
-        private FragmentTransaction mCurTransaction;
-        private androidx.fragment.app.FragmentTransaction mTransactionx;
-
-        private SectionsPagerAdapter(FragmentManager fragmentManager, androidx.fragment.app.FragmentManager fragmentManagerx) {
-            mFragmentManager = fragmentManager;
-            mFragmentManagerx = fragmentManagerx;
-            mFragments = new Object[COUNT];
+        private SectionsPagerAdapter(FragmentManager fragmentManager) {
+            this.fragmentManager = fragmentManager;
+            fragments = new Fragment[COUNT];
         }
 
+
+        @NonNull
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Fragment fragment = fragments[position];
 
-            Object frag = mFragments[position];
+            if (fragment == null)
+                fragment = getFragment(position);
 
-            if (position == 1) {
-                Fragment fragment = (android.app.Fragment)frag;
-
-                if (fragment == null)
-                    fragment = getFragment(position);
-
-                if (fragment == null) {
-                    fragment = (Fragment)getItem(position);
-                    if (mCurTransaction == null) {
-                        mCurTransaction = mFragmentManager.beginTransaction();
-                    }
-
-                    mCurTransaction.add(container.getId(), fragment, getTag(position));
+            if (fragment == null) {
+                fragment = getItem(position);
+                if (transaction == null) {
+                    transaction = fragmentManager.beginTransaction();
                 }
 
-                frag = fragment;
-            }
-            else {
-                androidx.fragment.app.Fragment fragment = (androidx.fragment.app.Fragment)frag;
-
-                if (fragment == null)
-                    fragment = getFragmentx(position);
-
-                if (fragment == null) {
-                    fragment = (androidx.fragment.app.Fragment)getItem(position);
-                    if (mTransactionx == null) {
-                        mTransactionx = mFragmentManagerx.beginTransaction();
-                    }
-
-                    mTransactionx.add(container.getId(), fragment, getTag(position));
-                }
-
-                frag = fragment;
+                transaction.add(container.getId(), fragment, getTag(position));
             }
 
-            return frag;
+            return fragment;
         }
 
         /*
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             if (mCurTransaction == null) {
-                mCurTransaction = mFragmentManager.beginTransaction();
+                mCurTransaction = fragmentManager.beginTransaction();
             }
-            mCurTransaction.detach(mFragments.get(position));
-            mFragments.remove(position);
+            mCurTransaction.detach(fragments.get(position));
+            fragments.remove(position);
         }
         */
 
@@ -177,47 +145,39 @@ public class MainActivity extends AppCompatActivity {
             return ((Fragment) fragment).getView() == view;
         }
 
-        public Object getItem(int position) {
+        public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    mFragments[0] = new SymbolsFragment();
+                    fragments[0] = new SymbolsFragment();
                     break;
                 case 1:
-                    mFragments[1] = new PositionListFragment();
+                    fragments[1] = new PositionsFragment();
                     break;
                 case 2:
-                    mFragments[2] = new WatchListFragment();
+                    fragments[2] = new WatchListFragment();
                     break;
             }
 
-            return mFragments[position];
+            return fragments[position];
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
-                    return "Symbols";
-                case 1:
-                    return "Positions";
-                case 2:
-                    return "Watch List";
+                case 0: return "Symbols";
+                case 1: return "Positions";
+                case 2: return "Watch List";
             }
 
             return null;
         }
 
         @Override
-        public void finishUpdate(ViewGroup container) {
-            if (mCurTransaction != null) {
-                mCurTransaction.commitAllowingStateLoss();
-                mCurTransaction = null;
-                mFragmentManager.executePendingTransactions();
-            }
-            if (mTransactionx != null) {
-                mTransactionx.commitAllowingStateLoss();
-                mTransactionx = null;
-                mFragmentManagerx.executePendingTransactions();
+        public void finishUpdate(@NonNull ViewGroup container) {
+            if (transaction != null) {
+                transaction.commitAllowingStateLoss();
+                transaction = null;
+                fragmentManager.executePendingTransactions();
             }
         }
 
@@ -228,12 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
         public Fragment getFragment(int position) {
             String tag = getTag(position);
-            return mFragmentManager.findFragmentByTag(tag);
-        }
-
-        public androidx.fragment.app.Fragment getFragmentx(int position) {
-            String tag = getTag(position);
-            return mFragmentManagerx.findFragmentByTag(tag);
+            return fragmentManager.findFragmentByTag(tag);
         }
 
         private String getTag(int position) {

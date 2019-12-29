@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import org.cerion.stockcharts.Injection;
 import org.cerion.stockcharts.repository.SymbolRepository;
 import org.cerion.stocks.core.model.Symbol;
-import org.cerion.stocks.core.web.CachedDataAPI;
+import org.cerion.stocks.core.web.DataAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
         private ArrayList<Symbol> mResults;
         private List<Symbol> mDatabaseList;
         private SymbolRepository repo;
-        private CachedDataAPI api;
+        private DataAPI dataApi;
         private Context mContext;
 
         SymbolAutoCompleteAdapter(@NonNull Context context, @LayoutRes int resource) {
@@ -57,7 +57,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
             mContext = context;
             mResults = new ArrayList<>();
             repo = new SymbolRepository(context);
-            api = Injection.getAPI(context);
+            dataApi = Injection.getDataApi();
 
             mDatabaseList = new SymbolRepository(context).getAll();
         }
@@ -97,7 +97,7 @@ public class SymbolAutoCompleteTextView extends AutoCompleteTextView {
                     if(constraint != null && isFocused()) {
                         mResults.clear();
 
-                        Symbol symbol = api.getSymbol(constraint + "");
+                        Symbol symbol = dataApi.getSymbol(constraint + "");
                         if (symbol != null && symbol.isValid())
                             mResults.add(symbol);
 
