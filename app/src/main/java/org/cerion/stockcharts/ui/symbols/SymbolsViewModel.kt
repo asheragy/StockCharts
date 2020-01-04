@@ -6,14 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
+import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.repository.SymbolRepository
 import org.cerion.stocks.core.model.Symbol
-import org.cerion.stocks.core.web.CombinedDataAPI
 
 class SymbolsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo = SymbolRepository(application)
-    private val dataApi = CombinedDataAPI()
+    private val dataApi = Injection.getDataApi()
 
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )

@@ -9,6 +9,8 @@ import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocks.core.model.Quote;
 import org.cerion.stocks.core.web.DataAPI;
 
+import kotlin.NotImplementedError;
+
 public class InfoPanelViewModel {
 
     public ObservableField<String> fullName = new ObservableField<>("");
@@ -42,8 +44,9 @@ public class InfoPanelViewModel {
 
         @Override
         protected Quote doInBackground(Void... params) {
-            Quote q = api.getQuote(symbol);
-            return q;
+            throw new NotImplementedError();
+            //Quote q = api.getQuote(symbol);
+            //return q;
         }
 
         @Override

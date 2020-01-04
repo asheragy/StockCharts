@@ -5,7 +5,7 @@
 .DS_Store
 build
 /captures
-/apikeys
+apikey.properties
 
 
 # Android Studio 3 in .gitignore file.
