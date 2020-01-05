@@ -7,12 +7,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import org.cerion.stockcharts.common.GenericAsyncTask
-import org.cerion.stockcharts.common.GenericAsyncTask.TaskHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stockcharts.ui.positions.PositionsFragment
 import org.cerion.stockcharts.ui.symbols.SymbolsFragment
 import org.cerion.stockcharts.ui.watchlist.WatchListFragment
@@ -58,15 +61,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onClearCache() {
-        val task = GenericAsyncTask(object : TaskHandler {
-            override fun run() { //Injection.getAPI(MainActivity.this).clearCache();
+        val repo = PriceListSQLRepository(this)
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                repo.clearCache()
             }
 
-            override fun onFinish() {
-                Toast.makeText(this@MainActivity, "Cache cleared", Toast.LENGTH_SHORT).show()
-            }
-        })
-        task.execute()
+            Toast.makeText(this@MainActivity, "Cache cleared", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private inner class ViewPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {

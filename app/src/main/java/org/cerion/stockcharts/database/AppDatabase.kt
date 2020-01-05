@@ -14,6 +14,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val priceListDao: PriceListDao
     abstract val pricesDao: PricesDao
     abstract val symbolsDao: SymbolDao
+
+    fun compact() {
+        openHelper.writableDatabase.execSQL("VACUUM")
+    }
 }
 
 private lateinit var INSTANCE: AppDatabase

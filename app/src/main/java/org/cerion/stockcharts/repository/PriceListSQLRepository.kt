@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.repository
 
 import android.content.Context
+import android.util.Log
 import org.cerion.stockcharts.database.PriceListEntity
 import org.cerion.stockcharts.database.PriceRowEntity
 import org.cerion.stockcharts.database.getDatabase
@@ -10,7 +11,7 @@ import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.repository.IPriceListRepository
 import java.util.*
 
-class PriceListSQLRepository(context: Context) : IPriceListRepository {
+class PriceListSQLRepository(private val context: Context) : IPriceListRepository {
 
     private val roomDb = getDatabase(context)
     private val priceListDao = roomDb.priceListDao
@@ -51,6 +52,16 @@ class PriceListSQLRepository(context: Context) : IPriceListRepository {
 
             pricesDao.insert(dbPrices)
         }
+    }
+
+    fun clearCache() {
+        val name = roomDb.openHelper.databaseName
+        val file = context.getDatabasePath(name)
+
+        Log.i("Main", "Size before compact: ${file.length()}")
+        priceListDao.deleteAll()
+        roomDb.compact()
+        Log.i("Main", "Size after compact: ${file.length()}")
     }
 
     /*
