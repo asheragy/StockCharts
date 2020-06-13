@@ -1,3 +1,4 @@
-include ':app', ':stocks-core'
+include ':app', ':core'
 
-project(':stocks-core').projectDir = new File(settingsDir, '../../Java/Stocks/core')
+project(':core').projectDir = new File(settingsDir, '../stocks-core')
+

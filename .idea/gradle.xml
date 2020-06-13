@@ -13,7 +13,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/../../Java/Stocks/core" />
+            <option value="$PROJECT_DIR$/../stocks-core" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
