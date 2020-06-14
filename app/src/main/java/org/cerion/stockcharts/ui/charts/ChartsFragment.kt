@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import org.cerion.stockcharts.Injection
+import org.cerion.stockcharts.MainActivity
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 
 class ChartsFragment : Fragment() {
@@ -17,8 +18,11 @@ class ChartsFragment : Fragment() {
         val binding = FragmentChartsBinding.inflate(inflater, container, false)
 
         // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
-        val symbol = requireActivity().intent.extras!!.getString("symbol")!!
-        viewModel = ChartsViewModel(Injection.getPriceListRepository(requireContext()), symbol)
+
+        val args = ChartsFragmentArgs.fromBundle(arguments!!)
+        (requireActivity() as MainActivity).supportActionBar?.title = args.symbol
+
+        viewModel = ChartsViewModel(Injection.getPriceListRepository(requireContext()), args.symbol)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel

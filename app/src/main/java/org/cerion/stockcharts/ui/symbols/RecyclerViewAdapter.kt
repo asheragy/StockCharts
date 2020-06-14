@@ -8,10 +8,13 @@ import android.view.View.OnCreateContextMenuListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.databinding.ListItemSymbolBinding
-import org.cerion.stockcharts.ui.charts.ChartsActivity.Companion.getIntent
 import org.cerion.stocks.core.model.Symbol
 
-internal class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder>() {
+internal class RecyclerViewAdapter(private val listener: SymbolListener) : RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder>() {
+
+    interface SymbolListener {
+        fun click(symbol: Symbol)
+    }
 
     private var items = emptyList<Symbol>()
 
@@ -40,9 +43,8 @@ internal class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.Li
         }
 
         override fun onClick(v: View) {
-            val symbol = binding.item!!.symbol
-            val intent = getIntent(v.context, symbol)
-            v.context.startActivity(intent)
+            val symbol = binding.item!!
+            listener.click(symbol)
         }
 
         override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenuInfo?) {

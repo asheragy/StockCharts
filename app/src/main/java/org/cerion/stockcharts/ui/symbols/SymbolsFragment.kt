@@ -5,9 +5,12 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.R
+import org.cerion.stockcharts.ui.FragmentHomeDirections
+import org.cerion.stocks.core.model.Symbol
 
 class SymbolsFragment : Fragment() {
 
@@ -18,7 +21,13 @@ class SymbolsFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity()).get(SymbolsViewModel::class.java)
 
-        val adapter = RecyclerViewAdapter()
+        val adapter = RecyclerViewAdapter(object : RecyclerViewAdapter.SymbolListener {
+            override fun click(symbol: Symbol) {
+                val action = FragmentHomeDirections.actionFragmentHomeToChartsFragment(symbol.symbol)
+                findNavController().navigate(action)
+            }
+        })
+
         val rv: RecyclerView = view.findViewById(R.id.recycler_view)
         rv.setHasFixedSize(true)
         rv.layoutManager = LinearLayoutManager(activity)

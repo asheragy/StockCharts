@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation_graph"
+    app:startDestination="@id/fragmentHome">
+
+    <fragment
+        android:id="@+id/fragmentHome"
+        android:name="org.cerion.stockcharts.ui.FragmentHome"
+        android:label="Stock Charts" >
+        <action
+            android:id="@+id/action_fragmentHome_to_chartsFragment"
+            app:destination="@id/chartsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chartsFragment"
+        android:name="org.cerion.stockcharts.ui.charts.ChartsFragment"
+        android:label="">
+        <argument
+            android:name="symbol"
+            app:argType="string" />
+    </fragment>
+</navigation>
