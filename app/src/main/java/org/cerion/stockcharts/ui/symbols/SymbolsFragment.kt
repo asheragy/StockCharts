@@ -23,7 +23,7 @@ class SymbolsFragment : Fragment() {
 
         val adapter = RecyclerViewAdapter(object : RecyclerViewAdapter.SymbolListener {
             override fun click(symbol: Symbol) {
-                val action = FragmentHomeDirections.actionFragmentHomeToChartsFragment(symbol.symbol)
+                val action = FragmentHomeDirections.actionFragmentHomeToSymbolDetailsFragment(symbol.symbol)
                 findNavController().navigate(action)
             }
         })
