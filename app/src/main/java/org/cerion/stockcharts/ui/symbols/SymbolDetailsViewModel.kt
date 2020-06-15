@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.PriceChart
 import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.repository.IPriceListRepository
 
-class SymbolDetailsViewModel(private val priceRepo: IPriceListRepository) : ViewModel() {
+class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : ViewModel() {
 
     private val _details = MutableLiveData<SymbolDetails>()
     val details: LiveData<SymbolDetails>

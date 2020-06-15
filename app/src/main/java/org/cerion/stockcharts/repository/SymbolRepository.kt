@@ -1,26 +1,28 @@
 package org.cerion.stockcharts.repository
 
 import android.content.Context
+import org.cerion.stockcharts.database.SymbolDao
 import org.cerion.stockcharts.database.SymbolEntity
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.model.Symbol
 
-class SymbolRepository(context: Context) {
+class SymbolRepository(private val dao: SymbolDao) {
 
-    private val symbolDao = getDatabase(context).symbolsDao
+    @Deprecated("use DAO constructor")
+    constructor(context: Context) : this(getDatabase(context).symbolsDao)
 
     fun getAll(): List<Symbol> {
-        return symbolDao.getAll().map {
+        return dao.getAll().map {
             Symbol(it.symbol, it.name, it.exchange)
         }
     }
 
     fun add(symbol: Symbol) {
-        symbolDao.insert(
+        dao.insert(
                 SymbolEntity(symbol.symbol, symbol.name ?: "", symbol.exchange ?: ""))
     }
 
     fun delete(symbol: String) {
-        symbolDao.delete(SymbolEntity(symbol, "", ""))
+        dao.delete(SymbolEntity(symbol, "", ""))
     }
 }

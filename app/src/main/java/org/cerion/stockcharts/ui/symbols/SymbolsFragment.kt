@@ -11,15 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.ui.FragmentHomeDirections
 import org.cerion.stocks.core.model.Symbol
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SymbolsFragment : Fragment() {
 
-    private lateinit var viewModel: SymbolsViewModel
+    private val viewModel: SymbolsViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_symbols, container, false)
-
-        viewModel = ViewModelProvider(requireActivity()).get(SymbolsViewModel::class.java)
 
         val adapter = RecyclerViewAdapter(object : RecyclerViewAdapter.SymbolListener {
             override fun click(symbol: Symbol) {

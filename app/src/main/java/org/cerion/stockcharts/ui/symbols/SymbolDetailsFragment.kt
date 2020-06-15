@@ -9,12 +9,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.cerion.stockcharts.MainActivity
 import org.cerion.stockcharts.databinding.FragmentSymbolDetailsBinding
-import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SymbolDetailsFragment : Fragment() {
 
-    private lateinit var viewModel: SymbolDetailsViewModel
+    private val viewModel: SymbolDetailsViewModel by viewModel()
     private lateinit var chartFactory: ChartViewFactory
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -24,7 +24,6 @@ class SymbolDetailsFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.title = args.symbol
 
         chartFactory = ChartViewFactory(requireActivity())
-        viewModel = SymbolDetailsViewModel(PriceListSQLRepository(requireContext()))
         binding.viewModel = viewModel
 
         binding.fullscreen.setOnClickListener {

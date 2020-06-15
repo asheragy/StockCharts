@@ -10,9 +10,8 @@ import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.repository.SymbolRepository
 import org.cerion.stocks.core.model.Symbol
 
-class SymbolsViewModel(application: Application) : AndroidViewModel(application) {
+class SymbolsViewModel(private val symbolRepo: SymbolRepository, application: Application) : AndroidViewModel(application) {
 
-    private val repo = SymbolRepository(application)
     private val dataApi = Injection.getDataApi()
 
     private var job = Job()
@@ -29,7 +28,7 @@ class SymbolsViewModel(application: Application) : AndroidViewModel(application)
     private fun load() {
         scope.launch {
             _items.value = withContext(Dispatchers.IO) {
-                repo.getAll()
+                symbolRepo.getAll()
             }
         }
     }
@@ -40,7 +39,7 @@ class SymbolsViewModel(application: Application) : AndroidViewModel(application)
                 val success = withContext(Dispatchers.IO) {
                     val s = dataApi.getSymbol(symbol)
                     if (s != null) {
-                        repo.add(s)
+                        symbolRepo.add(s)
                         true
                     } else
                         false
@@ -58,7 +57,7 @@ class SymbolsViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun delete(symbol: String?) {
-        repo.delete(symbol!!)
+        symbolRepo.delete(symbol!!)
         load()
     }
 
