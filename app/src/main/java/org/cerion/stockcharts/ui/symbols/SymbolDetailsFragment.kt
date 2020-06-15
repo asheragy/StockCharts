@@ -5,11 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.cerion.stockcharts.MainActivity
 import org.cerion.stockcharts.databinding.FragmentSymbolDetailsBinding
+import org.cerion.stockcharts.repository.PriceListSQLRepository
+import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
 
 class SymbolDetailsFragment : Fragment() {
+
+    private lateinit var viewModel: SymbolDetailsViewModel
+    private lateinit var chartFactory: ChartViewFactory
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentSymbolDetailsBinding.inflate(inflater, container, false)
@@ -17,11 +23,22 @@ class SymbolDetailsFragment : Fragment() {
         val args = SymbolDetailsFragmentArgs.fromBundle(arguments!!)
         (requireActivity() as MainActivity).supportActionBar?.title = args.symbol
 
+        chartFactory = ChartViewFactory(requireActivity())
+        viewModel = SymbolDetailsViewModel(PriceListSQLRepository(requireContext()))
+        binding.viewModel = viewModel
 
-        binding.chart.rootView.setOnClickListener {
+        binding.fullscreen.setOnClickListener {
             val action = SymbolDetailsFragmentDirections.actionSymbolDetailsFragmentToChartsFragment(args.symbol)
             findNavController().navigate(action)
         }
+
+        viewModel.prices.observe(viewLifecycleOwner, Observer {
+            val chart = chartFactory.getChart(viewModel.chart, it)
+            binding.chartFrame.removeAllViews()
+            binding.chartFrame.addView(chart)
+        })
+
+        viewModel.load(args.symbol)
 
         return binding.root
     }

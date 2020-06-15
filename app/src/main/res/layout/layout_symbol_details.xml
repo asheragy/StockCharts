@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="viewModel"
-            type="org.cerion.stockcharts.ui.charts.InfoPanelViewModel" />
+            name="details"
+            type="org.cerion.stockcharts.ui.symbols.SymbolDetails" />
 
         <import type="android.view.View"/>
     </data>
@@ -17,14 +17,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.fullName}"
+            android:text="@{details.fullName}"
             android:textStyle="bold"
             android:textColor="@color/black"
             tools:text="Apple, Inc"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.symbolExchange}"
+            android:text="@{details.exchangeSymbol}"
             tools:text="NASDAQ: AAPL"/>
 
         <LinearLayout
@@ -36,14 +36,14 @@
                 android:paddingBottom="5dp"
                 android:layout_marginRight="5dp"
                 android:textColor="@color/black"
-                android:text="@{viewModel.currentPrice}"
+                android:text="@{details.currentPrice}"
                 tools:text="175.01"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
-                android:text="@{viewModel.priceChange}"
-                android:textColor="@{viewModel.change == 0 ? @color/black : viewModel.change > 0 ? @color/positive_green : @color/negative_red}"
+                android:text="@{details.priceChange}"
+                android:textColor="@{details.change == 0 ? @color/black : details.change > 0 ? @color/positive_green : @color/negative_red}"
                 tools:text="+0.66 (0.38%)"/>
         </LinearLayout>
 
@@ -63,7 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.sector}"
+                android:text="@{details.sector}"
                 tools:text="Technology"/>
 
             <TextView
@@ -77,7 +77,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.beta}"
+                android:text="@{details.beta}"
                 tools:text="0.13"/>
         </LinearLayout>
 
@@ -97,7 +97,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.marketCap}"
+                android:text="@{details.marketCap}"
                 tools:text="898.56B"/>
 
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.peRatio}"
+                android:text="@{details.peRatio}"
                 tools:text="32.73"/>
         </LinearLayout>
 
@@ -131,7 +131,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.volume}"
+                android:text="@{details.volume}"
                 tools:text="20.95M"/>
 
             <TextView
@@ -145,7 +145,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.eps}"
+                android:text="@{details.eps}"
                 tools:text="0.82"/>
         </LinearLayout>
 
@@ -165,7 +165,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{viewModel.yield}"
+                android:text="@{details.yield}"
                 tools:text="1.44%"/>
 
             <TextView
@@ -182,7 +182,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="-10dp"
                 android:layout_marginRight="10dp"
-                android:progress="@{viewModel.yearRange}" />
+                android:progress="@{details.yearRange}" />
 
 
         </LinearLayout>

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
 
     <data>
-        <variable
-            name="viewModel"
-            type="org.cerion.stockcharts.ui.charts.InfoPanelViewModel" />
-
-        <import type="android.view.View"/>
+        <variable name="viewModel" type="org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel" />
+        <variable name="details" type="org.cerion.stockcharts.ui.symbols.SymbolDetails" />
     </data>
 
     <LinearLayout
@@ -16,193 +14,30 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include
+            layout="@layout/layout_symbol_details"
+            bind:details="@{viewModel.details}">
+
+        </include>
+
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.fullName}"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                tools:text="Apple, Inc"/>
-            <TextView
+            <ImageButton
+                android:id="@+id/fullscreen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.symbolExchange}"
-                tools:text="NASDAQ: AAPL"/>
+                android:src="@drawable/ic_fullscreen">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:layout_marginRight="5dp"
-                    android:textColor="@color/black"
-                    android:text="@{viewModel.currentPrice}"
-                    tools:text="175.01"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:text="@{viewModel.priceChange}"
-                    android:textColor="@{viewModel.change == 0 ? @color/black : viewModel.change > 0 ? @color/positive_green : @color/negative_red}"
-                    tools:text="+0.66 (0.38%)"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Sector"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.sector}"
-                    tools:text="Technology"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Beta"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.beta}"
-                    tools:text="0.13"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Market cap"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.marketCap}"
-                    tools:text="898.56B"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="P/E ratio"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.peRatio}"
-                    tools:text="32.73"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Volume"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.volume}"
-                    tools:text="20.95M"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="EPS"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.eps}"
-                    tools:text="0.82"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Dividend Yield"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.yield}"
-                    tools:text="1.44%"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:text="Year Range"/>
-
-                <SeekBar
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="-10dp"
-                    android:layout_marginRight="10dp"
-                    android:progress="@{viewModel.yearRange}" />
-
-
-            </LinearLayout>
-
+            </ImageButton>
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/chart"
+        <FrameLayout
+            android:id="@+id/chart_frame"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp">
-
-        </com.github.mikephil.charting.charts.LineChart>
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </FrameLayout>
     </LinearLayout>
 
 </layout>
