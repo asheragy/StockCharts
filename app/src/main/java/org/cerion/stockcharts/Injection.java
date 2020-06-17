@@ -8,6 +8,7 @@ import org.cerion.stocks.core.web.CombinedDataAPI;
 import org.cerion.stocks.core.web.DataAPI;
 import org.cerion.stocks.core.web.clients.TDAmeritrade;
 
+@Deprecated
 public class Injection {
 
     private static DataAPI dataAPI = new CombinedDataAPI(BuildConfig.TIINGO_APIKEY);

@@ -6,6 +6,7 @@ import org.cerion.stockcharts.database.SymbolDao
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stockcharts.repository.SymbolRepository
+import org.cerion.stockcharts.ui.charts.ChartsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolsViewModel
 import org.koin.android.ext.koin.androidContext
@@ -45,4 +46,6 @@ val repositoryModule = module {
 val viewModelModule = module {
     viewModel { SymbolsViewModel(get(), get()) }
     viewModel { SymbolDetailsViewModel(get()) }
+
+    viewModel { ChartsViewModel(Injection.getPriceListRepository(get())) } // TODO fix to add cached repository
 }

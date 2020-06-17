@@ -10,6 +10,7 @@ import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.PriceChart
 import org.cerion.stocks.core.model.Interval
 
+// TODO may need to take the cached repository version
 class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : ViewModel() {
 
     private val _details = MutableLiveData<SymbolDetails>()
