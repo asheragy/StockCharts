@@ -135,7 +135,6 @@ class ChartViewFactory(private val context: Context) {
             xAxis.textColor = _textColor
 
             setViewPortOffsets(0f, viewPortHandler.offsetTop(), 0f, viewPortHandler.offsetBottom())
-            postInvalidate()
         }
     }
 

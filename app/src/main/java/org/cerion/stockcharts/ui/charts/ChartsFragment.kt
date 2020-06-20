@@ -2,13 +2,12 @@ package org.cerion.stockcharts.ui.charts
 
 import android.graphics.Matrix
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.cerion.stockcharts.R
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 import org.cerion.stocks.core.charts.StockChart
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +29,8 @@ class ChartsFragment : Fragment() {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
+
+        setHasOptionsMenu(true)
 
         val chartListener = object : StockChartListener {
             override fun onClick(chart: StockChart) {
@@ -53,14 +54,25 @@ class ChartsFragment : Fragment() {
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
-
-        binding.fabGroup.add("Price") { viewModel.addPriceChart() }
-        binding.fabGroup.add("Volume") { viewModel.addVolumeChart() }
-        binding.fabGroup.add("Indicator") { viewModel.addIndicatorChart() }
-
         viewModel.load(symbol)
 
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.charts_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.add_indicator -> viewModel.addIndicatorChart()
+            R.id.add_price -> viewModel.addPriceChart()
+            R.id.add_volume -> viewModel.addVolumeChart()
+            else -> return super.onContextItemSelected(item)
+        }
+
+        return true
     }
 
     private val mainVals = FloatArray(9)
