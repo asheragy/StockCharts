@@ -59,7 +59,7 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
                 val chartView = factory.getChart(chart, prices!!)
                 /*
                 chartView.setOnLongClickListener {
-                    clickListener.onClick(chart)
+                    chartListener.onClick(chart)
                     true
                 }
 

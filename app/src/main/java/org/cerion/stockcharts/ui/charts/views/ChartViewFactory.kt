@@ -13,6 +13,8 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import org.cerion.stockcharts.R
+import org.cerion.stockcharts.common.isDarkTheme
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.*
 import org.cerion.stocks.core.charts.CandleDataSet
@@ -25,6 +27,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.exp
 
+class ColorMap(context: Context) {
+    val default = if (context.isDarkTheme()) Color.WHITE else Color.BLACK
+    val red = context.getColor(R.color.chart_red)
+    val green = context.getColor(R.color.chart_green)
+    val blue = context.getColor(R.color.chart_blue)
+}
+
 class ChartViewFactory(private val context: Context) {
 
     companion object {
@@ -33,13 +42,10 @@ class ChartViewFactory(private val context: Context) {
         private val dateFormat: DateFormat = SimpleDateFormat("MMM d, yy", Locale.ENGLISH)
         private val dateFormatMonthly: DateFormat = SimpleDateFormat("MMM ''yy", Locale.ENGLISH)
         private val blankDescription = Description().apply { text = "" }
-
-        // TODO define these in colors.xml and get from context
-        val COLOR_CHART_PRIMARY = intArrayOf(Color.BLACK, Color.RED, Color.BLUE, Color.GREEN)
-        val COLOR_CHART_SECONDARY = intArrayOf(Color.RED, Color.BLUE, Color.GREEN)
-        const val COLOR_CANDLE_UP = Color.GREEN
-        const val COLOR_CANDLE_DOWN = Color.RED
     }
+
+    private val _colors = ColorMap(context)
+    private val _textColor = if (context.isDarkTheme()) context.getColor(R.color.secondaryTextColor) else context.getColor(R.color.primaryColor)
 
     fun getChart(chart: StockChart, list: PriceList): Chart<*> {
         return when(chart) {
@@ -120,11 +126,16 @@ class ChartViewFactory(private val context: Context) {
             axisLeft.setDrawLabels(false)
             axisRight.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART)
             axisRight.setLabelCount(3, false)
+            axisRight.textColor = _textColor
 
             xAxis.valueFormatter = getAxisFormatter(stockchart.getDates(list), list.interval)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             // Always start at position 0 even if data set starts after that
             xAxis.axisMinimum = 0f
+            xAxis.textColor = _textColor
+
+            setViewPortOffsets(0f, viewPortHandler.offsetTop(), 0f, viewPortHandler.offsetBottom())
+            postInvalidate()
         }
     }
 
@@ -159,12 +170,13 @@ class ChartViewFactory(private val context: Context) {
             orientation = Legend.LegendOrientation.VERTICAL
             verticalAlignment = Legend.LegendVerticalAlignment.TOP
             isWordWrapEnabled = false
+            textColor = _textColor
         }
     }
 
     private fun getDataSets(chart: StockChart, list: PriceList): List<IDataSet> {
-        chart.setPrimaryColors(COLOR_CHART_PRIMARY)
-        chart.setSecondaryColors(COLOR_CHART_SECONDARY)
+        chart.setPrimaryColors(intArrayOf(_colors.default, _colors.red, _colors.blue, _colors.green))
+        chart.setSecondaryColors(intArrayOf(_colors.red, _colors.blue, _colors.green))
         return chart.getDataSets(list)
     }
 
@@ -236,9 +248,9 @@ class ChartViewFactory(private val context: Context) {
 
                 val dataSet = com.github.mikephil.charting.data.CandleDataSet(entries, set.label)
                 dataSet.setDrawValues(false)
-                dataSet.decreasingColor = COLOR_CANDLE_DOWN
+                dataSet.decreasingColor = _colors.red
                 dataSet.decreasingPaintStyle = Paint.Style.FILL
-                dataSet.increasingColor = COLOR_CANDLE_UP
+                dataSet.increasingColor = _colors.green
                 dataSet.increasingPaintStyle = Paint.Style.FILL
 
                 return CandleData(dataSet)

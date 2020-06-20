@@ -13,4 +13,8 @@
     <color name="positive_green">#4DB74D</color>
     <color name="negative_red">#CD2232</color>
 
+
+    <color name="chart_red">#f44336</color>
+    <color name="chart_blue">#2196f3</color>
+    <color name="chart_green">#4caf50</color>
 </resources>
