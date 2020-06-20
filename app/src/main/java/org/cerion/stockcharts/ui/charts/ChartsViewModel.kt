@@ -14,8 +14,6 @@ import org.cerion.stocks.core.charts.VolumeChart
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.repository.CachedPriceListRepository
-import kotlin.math.max
-import kotlin.math.min
 
 class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel() {
 
@@ -29,10 +27,6 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
     val interval: LiveData<Interval>
         get() = _interval
 
-    private val _range = MediatorLiveData<Pair<Int, Int>>()
-    val range: LiveData<Pair<Int, Int>>
-        get() = _range
-
     val prices = MediatorLiveData<PriceList>()
 
     private var _charts = mutableListOf(PriceChart(), VolumeChart())
@@ -40,11 +34,6 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
 
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
-
-    init {
-        _range.value = Pair(0, 0)
-
-    }
 
     fun load(symbol: String) {
         // TODO add source for symbol too
@@ -56,21 +45,10 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
                 }
             }
         }
-
-        _range.addSource(prices) {
-            _range.value = Pair(0, it.size - 1)
-        }
     }
 
     fun setInterval(interval: Interval) {
         _interval.value = interval
-    }
-
-    fun setRange(start: Int, end: Int) {
-        val s = max(0, start)
-        val e = min(end, prices.value!!.size - 1)
-        if (range.value!!.first != s || range.value!!.second != e)
-            _range.value = Pair(s, e)
     }
 
     fun addPriceChart() {

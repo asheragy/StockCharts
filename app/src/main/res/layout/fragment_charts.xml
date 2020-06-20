@@ -56,17 +56,6 @@
 
             </com.google.android.material.chip.ChipGroup>
 
-            <com.edmodo.rangebar.RangeBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/range_bar"/>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewmodel.symbol}" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"

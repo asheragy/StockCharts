@@ -90,7 +90,6 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'com.edmodo:rangebar:1.0.0'
 
     //implementation 'com.github.asheragy:stocks-core:-SNAPSHOT'
     implementation project(':core')

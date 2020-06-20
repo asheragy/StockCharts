@@ -1,29 +1,30 @@
 package org.cerion.stockcharts.ui.charts
 
 import android.content.Context
-import android.util.Log
+import android.graphics.Matrix
 import android.view.LayoutInflater
-import android.view.View
+import android.view.MotionEvent
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.common.TAG
+import org.cerion.stockcharts.common.DefaultChartGestureListener
+import org.cerion.stockcharts.databinding.ViewChartBinding
 import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.StockChart
 
-class StockChartListener(val clickListener: (chart: StockChart) -> Unit) {
-    fun onClick(chart: StockChart) = clickListener(chart)
+
+interface StockChartListener {
+    fun onClick(chart: StockChart)
+    fun onViewPortChange(matrix: Matrix)
 }
 
-class ChartListAdapter(context: Context, private val clickListener: StockChartListener) : RecyclerView.Adapter<ChartListAdapter.ViewHolder>() {
+class ChartListAdapter(context: Context, private val chartListener: StockChartListener) : RecyclerView.Adapter<ChartListAdapter.ViewHolder>() {
 
     private var charts: List<StockChart> = emptyList()
     private val factory = ChartViewFactory(context)
     private var prices: PriceList? = null
-    private var range: Pair<Int, Int>? = null
 
     fun setCharts(charts: List<StockChart>, prices: PriceList?) {
         this.charts = charts
@@ -31,15 +32,12 @@ class ChartListAdapter(context: Context, private val clickListener: StockChartLi
         notifyDataSetChanged()
     }
 
-    fun setRange(start: Int, end: Int) {
-        range = Pair(start, end)
-        notifyDataSetChanged()
-    }
+    private var viewPortMatrix: Matrix? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view: View = layoutInflater.inflate(R.layout.view_chart, parent, false)
-        return ViewHolder(view)
+        val binding = ViewChartBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int = charts.size
@@ -49,37 +47,57 @@ class ChartListAdapter(context: Context, private val clickListener: StockChartLi
         holder.bind(item)
     }
 
-    inner class ViewHolder internal constructor(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder internal constructor(val binding: ViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(chart: StockChart) {
-            val tag = Pair(chart, prices)
+            val frame = binding.chartFrame
+            frame.removeAllViews()
 
-            val frame = view.findViewById<FrameLayout>(R.id.chart_frame)
-
-            if (frame.childCount == 0 || frame.tag != tag) {
-                frame.removeAllViews()
-                if (prices.isNullOrEmpty()) {
-                    frame.addView(factory.getEmptyChart())
-                    frame.tag = null
-                }
-                else {
-                    val chartView = factory.getChart(chart, prices!!)
-                    chartView.setOnClickListener { clickListener.onClick(chart) }
-                    frame.addView(chartView)
-                    frame.tag = tag
-                }
+            if (prices.isNullOrEmpty()) {
+                frame.addView(factory.getEmptyChart())
             }
-            else if (range != null) {
-                // TODO range actually needs to apply to a new chart (but not blank)
-                val currRange = range!!
-                Log.d(TAG, "range $currRange")
+            else {
+                val chartView = factory.getChart(chart, prices!!)
+                /*
+                chartView.setOnLongClickListener {
+                    clickListener.onClick(chart)
+                    true
+                }
 
-                val c = frame.getChildAt(0) as BarLineChartBase<*>
-                val start = currRange.first.toFloat()
-                val end = currRange.second.toFloat()
-                c.setVisibleXRangeMinimum(end - start)
-                c.setVisibleXRangeMaximum(end - start)
-                c.moveViewToX(start)
+                 */
+
+                val matrix = chartView.viewPortHandler.matrixTouch
+
+                chartView.onChartGestureListener = object : DefaultChartGestureListener() {
+                    override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
+                        super.onChartScale(me, scaleX, scaleY)
+                        chartListener.onViewPortChange(matrix)
+                    }
+
+                    override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
+                        super.onChartTranslate(me, dX, dY)
+                        chartListener.onViewPortChange(matrix)
+                    }
+                }
+
+                chartView.id = R.id.chart_view
+                frame.addView(chartView)
             }
         }
+    }
+
+    private val otherVals = FloatArray(9)
+    fun syncMatrix(matrix: Matrix, values: FloatArray, viewHolder: ChartListAdapter.ViewHolder) {
+        val tempChart = viewHolder.itemView.findViewById<BarLineChartBase<*>>(R.id.chart_view)
+
+        val otherMatrix: Matrix = tempChart.viewPortHandler.matrixTouch
+        if (matrix == otherMatrix)
+            return
+
+        otherMatrix.getValues(otherVals)
+        otherVals[Matrix.MSCALE_X] = values[Matrix.MSCALE_X]
+        otherVals[Matrix.MTRANS_X] = values[Matrix.MTRANS_X]
+        otherVals[Matrix.MSKEW_X] = values[Matrix.MSKEW_X]
+        otherMatrix.setValues(otherVals)
+        tempChart.viewPortHandler.refresh(otherMatrix, tempChart, true)
     }
 }

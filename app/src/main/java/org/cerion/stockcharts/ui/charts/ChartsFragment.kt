@@ -1,5 +1,6 @@
 package org.cerion.stockcharts.ui.charts
 
+import android.graphics.Matrix
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,15 +8,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
+import org.cerion.stocks.core.charts.StockChart
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChartsFragment : Fragment() {
 
     private val viewModel: ChartsViewModel by viewModel()
+    private lateinit var binding: FragmentChartsBinding
+    private lateinit var adapter: ChartListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentChartsBinding.inflate(inflater, container, false)
+        binding = FragmentChartsBinding.inflate(inflater, container, false)
 
         // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
 
@@ -26,12 +31,19 @@ class ChartsFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
 
-        val adapter = ChartListAdapter(requireContext(), StockChartListener {
-            //Toast.makeText(requireContext(), "clicked", Toast.LENGTH_SHORT).show()
-            val fm = requireActivity().supportFragmentManager
-            val dialog = EditChartDialog.newInstance(it, viewModel)
-            dialog.show(fm, "editDialog")
-        })
+        val chartListener = object : StockChartListener {
+            override fun onClick(chart: StockChart) {
+                val fm = requireActivity().supportFragmentManager
+                val dialog = EditChartDialog.newInstance(chart, viewModel)
+                dialog.show(fm, "editDialog")
+            }
+
+            override fun onViewPortChange(matrix: Matrix) {
+                syncCharts(matrix)
+            }
+        }
+
+        adapter = ChartListAdapter(requireContext(), chartListener)
 
         binding.recyclerView.adapter = adapter
 
@@ -41,20 +53,6 @@ class ChartsFragment : Fragment() {
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
-        viewModel.range.observe(viewLifecycleOwner, Observer {
-            adapter.setRange(it.first, it.second)
-        })
-
-        viewModel.range.observe(viewLifecycleOwner, Observer {
-            if (viewModel.prices.value != null) {
-                binding.rangeBar.setTickCount(viewModel.prices.value!!.size)
-                binding.rangeBar.setThumbIndices(it.first, it.second)
-            }
-        })
-
-        binding.rangeBar.setOnRangeBarChangeListener { _, start, end ->
-            viewModel.setRange(start, end)
-        }
 
         binding.fabGroup.add("Price") { viewModel.addPriceChart() }
         binding.fabGroup.add("Volume") { viewModel.addVolumeChart() }
@@ -63,5 +61,21 @@ class ChartsFragment : Fragment() {
         viewModel.load(symbol)
 
         return binding.root
+    }
+
+    private val mainVals = FloatArray(9)
+    private fun syncCharts(matrix: Matrix) {
+        matrix.getValues(mainVals)
+
+        binding.recyclerView.let {
+            val lm = binding.recyclerView.layoutManager as LinearLayoutManager
+            val firstVisibleItemPosition = lm.findFirstVisibleItemPosition()
+            val lastVisibleItemPosition = lm.findLastVisibleItemPosition()
+
+            for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
+                val holder = it.findViewHolderForAdapterPosition(i)
+                adapter.syncMatrix(matrix, mainVals, holder as ChartListAdapter.ViewHolder)
+            }
+        }
     }
 }
