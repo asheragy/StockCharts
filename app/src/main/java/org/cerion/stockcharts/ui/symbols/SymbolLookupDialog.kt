@@ -10,13 +10,15 @@ import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import org.cerion.stockcharts.common.SymbolAutoCompleteTextView
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SymbolLookupDialog : DialogFragment() {
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val viewModel = ViewModelProvider(requireActivity()).get(SymbolsViewModel::class.java)
+    private val viewModel: SymbolsViewModel by sharedViewModel()
 
-        val input: AutoCompleteTextView = SymbolAutoCompleteTextView(context)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val input: AutoCompleteTextView = SymbolAutoCompleteTextView(requireContext())
         input.filters = arrayOf<InputFilter>(AllCaps())
         input.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
 
