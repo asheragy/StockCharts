@@ -8,13 +8,12 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.repository.SymbolRepository
 import org.cerion.stocks.core.model.Symbol
 
 
-class SymbolSearchAdapter(context: Context, @LayoutRes resource: Int) : ArrayAdapter<String>(context, resource), Filterable {
+class SymbolSearchAdapter(context: Context) : ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
 
     private val mResults = mutableListOf<Symbol>()
     private val repo = SymbolRepository(context)

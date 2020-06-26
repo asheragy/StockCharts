@@ -61,6 +61,9 @@ class ChartsFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.charts_menu, menu)
+
+        //val searchView = menu.findItem(R.id.action_search).actionView as ArrayAdapterSearchView
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 

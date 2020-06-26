@@ -10,7 +10,7 @@ class SymbolAutoCompleteTextView(context: Context, attrs: AttributeSet? = null) 
 
     init {
         threshold = 1 // Some symbols are only 1 character
-        val adapter = SymbolSearchAdapter(context, android.R.layout.simple_dropdown_item_1line)
+        val adapter = SymbolSearchAdapter(context)
         setAdapter(adapter)
     }
 }
