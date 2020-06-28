@@ -23,7 +23,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
+                <category android:name="android.intent.category.LAUNCHER" />
                 <data
                     android:host="callback"
                     android:scheme="stockcharts" />

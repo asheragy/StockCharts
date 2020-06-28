@@ -32,6 +32,9 @@ class ColorMap(context: Context) {
     val red = context.getColor(R.color.chart_red)
     val green = context.getColor(R.color.chart_green)
     val blue = context.getColor(R.color.chart_blue)
+
+    val up = context.getColor(R.color.positive_green)
+    val down = context.getColor(R.color.negative_red)
 }
 
 class ChartViewFactory(private val context: Context) {
@@ -247,9 +250,9 @@ class ChartViewFactory(private val context: Context) {
 
                 val dataSet = com.github.mikephil.charting.data.CandleDataSet(entries, set.label)
                 dataSet.setDrawValues(false)
-                dataSet.decreasingColor = _colors.red
+                dataSet.decreasingColor = _colors.down
                 dataSet.decreasingPaintStyle = Paint.Style.FILL
-                dataSet.increasingColor = _colors.green
+                dataSet.increasingColor = _colors.up
                 dataSet.increasingPaintStyle = Paint.Style.FILL
 
                 return CandleData(dataSet)

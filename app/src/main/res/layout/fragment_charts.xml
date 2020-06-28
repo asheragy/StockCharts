@@ -6,60 +6,75 @@
     <data>
         <variable name="viewmodel" type="org.cerion.stockcharts.ui.charts.ChartsViewModel" />
         <import type="org.cerion.stocks.core.model.Interval"/>
+        <import type="android.view.View"/>
     </data>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.chip.ChipGroup
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_daily"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
+                    android:checked="@{viewmodel.interval == Interval.DAILY}"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_weekly"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
+                    android:checked="@{viewmodel.interval == Interval.WEEKLY}"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_monthly"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
+                    android:checked="@{viewmodel.interval == Interval.MONTHLY}"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval_quarterly"
+                    android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
+                    android:checked="@{viewmodel.interval == Interval.QUARTERLY}"/>
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:visibility="@{viewmodel.busy ? View.VISIBLE : View.GONE}"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true">
+            android:layout_gravity="center">
+        </ProgressBar>
 
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/interval_daily"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
-                android:checked="@{viewmodel.interval == Interval.DAILY}"/>
+    </FrameLayout>
 
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/interval_weekly"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
-                android:checked="@{viewmodel.interval == Interval.WEEKLY}"/>
-
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/interval_monthly"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
-                android:checked="@{viewmodel.interval == Interval.MONTHLY}"/>
-
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/interval_quarterly"
-                android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
-                android:checked="@{viewmodel.interval == Interval.QUARTERLY}"/>
-
-        </com.google.android.material.chip.ChipGroup>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
 
 </layout>
 

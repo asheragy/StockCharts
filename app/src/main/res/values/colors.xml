@@ -10,8 +10,8 @@
     <color name="secondaryTextColor">#ffffff</color>
 
     <color name="black">#000000</color>
-    <color name="positive_green">#4DB74D</color>
-    <color name="negative_red">#CD2232</color>
+    <color name="positive_green">#64dd17</color>
+    <color name="negative_red">#d50000</color>
 
 
     <color name="chart_red">#f44336</color>

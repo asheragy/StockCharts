@@ -8,6 +8,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import org.cerion.stockcharts.R
+import org.cerion.stockcharts.common.SymbolSearchView
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 import org.cerion.stocks.core.charts.StockChart
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -20,13 +21,6 @@ class ChartsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentChartsBinding.inflate(inflater, container, false)
-
-        // TODO add factory method ViewModelProvider(this).get(ChartsViewModel::class.java)
-
-        val args = if (arguments != null) ChartsFragmentArgs.fromBundle(arguments!!) else null
-        val symbol = args?.symbol ?: "XLE"
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = symbol
-
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
 
@@ -52,9 +46,18 @@ class ChartsFragment : Fragment() {
             adapter.setCharts(viewModel.charts.value!!, viewModel.prices.value)
         }
 
+        viewModel.symbol.observe(viewLifecycleOwner, Observer{
+            (requireActivity() as AppCompatActivity).supportActionBar?.title = it
+        })
+
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
-        viewModel.load(symbol)
+
+        if (viewModel.symbol.value.isNullOrEmpty() || savedInstanceState == null) {
+            val args = if (arguments != null) ChartsFragmentArgs.fromBundle(arguments!!) else null
+            val symbol = args?.symbol ?: "XLE"
+            viewModel.load(symbol)
+        }
 
         return binding.root
     }
@@ -62,7 +65,15 @@ class ChartsFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.charts_menu, menu)
 
-        //val searchView = menu.findItem(R.id.action_search).actionView as ArrayAdapterSearchView
+        val menuItem = menu.findItem(R.id.action_search)
+        val searchView = menuItem.actionView as SymbolSearchView
+
+        searchView.setOnSymbolClickListener(object : SymbolSearchView.OnSymbolClickListener {
+            override fun onClick(symbol: String) {
+                viewModel.load(symbol)
+                menuItem.collapseActionView()
+            }
+        })
 
         super.onCreateOptionsMenu(menu, inflater)
     }

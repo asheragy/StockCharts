@@ -1,9 +1,6 @@
 package org.cerion.stockcharts.ui.charts
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Constants
 import org.cerion.stocks.core.PriceList
@@ -33,17 +30,23 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
     private var _charts = mutableListOf(PriceChart(), VolumeChart(), IndicatorChart(MACD()), PriceChart(), VolumeChart(), IndicatorChart(AccumulationDistributionLine()))
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
 
-    private var job = Job()
-    private val scope = CoroutineScope(job + Dispatchers.Main )
+    private val _busy = MutableLiveData(false)
+    val busy: LiveData<Boolean>
+        get() = _busy
 
     fun load(symbol: String) {
-        // TODO add source for symbol too
-        prices.addSource(interval) {
-            scope.launch {
-                prices.value = withContext(scope.coroutineContext) {
-                    val prices = getPrices(symbol)
-                    prices
-                }
+        _symbol.value = symbol
+        refresh()
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            try {
+                _busy.value = true
+                prices.value = getPrices(_symbol.value!!)
+            }
+            finally {
+                _busy.value = false
             }
         }
     }
@@ -104,10 +107,5 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
                 else -> list
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        job.cancel()
     }
 }

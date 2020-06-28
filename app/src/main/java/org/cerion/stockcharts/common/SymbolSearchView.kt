@@ -12,8 +12,13 @@ import androidx.appcompat.widget.SearchView
 
 class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(context, attrs) {
 
+    interface OnSymbolClickListener {
+        fun onClick(symbol: String)
+    }
+
     private val _searchAutoComplete: SearchAutoComplete = findViewById<View>(R.id.search_src_text) as SearchAutoComplete
     private val _adapter = SymbolSearchAdapter(context)
+    private var _listener: OnSymbolClickListener? = null
 
     constructor(context: Context) : this(context, null)
 
@@ -21,19 +26,19 @@ class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(cont
         setAdapter(_adapter)
         _searchAutoComplete.filters = arrayOf<InputFilter>(InputFilter.AllCaps())
         @SuppressLint("RestrictedApi")
-        _searchAutoComplete.threshold = 1;
-        setOnItemClickListener(null)
+        _searchAutoComplete.threshold = 1
+
+        _searchAutoComplete.onItemClickListener = OnItemClickListener { _, _, position, _ ->
+            val symbol = _adapter.getItem(position)
+            _listener?.onClick(symbol)
+        }
     }
 
-    fun setOnItemClickListener(listener: OnItemClickListener?) {
-        _searchAutoComplete!!.onItemClickListener = listener
+    fun setOnSymbolClickListener(listener: OnSymbolClickListener) {
+        _listener = listener
     }
 
     private fun setAdapter(adapter: ArrayAdapter<*>?) {
-        _searchAutoComplete!!.setAdapter(adapter)
-    }
-
-    fun setText(text: String?) {
-        _searchAutoComplete.setText(text)
+        _searchAutoComplete.setAdapter(adapter)
     }
 }
