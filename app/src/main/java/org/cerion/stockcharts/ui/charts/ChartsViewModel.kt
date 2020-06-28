@@ -11,6 +11,7 @@ import org.cerion.stocks.core.charts.IndicatorChart
 import org.cerion.stocks.core.charts.PriceChart
 import org.cerion.stocks.core.charts.StockChart
 import org.cerion.stocks.core.charts.VolumeChart
+import org.cerion.stocks.core.indicators.AccumulationDistributionLine
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.repository.CachedPriceListRepository
@@ -29,7 +30,7 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
 
     val prices = MediatorLiveData<PriceList>()
 
-    private var _charts = mutableListOf(PriceChart(), VolumeChart())
+    private var _charts = mutableListOf(PriceChart(), VolumeChart(), IndicatorChart(MACD()), PriceChart(), VolumeChart(), IndicatorChart(AccumulationDistributionLine()))
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
 
     private var job = Job()

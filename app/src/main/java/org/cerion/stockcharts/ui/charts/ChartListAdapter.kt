@@ -2,6 +2,7 @@ package org.cerion.stockcharts.ui.charts
 
 import android.content.Context
 import android.graphics.Matrix
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -25,6 +26,8 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
     private var charts: List<StockChart> = emptyList()
     private val factory = ChartViewFactory(context)
     private var prices: PriceList? = null
+    private var _viewPortMatrix: Matrix? = null
+    private var _viewPortValues: FloatArray? = null
 
     fun setCharts(charts: List<StockChart>, prices: PriceList?) {
         this.charts = charts
@@ -32,12 +35,16 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
         notifyDataSetChanged()
     }
 
-    private var viewPortMatrix: Matrix? = null
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ViewChartBinding.inflate(layoutInflater, parent, false)
         return ViewHolder(binding)
+    }
+
+
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        syncMatrix(holder)
     }
 
     override fun getItemCount(): Int = charts.size
@@ -57,13 +64,11 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
             }
             else {
                 val chartView = factory.getChart(chart, prices!!)
-                /*
+
                 chartView.setOnLongClickListener {
                     chartListener.onClick(chart)
                     true
                 }
-
-                 */
 
                 val matrix = chartView.viewPortHandler.matrixTouch
 
@@ -81,23 +86,42 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
 
                 chartView.id = R.id.chart_view
                 frame.addView(chartView)
+
+                // Workaround for fixing viewPortOffset issue //TODO look into more as a bug
+                Handler().postDelayed({
+                    chartView.invalidate()
+                    syncMatrix(this) // This was not working unless it was inside here, possibly related to bug OR viewport stuff needs to go AFTER this operation is done
+                }, 10)
             }
         }
     }
 
-    private val otherVals = FloatArray(9)
-    fun syncMatrix(matrix: Matrix, values: FloatArray, viewHolder: ChartListAdapter.ViewHolder) {
-        val tempChart = viewHolder.itemView.findViewById<BarLineChartBase<*>>(R.id.chart_view)
+    private val _otherVals = FloatArray(9)
 
-        val otherMatrix: Matrix = tempChart.viewPortHandler.matrixTouch
-        if (matrix == otherMatrix)
+    fun syncMatrix(matrix: Matrix, values: FloatArray, viewHolder: ChartListAdapter.ViewHolder) {
+        _viewPortMatrix = matrix // TODO these should be set to null again, maybe when priceList changes but not chart list since adding new chart should not reset
+        _viewPortValues = values
+
+        syncMatrix(viewHolder)
+    }
+
+    private fun syncMatrix(viewHolder: ChartListAdapter.ViewHolder) {
+        if (_viewPortMatrix == null || _viewPortValues == null)
             return
 
-        otherMatrix.getValues(otherVals)
-        otherVals[Matrix.MSCALE_X] = values[Matrix.MSCALE_X]
-        otherVals[Matrix.MTRANS_X] = values[Matrix.MTRANS_X]
-        otherVals[Matrix.MSKEW_X] = values[Matrix.MSKEW_X]
-        otherMatrix.setValues(otherVals)
+        val tempChart = viewHolder.itemView.findViewById<BarLineChartBase<*>>(R.id.chart_view)
+        val otherMatrix: Matrix = tempChart.viewPortHandler.matrixTouch
+
+        // Realtime refresh is called from a matrix parameter, only need to update if its NOT the chart currently being resized
+        if (_viewPortMatrix == otherMatrix)
+            return
+
+        // TODO see if there is another way to set the values, if this was the example code it may be the best solution already...
+        otherMatrix.getValues(_otherVals)
+        _otherVals[Matrix.MSCALE_X] = _viewPortValues!![Matrix.MSCALE_X]
+        _otherVals[Matrix.MTRANS_X] = _viewPortValues!![Matrix.MTRANS_X]
+        _otherVals[Matrix.MSKEW_X] = _viewPortValues!![Matrix.MSKEW_X]
+        otherMatrix.setValues(_otherVals)
         tempChart.viewPortHandler.refresh(otherMatrix, tempChart, true)
     }
 }

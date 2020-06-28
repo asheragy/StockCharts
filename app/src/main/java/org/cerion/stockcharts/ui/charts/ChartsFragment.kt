@@ -4,9 +4,9 @@ import android.graphics.Matrix
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 import org.cerion.stocks.core.charts.StockChart
@@ -78,19 +78,11 @@ class ChartsFragment : Fragment() {
         return true
     }
 
-    private val mainVals = FloatArray(9)
+    private val _mainVals = FloatArray(9)
     private fun syncCharts(matrix: Matrix) {
-        matrix.getValues(mainVals)
-
-        binding.recyclerView.let {
-            val lm = binding.recyclerView.layoutManager as LinearLayoutManager
-            val firstVisibleItemPosition = lm.findFirstVisibleItemPosition()
-            val lastVisibleItemPosition = lm.findLastVisibleItemPosition()
-
-            for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
-                val holder = it.findViewHolderForAdapterPosition(i)
-                adapter.syncMatrix(matrix, mainVals, holder as ChartListAdapter.ViewHolder)
-            }
+        matrix.getValues(_mainVals)
+        for(view in binding.recyclerView.children) {
+            adapter.syncMatrix(matrix, _mainVals, binding.recyclerView.getChildViewHolder(view) as ChartListAdapter.ViewHolder)
         }
     }
 }
