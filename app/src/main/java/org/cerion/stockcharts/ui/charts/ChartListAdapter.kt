@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
+import com.github.mikephil.charting.components.XAxis
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.DefaultChartGestureListener
 import org.cerion.stockcharts.databinding.ViewChartBinding
@@ -51,11 +52,11 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = charts[position]
-        holder.bind(item)
+        holder.bind(item, position == 0)
     }
 
     inner class ViewHolder internal constructor(val binding: ViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(chart: StockChart) {
+        fun bind(chart: StockChart, first: Boolean) {
             val frame = binding.chartFrame
             frame.removeAllViews()
 
@@ -87,11 +88,17 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
                 chartView.id = R.id.chart_view
                 frame.addView(chartView)
 
-                // Workaround for fixing viewPortOffset issue //TODO look into more as a bug
+                /*
                 Handler().postDelayed({
-                    chartView.invalidate()
                     syncMatrix(this) // This was not working unless it was inside here, possibly related to bug OR viewport stuff needs to go AFTER this operation is done
                 }, 10)
+
+                 */
+
+                if (!first)
+                    chartView.xAxis.setDrawLabels(false) // Only draw labels on first chart
+
+                syncMatrix(this)
             }
         }
     }

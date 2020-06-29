@@ -17,4 +17,5 @@
     <color name="chart_red">#f44336</color>
     <color name="chart_blue">#2196f3</color>
     <color name="chart_green">#4caf50</color>
+    <color name="chart_bar">#8ceaff</color>
 </resources>

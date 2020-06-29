@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.ColorTemplate
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.isDarkTheme
 import org.cerion.stocks.core.PriceList
@@ -28,13 +29,20 @@ import java.util.*
 import kotlin.math.exp
 
 class ColorMap(context: Context) {
-    val default = if (context.isDarkTheme()) Color.WHITE else Color.BLACK
-    val red = context.getColor(R.color.chart_red)
-    val green = context.getColor(R.color.chart_green)
-    val blue = context.getColor(R.color.chart_blue)
+    //val red = context.getColor(R.color.chart_red)
+    //val green = context.getColor(R.color.chart_green)
+    //val blue = context.getColor(R.color.chart_blue)
+
+    val red = ColorTemplate.VORDIPLOM_COLORS[4]
+    val green = ColorTemplate.VORDIPLOM_COLORS[1]
+    val yellow = ColorTemplate.VORDIPLOM_COLORS[0]
+    val peach = ColorTemplate.VORDIPLOM_COLORS[2]
+
+    val default = context.getColor(R.color.chart_blue) //if (context.isDarkTheme()) Color.WHITE else Color.BLACK
 
     val up = context.getColor(R.color.positive_green)
     val down = context.getColor(R.color.negative_red)
+    val barColor = ColorTemplate.VORDIPLOM_COLORS[3] //context.getColor(R.color.chart_bar)
 }
 
 class ChartViewFactory(private val context: Context) {
@@ -75,16 +83,17 @@ class ChartViewFactory(private val context: Context) {
             data.setData(getLineData(sets))
 
             chart = CombinedChart(context)
+            setChartDefaults(chart, pchart, list)
             chart.drawOrder = arrayOf(DrawOrder.CANDLE, DrawOrder.LINE)
             chart.data = data
         }
         else {
             chart = LineChart(context)
+            setChartDefaults(chart, pchart, list)
             val lineData = getLineData(sets)
             chart.data = lineData
         }
 
-        setChartDefaults(chart, pchart, list)
         chart.minimumHeight = CHART_HEIGHT_PRICE
         if (pchart.logScale)
             chart.axisRight.valueFormatter = logScaleYAxis
@@ -121,6 +130,9 @@ class ChartViewFactory(private val context: Context) {
     }
 
     private fun setChartDefaults(chart: BarLineChartBase<*>, stockchart: StockChart, list: PriceList) {
+        if (chart.data != null)
+            throw AssertionError("chart defaults should be set before data") // Needed for viewPortOffsets to work properly
+
         chart.apply {
             description = blankDescription
             minimumHeight = CHART_HEIGHT
@@ -132,7 +144,7 @@ class ChartViewFactory(private val context: Context) {
             axisRight.textColor = _textColor
 
             xAxis.valueFormatter = getAxisFormatter(stockchart.getDates(list), list.interval)
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
             // Always start at position 0 even if data set starts after that
             xAxis.axisMinimum = 0f
             xAxis.textColor = _textColor
@@ -141,44 +153,9 @@ class ChartViewFactory(private val context: Context) {
         }
     }
 
-    private fun setLegend(chart: Chart<*>, sets: List<IDataSet>) {
-        val entries = mutableListOf<LegendEntry>()
-        var lastLabel = ""
-        var lastColor = -1
-
-        for (set in sets) {
-            val label = set.label
-            val color = set.color
-            var entry: LegendEntry? = null
-            if (lastLabel.contentEquals(label)) {
-                if (lastColor != color) {
-                    entry = LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color)
-                    entries[entries.size - 1].label = null // label needs to go on the last one added
-                }
-            } else {
-                entry = LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color)
-            }
-
-            if (entry != null)
-                entries.add(entry)
-
-            lastLabel = label
-            lastColor = color
-        }
-
-        chart.legend.apply {
-            setCustom(entries)
-            setDrawInside(true)
-            orientation = Legend.LegendOrientation.VERTICAL
-            verticalAlignment = Legend.LegendVerticalAlignment.TOP
-            isWordWrapEnabled = false
-            textColor = _textColor
-        }
-    }
-
     private fun getDataSets(chart: StockChart, list: PriceList): List<IDataSet> {
-        chart.setPrimaryColors(intArrayOf(_colors.default, _colors.red, _colors.blue, _colors.green))
-        chart.setSecondaryColors(intArrayOf(_colors.red, _colors.blue, _colors.green))
+        chart.setPrimaryColors(intArrayOf(_colors.default, _colors.red, _colors.yellow, _colors.green))
+        chart.setSecondaryColors(intArrayOf(_colors.red, _colors.yellow, _colors.green, _colors.peach))
         return chart.getDataSets(list)
     }
 
@@ -196,6 +173,9 @@ class ChartViewFactory(private val context: Context) {
 
                     val dataSet = BarDataSet(entries, set.label)
                     dataSet.setDrawValues(false)
+
+                    set.color = _colors.barColor // Unlike other colors, barChart color is not set in library
+                    dataSet.color = set.color
                     result.add(dataSet)
                 }
 
@@ -260,6 +240,41 @@ class ChartViewFactory(private val context: Context) {
         }
 
         return CandleData()
+    }
+
+    private fun setLegend(chart: Chart<*>, sets: List<IDataSet>) {
+        val entries = mutableListOf<LegendEntry>()
+        var lastLabel = ""
+        var lastColor = -1
+
+        for (set in sets) {
+            val label = set.label
+            val color = set.color
+            var entry: LegendEntry? = null
+            if (lastLabel.contentEquals(label)) {
+                if (lastColor != color) {
+                    entry = LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color)
+                    entries[entries.size - 1].label = null // label needs to go on the last one added
+                }
+            } else {
+                entry = LegendEntry(label, Legend.LegendForm.DEFAULT, Float.NaN, Float.NaN, null, color)
+            }
+
+            if (entry != null)
+                entries.add(entry)
+
+            lastLabel = label
+            lastColor = color
+        }
+
+        chart.legend.apply {
+            setCustom(entries)
+            setDrawInside(true)
+            orientation = Legend.LegendOrientation.VERTICAL
+            verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            isWordWrapEnabled = false
+            textColor = _textColor
+        }
     }
 
     private fun getAxisFormatter(dates: Array<Date>, interval: Interval): ValueFormatter {
