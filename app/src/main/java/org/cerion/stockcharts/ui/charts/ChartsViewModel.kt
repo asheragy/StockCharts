@@ -15,8 +15,6 @@ import org.cerion.stocks.core.repository.CachedPriceListRepository
 
 class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel() {
 
-    // TODO only prices should be nullable value
-
     private val _symbol = MutableLiveData("")
     val symbol: LiveData<String>
         get() = _symbol
@@ -53,6 +51,7 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
 
     fun setInterval(interval: Interval) {
         _interval.value = interval
+        refresh()
     }
 
     fun addPriceChart() {
