@@ -11,6 +11,7 @@ import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.SymbolSearchView
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 import org.cerion.stocks.core.charts.StockChart
+import org.cerion.stocks.core.model.Symbol
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChartsFragment : Fragment() {
@@ -48,16 +49,16 @@ class ChartsFragment : Fragment() {
         }
 
         viewModel.symbol.observe(viewLifecycleOwner, Observer{
-            (requireActivity() as AppCompatActivity).supportActionBar?.title = it
+            (requireActivity() as AppCompatActivity).supportActionBar?.title = it.symbol
         })
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
 
-        if (viewModel.symbol.value.isNullOrEmpty() || savedInstanceState == null) {
-            val args = if (arguments != null) ChartsFragmentArgs.fromBundle(arguments!!) else null
-            val symbol = args?.symbol ?: "XLE"
-            viewModel.load(symbol)
+        if (savedInstanceState == null) {
+            // No args needed for now
+            //val args = if (arguments != null) ChartsFragmentArgs.fromBundle(arguments!!) else null
+            viewModel.load()
         }
 
         return binding.root
@@ -70,7 +71,7 @@ class ChartsFragment : Fragment() {
         val searchView = menuItem.actionView as SymbolSearchView
 
         searchView.setOnSymbolClickListener(object : SymbolSearchView.OnSymbolClickListener {
-            override fun onClick(symbol: String) {
+            override fun onClick(symbol: Symbol) {
                 viewModel.load(symbol)
                 menuItem.collapseActionView()
             }

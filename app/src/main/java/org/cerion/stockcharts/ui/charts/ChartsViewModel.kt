@@ -11,12 +11,15 @@ import org.cerion.stocks.core.charts.VolumeChart
 import org.cerion.stocks.core.indicators.AccumulationDistributionLine
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
+import org.cerion.stocks.core.model.Symbol
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 
 class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel() {
 
-    private val _symbol = MutableLiveData("")
-    val symbol: LiveData<String>
+    private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
+
+    private val _symbol = MutableLiveData(DefaultSymbol)
+    val symbol: LiveData<Symbol>
         get() = _symbol
 
     private val _interval = MutableLiveData(Interval.DAILY)
@@ -32,16 +35,11 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
     val busy: LiveData<Boolean>
         get() = _busy
 
-    fun load(symbol: String) {
-        _symbol.value = symbol
-        refresh()
-    }
-
-    private fun refresh() {
+    fun load() {
         viewModelScope.launch {
             try {
                 _busy.value = true
-                prices.value = getPrices(_symbol.value!!)
+                prices.value = getPrices(_symbol.value!!.symbol)
             }
             finally {
                 _busy.value = false
@@ -49,9 +47,14 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
         }
     }
 
+    fun load(symbol: Symbol) {
+        _symbol.value = symbol
+        load()
+    }
+
     fun setInterval(interval: Interval) {
         _interval.value = interval
-        refresh()
+        load()
     }
 
     fun addPriceChart() {

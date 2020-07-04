@@ -9,11 +9,12 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.appcompat.R
 import androidx.appcompat.widget.SearchView
+import org.cerion.stocks.core.model.Symbol
 
 class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(context, attrs) {
 
     interface OnSymbolClickListener {
-        fun onClick(symbol: String)
+        fun onClick(symbol: Symbol)
     }
 
     private val _searchAutoComplete: SearchAutoComplete = findViewById<View>(R.id.search_src_text) as SearchAutoComplete

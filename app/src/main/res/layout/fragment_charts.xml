@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable name="viewmodel" type="org.cerion.stockcharts.ui.charts.ChartsViewModel" />
@@ -35,6 +36,17 @@
                         app:layout_collapseMode="pin">
 
                     </androidx.appcompat.widget.Toolbar>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/windowBackground"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:text="@{viewmodel.symbol.name}"
+                        tools:text="S&amp;P 500">
+                    </TextView>
 
                     <com.google.android.material.chip.ChipGroup
                         android:layout_width="match_parent"

@@ -13,7 +13,7 @@ import org.cerion.stockcharts.repository.SymbolRepository
 import org.cerion.stocks.core.model.Symbol
 
 
-class SymbolSearchAdapter(context: Context) : ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
+class SymbolSearchAdapter(context: Context) : ArrayAdapter<Symbol>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
 
     private val mResults = mutableListOf<Symbol>()
     private val repo = SymbolRepository(context)
@@ -21,7 +21,7 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<String>(context, andr
     private val dataApi= Injection.getDataApi()
 
     override fun getCount(): Int = mResults.size
-    override fun getItem(index: Int): String = mResults[index].symbol
+    override fun getItem(index: Int): Symbol = mResults[index]
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
