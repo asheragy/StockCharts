@@ -6,19 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.databinding.PositionsFragmentBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PositionsFragment : androidx.fragment.app.Fragment() {
 
-    private lateinit var viewModel: PositionsViewModel
+    private val viewModel: PositionsViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = PositionsFragmentBinding.inflate(layoutInflater)
-
-        viewModel = ViewModelProvider(this).get(PositionsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 

@@ -6,24 +6,22 @@ import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.BuildConfig
-import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.database.Account
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.AccountRepository
 import org.cerion.stockcharts.repository.PositionRepository
 import org.cerion.stocks.core.model.Position
+import org.cerion.stocks.core.web.clients.TDAmeritrade
 
-class PositionsViewModel(application: Application) : AndroidViewModel(application) {
+class PositionsViewModel(application: Application, val tdapi: TDAmeritrade) : AndroidViewModel(application) {
 
     private val accountDao = getDatabase(getApplication()).accountDao
     private val accountRepo = AccountRepository(accountDao)
-    private val positionRepo = PositionRepository(accountDao)
+    private val positionRepo = PositionRepository(accountDao, tdapi)
 
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
-
-    val tdapi = Injection.getTD()
 
     private val _accounts = MutableLiveData<List<Account>>()
     val accounts: LiveData<List<Account>>

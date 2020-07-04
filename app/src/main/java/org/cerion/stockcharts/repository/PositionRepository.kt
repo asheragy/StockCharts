@@ -1,18 +1,15 @@
 package org.cerion.stockcharts.repository
 
-import org.cerion.stockcharts.Injection
 import org.cerion.stockcharts.database.Account
 import org.cerion.stockcharts.database.AccountDao
 import org.cerion.stocks.core.model.Position
 import org.cerion.stocks.core.web.clients.RequestException
+import org.cerion.stocks.core.web.clients.TDAmeritrade
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-
-class PositionRepository(private val dao: AccountDao) {
-
-    private val tdapi = Injection.getTD()
+class PositionRepository(private val dao: AccountDao, private val tdapi: TDAmeritrade) {
 
     // TODO add caching
 

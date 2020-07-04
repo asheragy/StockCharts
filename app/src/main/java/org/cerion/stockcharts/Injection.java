@@ -6,7 +6,6 @@ import org.cerion.stockcharts.repository.PriceListSQLRepository;
 import org.cerion.stocks.core.repository.CachedPriceListRepository;
 import org.cerion.stocks.core.web.CombinedDataAPI;
 import org.cerion.stocks.core.web.DataAPI;
-import org.cerion.stocks.core.web.clients.TDAmeritrade;
 
 @Deprecated
 public class Injection {
@@ -22,9 +21,5 @@ public class Injection {
         return new CachedPriceListRepository(
                 new PriceListSQLRepository(context),
                 dataAPI);
-    }
-
-    public static TDAmeritrade getTD() {
-        return new TDAmeritrade(BuildConfig.TD_CONSUMER_KEY, BuildConfig.TD_REDIRECT_URI);
     }
 }

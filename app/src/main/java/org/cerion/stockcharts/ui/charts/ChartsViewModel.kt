@@ -3,6 +3,7 @@ package org.cerion.stockcharts.ui.charts
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Constants
+import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.IndicatorChart
 import org.cerion.stocks.core.charts.PriceChart
@@ -14,7 +15,7 @@ import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.model.Symbol
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 
-class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel() {
+class ChartsViewModel(private val repo: CachedPriceListRepository, private val prefs: PreferenceRepository) : ViewModel() {
 
     private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
 
@@ -36,6 +37,26 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
         get() = _busy
 
     fun load() {
+        val lastSymbol = prefs.getLastSymbol()
+        if (lastSymbol != null)
+            _symbol.value = lastSymbol
+
+        refresh()
+    }
+
+    fun load(symbol: Symbol) {
+        _symbol.value = symbol
+        refresh()
+
+        prefs.saveLastSymbol(symbol)
+    }
+
+    fun setInterval(interval: Interval) {
+        _interval.value = interval
+        refresh()
+    }
+
+    private fun refresh() {
         viewModelScope.launch {
             try {
                 _busy.value = true
@@ -47,15 +68,6 @@ class ChartsViewModel(private val repo: CachedPriceListRepository) : ViewModel()
         }
     }
 
-    fun load(symbol: Symbol) {
-        _symbol.value = symbol
-        load()
-    }
-
-    fun setInterval(interval: Interval) {
-        _interval.value = interval
-        load()
-    }
 
     fun addPriceChart() {
         addChart(PriceChart().apply {
