@@ -8,20 +8,20 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import org.cerion.stockcharts.Injection
-import org.cerion.stockcharts.repository.SymbolRepository
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.stockcharts.database.SymbolEntity
+import org.cerion.stockcharts.database.getSymbolsDatabase
 
 
-class SymbolSearchAdapter(context: Context) : ArrayAdapter<Symbol>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
+class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
 
-    private val mResults = mutableListOf<Symbol>()
-    private val repo = SymbolRepository(context)
-    private val mDatabaseList = SymbolRepository(context).getAll()
-    private val dataApi= Injection.getDataApi()
+    private val _results = mutableListOf<SymbolEntity>()
+    //private val repo = SymbolRepository(context)
+    //private val mDatabaseList = SymbolRepository(context).getAll()
+    //private val dataApi= Injection.getDataApi()
+    private val _lookup = getSymbolsDatabase(context).symbolsDao
 
-    override fun getCount(): Int = mResults.size
-    override fun getItem(index: Int): Symbol = mResults[index]
+    override fun getCount(): Int = _results.size
+    override fun getItem(index: Int): SymbolEntity = _results[index]
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
@@ -30,7 +30,7 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<Symbol>(context, andr
             view = inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
         }
 
-        val symbol = mResults[position]
+        val symbol = _results[position]
         (view!!.findViewById<View>(android.R.id.text1) as TextView).text = symbol.symbol + " - " + symbol.name
 
         return view
@@ -42,19 +42,33 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<Symbol>(context, andr
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filterResults = FilterResults()
 
-                if (constraint != null) {
-                    mResults.clear()
-                    val symbol = dataApi.getSymbol(constraint.toString() + "")
-                    if (symbol != null && symbol.isValid) mResults.add(symbol)
+                _results.clear()
+                if (constraint != null && constraint.isNotEmpty()) {
+
+                    val matches =
+                            if (constraint.length >= 3)
+                                _lookup.find("$constraint%", "$constraint%")
+                            else
+                                _lookup.find(constraint.toString()) + _lookup.find(constraint.toString() + "_") // Exact match + matches with 1 other character
+
+                    // Old code to lookup previously saved + api fetch, not using either for now
+                    /*
+                    //val symbol = dataApi.getSymbol(constraint.toString() + "")
+                    //if (symbol != null && symbol.isValid) mResults.add(symbol)
                     for (s in mDatabaseList) {
                         val lookup = constraint.toString() + ""
                         if (s.symbol.startsWith(lookup) && s.symbol.length > lookup.length) {
                             mResults.add(s)
                         }
                     }
-                    filterResults.values = mResults
-                    filterResults.count = mResults.size
+                     */
+
+                    _results.addAll(matches)
                 }
+
+                filterResults.values = _results
+                filterResults.count = _results.size
+
                 return filterResults
             }
 

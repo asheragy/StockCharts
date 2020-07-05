@@ -9,6 +9,7 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.appcompat.R
 import androidx.appcompat.widget.SearchView
+import org.cerion.stockcharts.database.toSymbol
 import org.cerion.stocks.core.model.Symbol
 
 class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(context, attrs) {
@@ -30,7 +31,7 @@ class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(cont
         _searchAutoComplete.threshold = 1
 
         _searchAutoComplete.onItemClickListener = OnItemClickListener { _, _, position, _ ->
-            val symbol = _adapter.getItem(position)
+            val symbol = _adapter.getItem(position).toSymbol()
             _listener?.onClick(symbol)
         }
     }

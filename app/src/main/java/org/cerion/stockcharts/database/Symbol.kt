@@ -1,6 +1,7 @@
 package org.cerion.stockcharts.database
 
 import androidx.room.*
+import org.cerion.stocks.core.model.Symbol
 
 
 @Entity(tableName = "symbols")
@@ -22,3 +23,5 @@ interface SymbolDao {
     fun delete(symbol: SymbolEntity)
 
 }
+
+fun SymbolEntity.toSymbol(): Symbol = Symbol(symbol, name, exchange)
