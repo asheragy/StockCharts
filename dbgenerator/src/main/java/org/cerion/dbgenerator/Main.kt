@@ -8,11 +8,12 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 
+// http://www.nasdaqtrader.com/trader.aspx?id=symboldirdefs
 // ftp://ftp.nasdaqtrader.com/SymbolDirectory/otherlisted.txt
 
 const val RootDirectory = "symboldata"
-const val DatabaseName = "$RootDirectory\\symbols.db"
-const val CreateDatabase = "CREATE TABLE symbols (symbol TEXT PRIMARY KEY, name TEXT NOT NULL DEFAULT '', exchange TEXT NOT NULL DEFAULT '')"
+const val DatabaseName = "app\\src\\main\\assets\\symbols.db"
+const val CreateDatabase = "CREATE TABLE symbols (symbol TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL DEFAULT '', exchange TEXT NOT NULL DEFAULT '')"
 
 fun main() {
 
