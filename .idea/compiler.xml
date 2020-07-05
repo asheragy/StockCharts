@@ -4,6 +4,7 @@
     <bytecodeTargetLevel>
       <module name="core_jvmMain" target="1.6" />
       <module name="core_jvmTest" target="1.6" />
+      <module name="dbgenerator" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

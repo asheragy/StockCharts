@@ -1,3 +1,4 @@
+include ':dbgenerator'
 include ':app', ':core'
 
 project(':core').projectDir = new File(settingsDir, '../stocks-core')
