@@ -13,7 +13,6 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.utils.ColorTemplate
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.isDarkTheme
 import org.cerion.stocks.core.PriceList
@@ -21,29 +20,13 @@ import org.cerion.stocks.core.charts.*
 import org.cerion.stocks.core.charts.CandleDataSet
 import org.cerion.stocks.core.charts.DataSet
 import org.cerion.stocks.core.model.Interval
+import org.cerion.stocks.core.platform.KMPDate
 import java.math.BigDecimal
 import java.math.MathContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.exp
-
-class ColorMap(context: Context) {
-    //val red = context.getColor(R.color.chart_red)
-    //val green = context.getColor(R.color.chart_green)
-    //val blue = context.getColor(R.color.chart_blue)
-
-    val red = ColorTemplate.VORDIPLOM_COLORS[4]
-    val green = ColorTemplate.VORDIPLOM_COLORS[1]
-    val yellow = ColorTemplate.VORDIPLOM_COLORS[0]
-    val peach = ColorTemplate.VORDIPLOM_COLORS[2]
-
-    val default = context.getColor(R.color.chart_blue) //if (context.isDarkTheme()) Color.WHITE else Color.BLACK
-
-    val up = context.getColor(R.color.positive_green)
-    val down = context.getColor(R.color.negative_red)
-    val barColor = ColorTemplate.VORDIPLOM_COLORS[3] //context.getColor(R.color.chart_bar)
-}
 
 class ChartViewFactory(private val context: Context) {
 
@@ -55,7 +38,6 @@ class ChartViewFactory(private val context: Context) {
         private val blankDescription = Description().apply { text = "" }
     }
 
-    private val _colors = ColorMap(context)
     private val _textColor = if (context.isDarkTheme()) context.getColor(R.color.secondaryTextColor) else context.getColor(R.color.primaryColor)
 
     fun getChart(chart: StockChart, list: PriceList): Chart<*> {
@@ -154,8 +136,6 @@ class ChartViewFactory(private val context: Context) {
     }
 
     private fun getDataSets(chart: StockChart, list: PriceList): List<IDataSet> {
-        chart.setPrimaryColors(intArrayOf(_colors.default, _colors.red, _colors.yellow, _colors.green))
-        chart.setSecondaryColors(intArrayOf(_colors.red, _colors.yellow, _colors.green, _colors.peach))
         return chart.getDataSets(list)
     }
 
@@ -166,15 +146,12 @@ class ChartViewFactory(private val context: Context) {
                 .forEach {
                     val set = it as DataSet
 
-                    // TODO need to change corelib but DataSet should be mappable
-                    val entries = mutableListOf<BarEntry>()
-                    for (i in 0 until set.size)
-                        entries.add(BarEntry(i.toFloat(), set[i]))
+                    val entries = set.mapIndexed { index, value ->
+                        BarEntry(index.toFloat(), value)
+                    }
 
                     val dataSet = BarDataSet(entries, set.label)
                     dataSet.setDrawValues(false)
-
-                    set.color = _colors.barColor // Unlike other colors, barChart color is not set in library
                     dataSet.color = set.color
                     result.add(dataSet)
                 }
@@ -187,14 +164,10 @@ class ChartViewFactory(private val context: Context) {
 
         for (curr in sets) {
             if (curr.lineType === LineType.LINE || curr.lineType === LineType.DOTTED) {
-
                 val set = curr as DataSet
-                val entries = mutableListOf<Entry>()
-
-                for (i in 0 until set.size) {
-                    val point = set[i]
-                    if (!point.isNaN())
-                        entries.add(Entry(i.toFloat(), point))
+                val entries = set.mapIndexed { index, value ->
+                    // TODO previous code checked for NaN, could be other issues if that comes up...
+                    Entry(index.toFloat(), value)
                 }
 
                 val lineDataSet = LineDataSet(entries, set.label).apply {
@@ -230,9 +203,9 @@ class ChartViewFactory(private val context: Context) {
 
                 val dataSet = com.github.mikephil.charting.data.CandleDataSet(entries, set.label)
                 dataSet.setDrawValues(false)
-                dataSet.decreasingColor = _colors.down
+                dataSet.decreasingColor = context.getColor(R.color.negative_red)
                 dataSet.decreasingPaintStyle = Paint.Style.FILL
-                dataSet.increasingColor = _colors.up
+                dataSet.increasingColor = context.getColor(R.color.positive_green)
                 dataSet.increasingPaintStyle = Paint.Style.FILL
 
                 return CandleData(dataSet)
@@ -277,14 +250,14 @@ class ChartViewFactory(private val context: Context) {
         }
     }
 
-    private fun getAxisFormatter(dates: Array<Date>, interval: Interval): ValueFormatter {
+    private fun getAxisFormatter(dates: Array<KMPDate>, interval: Interval): ValueFormatter {
         return object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
-                val v = value.toInt()
+                val date: Date = dates[value.toInt()].jvmDate
                 return if (interval === Interval.MONTHLY)
-                    dateFormatMonthly.format(dates[v])
+                    dateFormatMonthly.format(date)
                 else
-                    dateFormat.format(dates[v])
+                    dateFormat.format(date)
             }
         }
     }

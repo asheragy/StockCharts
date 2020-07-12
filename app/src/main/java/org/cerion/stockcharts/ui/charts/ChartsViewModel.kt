@@ -5,17 +5,18 @@ import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Constants
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.IndicatorChart
-import org.cerion.stocks.core.charts.PriceChart
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.charts.VolumeChart
+import org.cerion.stocks.core.charts.*
 import org.cerion.stocks.core.indicators.AccumulationDistributionLine
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.model.Symbol
+import org.cerion.stocks.core.overlays.BollingerBands
+import org.cerion.stocks.core.overlays.ExpMovingAverage
+import org.cerion.stocks.core.overlays.ParabolicSAR
+import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 
-class ChartsViewModel(private val repo: CachedPriceListRepository, private val prefs: PreferenceRepository) : ViewModel() {
+class ChartsViewModel(private val repo: CachedPriceListRepository, private val prefs: PreferenceRepository, private val colors: ChartColorScheme) : ViewModel() {
 
     private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
 
@@ -29,7 +30,21 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
 
     val prices = MediatorLiveData<PriceList>()
 
-    private var _charts = mutableListOf(PriceChart(), VolumeChart(), IndicatorChart(MACD()), PriceChart(), VolumeChart(), IndicatorChart(AccumulationDistributionLine()))
+    private var _charts = mutableListOf(
+            PriceChart(colors).apply {
+                addOverlay(BollingerBands())
+                addOverlay(SimpleMovingAverage())
+                addOverlay(ExpMovingAverage())
+            },
+            VolumeChart(colors),
+            IndicatorChart(MACD(), colors),
+            PriceChart(colors).apply {
+                addOverlay(ParabolicSAR())
+            },
+            VolumeChart(colors),
+            IndicatorChart(AccumulationDistributionLine(), colors)
+    )
+
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
 
     private val _busy = MutableLiveData(false)
@@ -70,17 +85,17 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
 
 
     fun addPriceChart() {
-        addChart(PriceChart().apply {
+        addChart(PriceChart(colors).apply {
             candleData = false
         })
     }
 
     fun addIndicatorChart() {
-        addChart(IndicatorChart(MACD()))
+        addChart(IndicatorChart(MACD(), colors))
     }
 
     fun addVolumeChart() {
-        addChart(VolumeChart())
+        addChart(VolumeChart(colors))
     }
 
     fun removeChart(chart: StockChart) {

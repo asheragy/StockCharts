@@ -17,7 +17,7 @@ import org.cerion.stocks.core.functions.IOverlay
 import org.cerion.stocks.core.functions.types.IFunctionEnum
 import org.cerion.stocks.core.functions.types.Overlay
 
-class OverlayEditControl(context: Context, allowedOverlays: Array<IFunctionEnum>) : LinearLayout(context) {
+class OverlayEditControl(context: Context, allowedOverlays: List<IFunctionEnum>) : LinearLayout(context) {
 
     private var onDeleteListener: OnDeleteListener? = null
     private val spinner: Spinner

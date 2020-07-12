@@ -14,7 +14,7 @@ internal class FunctionAdapterItem private constructor(var function: IFunction) 
 
     companion object {
 
-        fun getList(values: Array<IFunctionEnum>): List<FunctionAdapterItem> {
+        fun getList(values: List<IFunctionEnum>): List<FunctionAdapterItem> {
             val result: MutableList<FunctionAdapterItem> = ArrayList()
 
             for (e in values)

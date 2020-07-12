@@ -8,6 +8,7 @@ import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.PriceRow
 import org.cerion.stocks.core.model.Interval
+import org.cerion.stocks.core.platform.KMPDate
 import org.cerion.stocks.core.repository.IPriceListRepository
 import java.util.*
 
@@ -24,7 +25,7 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
         val dbPrices = pricesDao.getAll(symbol, interval.ordinal)
 
         val prices = dbPrices.map {
-            PriceRow(it.date, it.open, it.high, it.low, it.close, it.volume)
+            PriceRow(KMPDate(it.date), it.open, it.high, it.low, it.close, it.volume)
         }
 
         val result = PriceList(symbol, prices)
@@ -47,7 +48,7 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
 
             // Add prices
             val dbPrices = list.map {
-                PriceRowEntity(list.symbol, interval, it.date, it.open, it.high, it.low, it.close, it.volume)
+                PriceRowEntity(list.symbol, interval, it.date.jvmDate, it.open, it.high, it.low, it.close, it.volume)
             }
 
             pricesDao.insert(dbPrices)
