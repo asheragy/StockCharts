@@ -30,7 +30,11 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
 
     val prices = MediatorLiveData<PriceList>()
 
-    private var _charts = mutableListOf(
+    private val DefaultCharts = mutableListOf(
+            PriceChart(colors),
+            VolumeChart(colors))
+
+    private val DefaultChartsTest = mutableListOf(
             PriceChart(colors).apply {
                 addOverlay(BollingerBands())
                 addOverlay(SimpleMovingAverage())
@@ -45,11 +49,21 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
             IndicatorChart(AccumulationDistributionLine(), colors)
     )
 
+    private var _charts = mutableListOf<StockChart>()
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
 
     private val _busy = MutableLiveData(false)
     val busy: LiveData<Boolean>
         get() = _busy
+
+    init {
+        // Load saved charts
+        _charts.addAll(prefs.getCharts(colors))
+        if (_charts.isEmpty())
+            _charts.addAll(DefaultCharts)
+
+        charts.value = _charts
+    }
 
     fun load() {
         val lastSymbol = prefs.getLastSymbol()
@@ -101,16 +115,23 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
     fun removeChart(chart: StockChart) {
         _charts.remove(chart)
         charts.value = _charts
+        saveCharts()
     }
 
     fun replaceChart(old: StockChart, new: StockChart) {
         _charts = _charts.map { if(it == old) new else it }.toMutableList()
         charts.value = _charts
+        saveCharts()
+    }
+
+    private fun saveCharts() {
+        prefs.saveCharts(_charts)
     }
 
     private fun addChart(chart: StockChart) {
         _charts.add(chart)
         charts.value = _charts
+        saveCharts()
     }
 
     private suspend fun getPrices(symbol: String): PriceList {
