@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Constants
 import org.cerion.stockcharts.repository.PreferenceRepository
+import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.*
 import org.cerion.stocks.core.indicators.AccumulationDistributionLine
@@ -16,7 +17,11 @@ import org.cerion.stocks.core.overlays.ParabolicSAR
 import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 
-class ChartsViewModel(private val repo: CachedPriceListRepository, private val prefs: PreferenceRepository, private val colors: ChartColorScheme) : ViewModel() {
+class ChartsViewModel(
+        private val repo: CachedPriceListRepository,
+        private val sqlRepo: PriceListSQLRepository,
+        private val prefs: PreferenceRepository,
+        private val colors: ChartColorScheme) : ViewModel() {
 
     private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
 
@@ -56,6 +61,8 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
     val busy: LiveData<Boolean>
         get() = _busy
 
+    private var cleanupCache = true
+
     init {
         // Load saved charts
         _charts.addAll(prefs.getCharts(colors))
@@ -76,7 +83,6 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
     fun load(symbol: Symbol) {
         _symbol.value = symbol
         refresh()
-
         prefs.saveLastSymbol(symbol)
     }
 
@@ -86,17 +92,28 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
     }
 
     private fun refresh() {
+        launchBusy {
+            // On the 2nd fetch of this app instance, cleanup database if needed
+            if (prices.value != null && cleanupCache) {
+                cleanupCache = false
+                sqlRepo.cleanupCache()
+            }
+
+            prices.value = getPrices(_symbol.value!!.symbol)
+        }
+    }
+
+    private fun launchBusy(block: suspend () -> Unit) {
         viewModelScope.launch {
             try {
                 _busy.value = true
-                prices.value = getPrices(_symbol.value!!.symbol)
+                block()
             }
             finally {
                 _busy.value = false
             }
         }
     }
-
 
     fun addPriceChart() {
         addChart(PriceChart(colors).apply {
@@ -122,6 +139,12 @@ class ChartsViewModel(private val repo: CachedPriceListRepository, private val p
         _charts = _charts.map { if(it == old) new else it }.toMutableList()
         charts.value = _charts
         saveCharts()
+    }
+
+    fun clearCache() {
+        launchBusy {
+            sqlRepo.clearCache()
+        }
     }
 
     private fun saveCharts() {

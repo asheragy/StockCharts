@@ -2,6 +2,9 @@ package org.cerion.stockcharts.repository
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.database.PriceListEntity
 import org.cerion.stockcharts.database.PriceRowEntity
 import org.cerion.stockcharts.database.getDatabase
@@ -55,14 +58,41 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
         }
     }
 
-    fun clearCache() {
-        val name = roomDb.openHelper.databaseName
-        val file = context.getDatabasePath(name)
+    suspend fun clearCache() {
+        withContext(Dispatchers.IO) {
+            val name = roomDb.openHelper.databaseName
+            val file = context.getDatabasePath(name)
 
-        Log.i("Main", "Size before compact: ${file.length()}")
-        priceListDao.deleteAll()
-        roomDb.compact()
-        Log.i("Main", "Size after compact: ${file.length()}")
+            Log.i("Main", "Size before compact: ${file.length()}")
+            priceListDao.deleteAll()
+            pricesDao.deleteAll()
+            roomDb.compact() // TODO how to verify this worked and how much space was saved
+
+            // There is a delay for when this gets reported correctly, ignore for now
+            //Log.i("Main", "Size after compact: ${file.length()}")
+        }
+    }
+
+    suspend fun cleanupCache() {
+        withContext(Dispatchers.IO) {
+            val name = roomDb.openHelper.databaseName
+            val file = context.getDatabasePath(name)
+            Log.i("Main", "Size before compact: ${file.length()}")
+
+            val lists = priceListDao.getAll().sortedBy { it.lastUpdated }
+            val maxToKeep = 20
+            val minToKeep = 5
+            if (lists.size > maxToKeep) {
+                val delete = lists.subList(0, lists.size - minToKeep)
+                Log.i(TAG, "Deleting ${delete.size} cached lists")
+                delete.forEach {
+                    pricesDao.delete(it.symbol, it.interval)
+                    priceListDao.delete(it)
+                }
+
+                roomDb.compact()
+            }
+        }
     }
 
     /*

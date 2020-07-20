@@ -53,6 +53,7 @@ val databaseModule = module {
 }
 
 val repositoryModule = module {
+    single { PriceListSQLRepository(get()) }
     single<IPriceListRepository> { PriceListSQLRepository(get()) }
     single { SymbolRepository(get() as SymbolDao) } // TODO remove cast after 2nd constructor is removed
     single { PreferenceRepository(get()) }
@@ -63,6 +64,6 @@ val viewModelModule = module {
     single { ChartColorScheme(get()) }
     viewModel { SymbolsViewModel(get(), get()) }
     viewModel { SymbolDetailsViewModel(get()) }
-    viewModel { ChartsViewModel(get(), get(), get()) }
+    viewModel { ChartsViewModel(get(), get(), get(), get()) }
     viewModel { PositionsViewModel(get(), get()) }
 }

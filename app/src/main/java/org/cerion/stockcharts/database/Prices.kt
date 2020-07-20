@@ -8,6 +8,9 @@ private const val PricesTable = "prices"
 
 @Dao
 interface PriceListDao {
+    @Query("select * from $PriceListTable")
+    fun getAll(): List<PriceListEntity>
+
     @Query("select * from $PriceListTable where symbol=:symbol and interval=:interval")
     fun get(symbol: String, interval: Int): PriceListEntity?
 
@@ -17,6 +20,9 @@ interface PriceListDao {
     // TODO should be able to replace with @Delete depending on usages
     @Query("delete from $PriceListTable where symbol=:symbol and interval=:interval")
     fun delete(symbol: String, interval: Int)
+
+    @Delete
+    fun delete(entity: PriceListEntity)
 
     @Query("delete from $PriceListTable")
     fun deleteAll()
@@ -29,6 +35,12 @@ interface PricesDao {
 
     @Insert
     fun insert(prices: List<PriceRowEntity>)
+
+    @Query("delete from $PricesTable where symbol=:symbol and interval=:interval")
+    fun delete(symbol: String, interval: Int)
+
+    @Query("delete from $PricesTable")
+    fun deleteAll()
 }
 
 @Entity(tableName = PriceListTable, primaryKeys = ["symbol", "interval"])

@@ -2,13 +2,17 @@ package org.cerion.stockcharts.ui.charts
 
 import android.graphics.Matrix
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.SymbolSearchView
+import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
 import org.cerion.stocks.core.charts.StockChart
 import org.cerion.stocks.core.model.Symbol
@@ -66,6 +70,7 @@ class ChartsFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.charts_menu, menu)
+        MenuCompat.setGroupDividerEnabled(menu, true)
 
         val menuItem = menu.findItem(R.id.action_search)
         val searchView = menuItem.actionView as SymbolSearchView
@@ -85,6 +90,8 @@ class ChartsFragment : Fragment() {
             R.id.add_indicator -> viewModel.addIndicatorChart()
             R.id.add_price -> viewModel.addPriceChart()
             R.id.add_volume -> viewModel.addVolumeChart()
+            R.id.clear_cache -> viewModel.clearCache()
+            R.id.stats -> showStats()
             else -> return super.onContextItemSelected(item)
         }
 
@@ -97,5 +104,18 @@ class ChartsFragment : Fragment() {
         for(view in binding.recyclerView.children) {
             adapter.syncMatrix(matrix, _mainVals, binding.recyclerView.getChildViewHolder(view) as ChartListAdapter.ViewHolder)
         }
+    }
+
+    // Debug only
+    private fun showStats() {
+        val db = getDatabase(requireContext())
+        val name = getDatabase(requireContext()).openHelper.databaseName
+        val file = requireContext().getDatabasePath(name)
+        val sizeInKb = file.length() / 1024
+
+        //Log.i("Main", "Size before compact: ${file.length()}")
+        val lists = db.priceListDao.getAll()
+
+        Toast.makeText(requireContext(), "${lists.size} lists with size ${sizeInKb}kb", Toast.LENGTH_LONG).show()
     }
 }
