@@ -30,8 +30,13 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context
             view = inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
         }
 
-        val symbol = _results[position]
-        (view!!.findViewById<View>(android.R.id.text1) as TextView).text = symbol.symbol + " - " + symbol.name
+        val tv = (view!!.findViewById<View>(android.R.id.text1) as TextView)
+        if (position < _results.size) {
+            val symbol = _results[position]
+            tv.text = "${symbol.symbol} - ${symbol.name}"
+        }
+        else
+            tv.text = "" // TODO look into this more, may happen if array is changed before old view is updated
 
         return view
     }

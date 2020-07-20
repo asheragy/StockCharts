@@ -2,7 +2,6 @@ package org.cerion.stockcharts.ui.charts
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
-import org.cerion.stockcharts.common.Constants
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
@@ -159,26 +158,7 @@ class ChartsViewModel(
 
     private suspend fun getPrices(symbol: String): PriceList {
         return withContext(Dispatchers.IO) {
-            // TODO repository should handle quarterly/monthly conversion
-            val startDate = when(interval.value) {
-                Interval.DAILY -> Constants.START_DATE_DAILY
-                Interval.WEEKLY -> Constants.START_DATE_WEEKLY
-                else -> Constants.START_DATE_MONTHLY
-            }
-
-            val intervalQuery = when(interval.value) {
-                Interval.DAILY -> Interval.DAILY
-                Interval.WEEKLY -> Interval.WEEKLY
-                else -> Interval.MONTHLY
-            }
-
-            val list = repo.get(symbol, intervalQuery, startDate)
-
-            when(interval.value) {
-                Interval.QUARTERLY -> list.toQuarterly()
-                Interval.YEARLY -> list.toYearly()
-                else -> list
-            }
+            repo.get(symbol, interval.value!!)
         }
     }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.PriceChart
+import org.cerion.stocks.core.model.FetchInterval
 import org.cerion.stocks.core.model.Interval
 
 // TODO may need to take the cached repository version
@@ -33,7 +34,7 @@ class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : Vi
         }
 
         viewModelScope.launch {
-            _prices.value = priceRepo.get(symbol, Interval.DAILY)
+            _prices.value = priceRepo.get(symbol, FetchInterval.DAILY)
         }
     }
 }

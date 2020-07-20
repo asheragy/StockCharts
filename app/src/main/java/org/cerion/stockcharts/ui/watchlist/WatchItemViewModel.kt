@@ -4,7 +4,6 @@ import androidx.databinding.ObservableField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import org.cerion.stockcharts.common.Constants.START_DATE_DAILY
 import org.cerion.stockcharts.common.Utils
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.StockChart
@@ -28,7 +27,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
 
             loading.set(true)
             try {
-                val prices = repo.get(symbol, Interval.DAILY, START_DATE_DAILY)
+                val prices = repo.get(symbol, Interval.DAILY)
                 apply(prices)
             } catch (e: Exception) {
                 // TODO set error state

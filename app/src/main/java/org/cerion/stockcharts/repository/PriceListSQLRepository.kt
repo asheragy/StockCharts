@@ -10,7 +10,7 @@ import org.cerion.stockcharts.database.PriceRowEntity
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.PriceRow
-import org.cerion.stocks.core.model.Interval
+import org.cerion.stocks.core.model.FetchInterval
 import org.cerion.stocks.core.platform.KMPDate
 import org.cerion.stocks.core.repository.IPriceListRepository
 import java.util.*
@@ -21,7 +21,7 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
     private val priceListDao = roomDb.priceListDao
     private val pricesDao = roomDb.pricesDao
 
-    override fun get(symbol: String, interval: Interval): PriceList? {
+    override fun get(symbol: String, interval: FetchInterval): PriceList? {
         val header = priceListDao.get(symbol, interval.ordinal)
                 ?: return null
 

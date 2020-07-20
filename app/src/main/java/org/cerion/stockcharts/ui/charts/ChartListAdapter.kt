@@ -42,7 +42,6 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
         return ViewHolder(binding)
     }
 
-
     override fun onViewAttachedToWindow(holder: ViewHolder) {
         super.onViewAttachedToWindow(holder)
         syncMatrix(holder)
