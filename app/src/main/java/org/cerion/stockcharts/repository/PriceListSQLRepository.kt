@@ -10,9 +10,9 @@ import org.cerion.stockcharts.database.PriceRowEntity
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.PriceRow
-import org.cerion.stocks.core.model.FetchInterval
 import org.cerion.stocks.core.platform.KMPDate
 import org.cerion.stocks.core.repository.IPriceListRepository
+import org.cerion.stocks.core.web.FetchInterval
 import java.util.*
 
 class PriceListSQLRepository(private val context: Context) : IPriceListRepository {

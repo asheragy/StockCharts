@@ -7,6 +7,7 @@ import org.cerion.stocks.core.repository.CachedPriceListRepository;
 import org.cerion.stocks.core.repository.DefaultPriceHistoryDates;
 import org.cerion.stocks.core.web.CombinedDataAPI;
 import org.cerion.stocks.core.web.DataAPI;
+import org.cerion.stocks.core.web.clients.YahooFinance;
 
 @Deprecated
 public class Injection {
@@ -21,7 +22,7 @@ public class Injection {
         context = context.getApplicationContext();
         return new CachedPriceListRepository(
                 new PriceListSQLRepository(context),
-                dataAPI,
+                YahooFinance.Companion.getInstance(),
                 new DefaultPriceHistoryDates());
     }
 }

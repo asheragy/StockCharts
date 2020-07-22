@@ -16,7 +16,9 @@ import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.cerion.stocks.core.repository.IPriceListRepository
 import org.cerion.stocks.core.web.CombinedDataAPI
 import org.cerion.stocks.core.web.DataAPI
+import org.cerion.stocks.core.web.PriceHistoryDataSource
 import org.cerion.stocks.core.web.clients.TDAmeritrade
+import org.cerion.stocks.core.web.clients.YahooFinance
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.android.viewmodel.dsl.viewModel
@@ -43,7 +45,7 @@ class App : Application() {
 }
 
 val networkModule = module {
-    single<DataAPI> { CombinedDataAPI(BuildConfig.TIINGO_APIKEY) }
+    single<PriceHistoryDataSource> { YahooFinance.instance }
     single { TDAmeritrade(BuildConfig.TD_CONSUMER_KEY, BuildConfig.TD_REDIRECT_URI) }
 }
 
