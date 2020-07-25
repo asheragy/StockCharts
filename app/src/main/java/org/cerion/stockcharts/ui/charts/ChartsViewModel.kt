@@ -2,6 +2,7 @@ package org.cerion.stockcharts.ui.charts
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
+import org.cerion.stockcharts.common.Event
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
@@ -31,6 +32,10 @@ class ChartsViewModel(
     private val _interval = MutableLiveData(Interval.DAILY)
     val interval: LiveData<Interval>
         get() = _interval
+
+    private val _editChart = MutableLiveData<Event<StockChart>>()
+    val editChart: LiveData<Event<StockChart>>
+        get() = _editChart
 
     val prices = MediatorLiveData<PriceList>()
 
@@ -114,6 +119,10 @@ class ChartsViewModel(
         }
     }
 
+    fun editChart(chart: StockChart) {
+        _editChart.value = Event(chart)
+    }
+
     fun addPriceChart() {
         addChart(PriceChart(colors).apply {
             candleData = false
@@ -121,7 +130,9 @@ class ChartsViewModel(
     }
 
     fun addIndicatorChart() {
-        addChart(IndicatorChart(MACD(), colors))
+        val newChart = IndicatorChart(MACD(), colors)
+        addChart(newChart)
+        editChart(newChart)
     }
 
     fun addVolumeChart() {

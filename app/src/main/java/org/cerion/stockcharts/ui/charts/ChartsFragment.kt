@@ -2,7 +2,6 @@ package org.cerion.stockcharts.ui.charts
 
 import android.graphics.Matrix
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,9 +33,7 @@ class ChartsFragment : Fragment() {
 
         val chartListener = object : StockChartListener {
             override fun onClick(chart: StockChart) {
-                val fm = requireActivity().supportFragmentManager
-                val dialog = EditChartDialog.newInstance(chart, viewModel)
-                dialog.show(fm, "editDialog")
+                viewModel.editChart(chart)
             }
 
             override fun onViewPortChange(matrix: Matrix) {
@@ -54,6 +51,14 @@ class ChartsFragment : Fragment() {
 
         viewModel.symbol.observe(viewLifecycleOwner, Observer{
             (requireActivity() as AppCompatActivity).supportActionBar?.title = it.symbol
+        })
+
+        viewModel.editChart.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { chart ->
+                val fm = requireActivity().supportFragmentManager
+                val dialog = EditChartDialog.newInstance(chart, viewModel)
+                dialog.show(fm, "editDialog")
+            }
         })
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)

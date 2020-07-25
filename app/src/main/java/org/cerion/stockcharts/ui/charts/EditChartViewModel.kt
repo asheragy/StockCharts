@@ -93,7 +93,7 @@ class EditChartViewModel(val originalChart: StockChart) {
 
             functions.sort()
 
-            val index = functions.indexOf(originalChart.id.name)
+            val index = functions.indexOf(originalChart.indicator.name)
             functionIndex.set(index)
         }
     }
