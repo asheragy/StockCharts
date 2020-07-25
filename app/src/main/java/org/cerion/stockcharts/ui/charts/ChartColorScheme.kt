@@ -11,15 +11,16 @@ class ChartColorScheme(context: Context) : ChartColors() {
     init {
         primary = Color.WHITE // TODO theme is hard coded so check does not work currently, if (context.isDarkTheme()) Color.WHITE else Color.BLACK
         primaryBlue = context.getColor(R.color.chart_blue)
-        volumneBlue = ColorTemplate.VORDIPLOM_COLORS[3] //context.getColor(R.color.chart_bar)
+        volumneBlue = context.getColor(R.color.chart_bar)
         positiveGreen = context.getColor(R.color.positive_green)
         negativeRed = context.getColor(R.color.negative_red)
+        primaryPurple = context.getColor(R.color.chart_purple)
 
-        orange = ColorTemplate.VORDIPLOM_COLORS[2]
-        yellow = ColorTemplate.VORDIPLOM_COLORS[0]
-        purple = context.getColor(R.color.chart_purple)
-        secondaryRed = ColorTemplate.VORDIPLOM_COLORS[4]
-        secondaryGreen = ColorTemplate.VORDIPLOM_COLORS[1]
-        secondaryBlue = context.getColor(R.color.chart_bar)
+        orange = context.getColor(R.color.chart_orange)
+        teal = context.getColor(R.color.chart_teal)
+        secondaryGreen = context.getColor(R.color.chart_secondaryGreen)
+        yellow = context.getColor(R.color.chart_yellow)
+        secondaryBlue = context.getColor(R.color.chart_secondaryBlue)
+        secondaryRed = context.getColor(R.color.chart_secondaryRed)
     }
 }

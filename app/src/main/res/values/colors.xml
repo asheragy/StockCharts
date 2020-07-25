@@ -13,10 +13,19 @@
     <color name="positive_green">#64dd17</color>
     <color name="negative_red">#d50000</color>
 
-
     <color name="chart_red">#f44336</color>
     <color name="chart_blue">#2196f3</color>
     <color name="chart_green">#4caf50</color>
     <color name="chart_bar">#8ceaff</color>
-    <color name="chart_purple">#C52351</color>
+    <color name="chart_purple">#9900FF</color>
+
+    <!-- Rotating overlay colors -->
+    <color name="chart_orange">#FF9900</color>
+    <color name="chart_teal">#00FFFF</color>
+    <color name="chart_secondaryGreen">#00FF00</color>
+    <color name="chart_yellow">#FFFF00</color>
+    <color name="chart_secondaryBlue">#6FA8DC</color>
+    <color name="chart_secondaryRed">#CC0000</color>
+
+
 </resources>
