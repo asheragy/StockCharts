@@ -14,8 +14,6 @@ import org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolsViewModel
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.cerion.stocks.core.repository.IPriceListRepository
-import org.cerion.stocks.core.web.CombinedDataAPI
-import org.cerion.stocks.core.web.DataAPI
 import org.cerion.stocks.core.web.PriceHistoryDataSource
 import org.cerion.stocks.core.web.clients.TDAmeritrade
 import org.cerion.stocks.core.web.clients.YahooFinance

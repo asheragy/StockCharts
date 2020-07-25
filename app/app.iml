@@ -226,9 +226,10 @@
     <orderEntry type="library" name="Gradle: androidx.annotation:annotation-experimental:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.PhilJay:MPAndroidChart:v3.1.0@aar" level="project" />
     <orderEntry type="module" module-name="core" />
-    <orderEntry type="module" module-name="core_jvmMain" />
+    <orderEntry type="module" module-name="core_jvmIntegrationTest" />
     <orderEntry type="module" module-name="core_commonMain" />
-    <orderEntry type="module" module-name="core_jvmTest" scope="TEST" production-on-test="" />
-    <orderEntry type="module" module-name="core_commonTest" scope="TEST" production-on-test="" />
+    <orderEntry type="module" module-name="core_jvmMain" />
+    <orderEntry type="module" module-name="core_jvmTest" production-on-test="" />
+    <orderEntry type="module" module-name="core_commonTest" production-on-test="" />
   </component>
 </module>

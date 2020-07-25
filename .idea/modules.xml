@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_commonTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_commonTest.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jsMain.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jsMain.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jsTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jsTest.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1141841526/core_jvmIntegrationTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1141841526/core_jvmIntegrationTest.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jvmMain.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jvmMain.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jvmTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jvmTest.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/dbgenerator.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/dbgenerator.iml" group="StockCharts/dbgenerator" />

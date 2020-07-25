@@ -72,7 +72,7 @@ class ChartsViewModel(
     }
 
     fun load() {
-        val lastSymbol = prefs.getLastSymbol()
+        val lastSymbol = prefs.getSymbolHistory().firstOrNull()
         if (lastSymbol != null)
             _symbol.value = lastSymbol
 
@@ -82,7 +82,7 @@ class ChartsViewModel(
     fun load(symbol: Symbol) {
         _symbol.value = symbol
         refresh()
-        prefs.saveLastSymbol(symbol)
+        prefs.addSymbolHistory(symbol)
     }
 
     fun setInterval(interval: Interval) {

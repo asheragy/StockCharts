@@ -28,7 +28,7 @@ class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(cont
         setAdapter(_adapter)
         _searchAutoComplete.filters = arrayOf<InputFilter>(InputFilter.AllCaps())
         @SuppressLint("RestrictedApi")
-        _searchAutoComplete.threshold = 1
+        _searchAutoComplete.threshold = 0 // Previous history is shown if nothing is entered
 
         _searchAutoComplete.onItemClickListener = OnItemClickListener { _, _, position, _ ->
             val symbol = _adapter.getItem(position).toSymbol()

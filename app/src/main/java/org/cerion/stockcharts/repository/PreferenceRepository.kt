@@ -7,8 +7,8 @@ import org.cerion.stocks.core.charts.ChartColors
 import org.cerion.stocks.core.charts.StockChart
 import org.cerion.stocks.core.model.Symbol
 
-private const val KEY_LAST_SYMBOL = "lastSymbol"
 private const val KEY_CHARTS = "charts"
+private const val KEY_SYMBOL_HISTORY = "symbolHistory"
 
 class PreferenceRepository(context: Context) {
 
@@ -16,20 +16,6 @@ class PreferenceRepository(context: Context) {
 
     private val prefs: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(app)
-
-    fun saveLastSymbol(symbol: Symbol) {
-        prefs.edit().putString(KEY_LAST_SYMBOL, symbol.symbol + "\t" + symbol.name).apply()
-    }
-
-    fun getLastSymbol(): Symbol? {
-        val symbol = prefs.getString(KEY_LAST_SYMBOL, null)
-        if (symbol != null) {
-            val arr = symbol.split("\t")
-            return Symbol(arr[0], arr[1])
-        }
-
-        return null
-    }
 
     fun getCharts(colors: ChartColors): List<StockChart> {
         val saved = prefs.getString(KEY_CHARTS, "") ?: ""
@@ -52,4 +38,29 @@ class PreferenceRepository(context: Context) {
         val stringList = charts.map { it.serialize() }.joinToString("\t")
         prefs.edit().putString(KEY_CHARTS, stringList).apply()
     }
+
+    fun getSymbolHistory(): List<Symbol> {
+        val saved = prefs.getString(KEY_SYMBOL_HISTORY, "")
+        if (!saved.isNullOrEmpty())
+            return saved.split("\t").map {
+                val split = it.split("|")
+                Symbol(split[0], split.getOrNull(1) ?: "", "")
+            }
+
+        return emptyList()
+    }
+
+    fun addSymbolHistory(symbol: Symbol) {
+        val existing = getSymbolHistory()
+                .filter { it.symbol != symbol.symbol }
+                .toMutableList()
+
+        existing.add(symbol)
+        if (existing.size > 5)
+            existing.removeAt(0)
+
+        val items = existing.map { it.symbol + "|" + it.name }
+        prefs.edit().putString(KEY_SYMBOL_HISTORY, items.joinToString("\t")).apply()
+    }
+
 }

@@ -2,13 +2,9 @@ package org.cerion.stockcharts.ui.charts;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
-
 import androidx.databinding.ObservableField;
-
 import org.cerion.stockcharts.common.Utils;
 import org.cerion.stocks.core.model.Quote;
-import org.cerion.stocks.core.web.DataAPI;
-
 import kotlin.NotImplementedError;
 
 public class InfoPanelViewModel {
@@ -28,11 +24,7 @@ public class InfoPanelViewModel {
     public ObservableField<Integer> change = new ObservableField<>(0);
     public ObservableField<Integer> yearRange = new ObservableField<>(0);
 
-    private DataAPI api;
-
-    public InfoPanelViewModel(DataAPI api) {
-        this.api = api;
-
+    public InfoPanelViewModel() {
     }
 
     private class InfoTask extends AsyncTask<Void, Void, Quote> {
