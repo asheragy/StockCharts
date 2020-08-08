@@ -10,14 +10,21 @@ import org.cerion.stocks.core.model.Symbol
 private const val KEY_CHARTS = "charts"
 private const val KEY_SYMBOL_HISTORY = "symbolHistory"
 
-class PreferenceRepository(context: Context) {
+interface PreferenceRepository {
+    fun getCharts(colors: ChartColors): List<StockChart>
+    fun saveCharts(charts: List<StockChart>)
+    fun getSymbolHistory(): List<Symbol>
+    fun addSymbolHistory(symbol: Symbol)
+}
+
+class DefaultPreferenceRepository(context: Context) : PreferenceRepository {
 
     private val app = context.applicationContext
 
     private val prefs: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(app)
 
-    fun getCharts(colors: ChartColors): List<StockChart> {
+    override fun getCharts(colors: ChartColors): List<StockChart> {
         val saved = prefs.getString(KEY_CHARTS, "") ?: ""
         val charts = mutableListOf<StockChart>()
 
@@ -34,12 +41,12 @@ class PreferenceRepository(context: Context) {
         return charts
     }
 
-    fun saveCharts(charts: List<StockChart>) {
+    override fun saveCharts(charts: List<StockChart>) {
         val stringList = charts.map { it.serialize() }.joinToString("\t")
         prefs.edit().putString(KEY_CHARTS, stringList).apply()
     }
 
-    fun getSymbolHistory(): List<Symbol> {
+    override fun getSymbolHistory(): List<Symbol> {
         val saved = prefs.getString(KEY_SYMBOL_HISTORY, "")
         if (!saved.isNullOrEmpty())
             return saved.split("\t").map {
@@ -50,7 +57,7 @@ class PreferenceRepository(context: Context) {
         return emptyList()
     }
 
-    fun addSymbolHistory(symbol: Symbol) {
+    override fun addSymbolHistory(symbol: Symbol) {
         val existing = getSymbolHistory()
                 .filter { it.symbol != symbol.symbol }
                 .toMutableList()

@@ -10,6 +10,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import org.cerion.stockcharts.R
+import org.cerion.stockcharts.appCompatActivity
 import org.cerion.stockcharts.common.SymbolSearchView
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
@@ -28,7 +29,7 @@ class ChartsFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
 
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
+        appCompatActivity?.setSupportActionBar(binding.toolbar)
         setHasOptionsMenu(true)
 
         val chartListener = object : StockChartListener {
@@ -50,7 +51,7 @@ class ChartsFragment : Fragment() {
         }
 
         viewModel.symbol.observe(viewLifecycleOwner, Observer{
-            (requireActivity() as AppCompatActivity).supportActionBar?.title = it.symbol
+            appCompatActivity?.supportActionBar?.title = it.symbol
         })
 
         viewModel.editChart.observe(viewLifecycleOwner, Observer { event ->

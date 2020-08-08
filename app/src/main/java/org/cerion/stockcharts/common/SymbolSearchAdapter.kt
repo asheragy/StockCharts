@@ -10,14 +10,14 @@ import android.widget.Filterable
 import android.widget.TextView
 import org.cerion.stockcharts.database.SymbolEntity
 import org.cerion.stockcharts.database.getSymbolsDatabase
-import org.cerion.stockcharts.repository.PreferenceRepository
+import org.cerion.stockcharts.repository.DefaultPreferenceRepository
 
 
 class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context, android.R.layout.simple_dropdown_item_1line), Filterable {
 
     private val _results = mutableListOf<SymbolEntity>()
     private val _lookup = getSymbolsDatabase(context).symbolsDao
-    private val _prefs = PreferenceRepository(context)
+    private val _prefs = DefaultPreferenceRepository(context)
 
     override fun getCount(): Int = _results.size
     override fun getItem(index: Int): SymbolEntity = _results[index]

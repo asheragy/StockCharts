@@ -3,6 +3,7 @@ package org.cerion.stockcharts
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,3 +15,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 }
+
+val Fragment.appCompatActivity: AppCompatActivity?
+    get() = if(requireActivity() is AppCompatActivity) requireActivity() as AppCompatActivity else null
