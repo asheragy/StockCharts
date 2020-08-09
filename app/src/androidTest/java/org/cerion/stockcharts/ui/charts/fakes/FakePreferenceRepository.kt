@@ -6,19 +6,18 @@ import org.cerion.stocks.core.charts.StockChart
 import org.cerion.stocks.core.model.Symbol
 
 class FakePreferenceRepository : PreferenceRepository {
-    override fun getCharts(colors: ChartColors): List<StockChart> {
-        TODO("Not yet implemented")
-    }
 
+    private val _symbolHistory = mutableListOf<Symbol>()
+    private val _charts = mutableListOf<StockChart>()
+
+    override fun getCharts(colors: ChartColors) = _charts
     override fun saveCharts(charts: List<StockChart>) {
-        TODO("Not yet implemented")
+        _charts.clear()
+        _charts.addAll(charts)
     }
 
-    override fun getSymbolHistory(): List<Symbol> {
-        TODO("Not yet implemented")
-    }
-
+    override fun getSymbolHistory() = _symbolHistory
     override fun addSymbolHistory(symbol: Symbol) {
-        TODO("Not yet implemented")
+        _symbolHistory.add(symbol)
     }
 }

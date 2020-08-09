@@ -15,7 +15,12 @@ import org.cerion.stocks.core.repository.IPriceListRepository
 import org.cerion.stocks.core.web.FetchInterval
 import java.util.*
 
-class PriceListSQLRepository(private val context: Context) : IPriceListRepository {
+interface AndroidPriceListRepository : IPriceListRepository {
+    suspend fun clearCache()
+    suspend fun cleanupCache()
+}
+
+class PriceListSQLRepository(private val context: Context) : AndroidPriceListRepository {
 
     private val roomDb = getDatabase(context)
     private val priceListDao = roomDb.priceListDao
@@ -58,7 +63,7 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
         }
     }
 
-    suspend fun clearCache() {
+    override suspend fun clearCache() {
         withContext(Dispatchers.IO) {
             val name = roomDb.openHelper.databaseName
             val file = context.getDatabasePath(name)
@@ -73,7 +78,7 @@ class PriceListSQLRepository(private val context: Context) : IPriceListRepositor
         }
     }
 
-    suspend fun cleanupCache() {
+    override suspend fun cleanupCache() {
         withContext(Dispatchers.IO) {
             val name = roomDb.openHelper.databaseName
             val file = context.getDatabasePath(name)

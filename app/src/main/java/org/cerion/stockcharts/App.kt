@@ -4,10 +4,7 @@ import android.app.Application
 import org.cerion.stockcharts.database.AppDatabase
 import org.cerion.stockcharts.database.SymbolDao
 import org.cerion.stockcharts.database.getDatabase
-import org.cerion.stockcharts.repository.DefaultPreferenceRepository
-import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stockcharts.repository.PriceListSQLRepository
-import org.cerion.stockcharts.repository.SymbolRepository
+import org.cerion.stockcharts.repository.*
 import org.cerion.stockcharts.ui.charts.ChartColorScheme
 import org.cerion.stockcharts.ui.charts.ChartsViewModel
 import org.cerion.stockcharts.ui.positions.PositionsViewModel
@@ -54,8 +51,8 @@ val databaseModule = module {
 }
 
 val repositoryModule = module {
-    single { PriceListSQLRepository(get()) }
-    single<IPriceListRepository> { PriceListSQLRepository(get()) }
+    single<AndroidPriceListRepository> { PriceListSQLRepository(get()) }  // Needed for AndroidPriceListRepository
+    single<IPriceListRepository> { PriceListSQLRepository(get()) }        // Needed for cachedRepository
     single { SymbolRepository(get() as SymbolDao) } // TODO remove cast after 2nd constructor is removed
     single<PreferenceRepository> { DefaultPreferenceRepository(get()) }
     single { CachedPriceListRepository(get(), get() ) }

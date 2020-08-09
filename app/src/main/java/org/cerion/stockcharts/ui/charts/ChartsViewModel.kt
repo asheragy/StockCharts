@@ -3,6 +3,7 @@ package org.cerion.stockcharts.ui.charts
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Event
+import org.cerion.stockcharts.repository.AndroidPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
@@ -19,7 +20,7 @@ import org.cerion.stocks.core.repository.CachedPriceListRepository
 
 class ChartsViewModel(
         private val repo: CachedPriceListRepository,
-        private val sqlRepo: PriceListSQLRepository,
+        private val sqlRepo: AndroidPriceListRepository,
         private val prefs: PreferenceRepository,
         private val colors: ChartColorScheme) : ViewModel() {
 
