@@ -93,13 +93,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_alignBottom="@id/edit_layout">
-
-            <Button
-                android:text="Save"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/save" />
 
             <Button
                 android:text="Remove"
@@ -107,8 +102,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/remove"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_weight="1" />
 
+            <Button
+                android:text="Save"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/save" />
 
         </LinearLayout>
 

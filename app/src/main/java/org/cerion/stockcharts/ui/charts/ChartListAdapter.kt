@@ -64,12 +64,6 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
             }
             else {
                 val chartView = factory.getChart(chart, prices!!)
-
-                chartView.setOnLongClickListener {
-                    chartListener.onClick(chart)
-                    true
-                }
-
                 val matrix = chartView.viewPortHandler.matrixTouch
 
                 chartView.onChartGestureListener = object : DefaultChartGestureListener() {
@@ -81,6 +75,11 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
                     override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
                         super.onChartTranslate(me, dX, dY)
                         chartListener.onViewPortChange(matrix)
+                    }
+
+                    override fun onChartSingleTapped(me: MotionEvent?) {
+                        super.onChartSingleTapped(me)
+                        chartListener.onClick(chart)
                     }
                 }
 

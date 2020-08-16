@@ -44,6 +44,8 @@ class ChartsViewModel(
             PriceChart(colors),
             VolumeChart(colors))
 
+
+
     private val DefaultChartsTest = mutableListOf(
             PriceChart(colors).apply {
                 addOverlay(BollingerBands())
