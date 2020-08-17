@@ -31,9 +31,9 @@
     </org.cerion.stockcharts.ui.charts.views.ParametersEditControl>
 
     <ImageButton
-        android:layout_marginStart="8dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_margin="4dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_weight="0"
         android:src="@android:drawable/ic_delete"
         android:background="#00000000"

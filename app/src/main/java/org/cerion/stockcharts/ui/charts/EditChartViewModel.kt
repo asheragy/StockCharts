@@ -32,6 +32,14 @@ class EditChartViewModel(val originalChart: StockChart) {
     var logScale = ObservableField<Boolean>()
     var lineChart = ObservableField<Boolean>()
 
+    val title: String
+        get() = when(originalChart) {
+            is IndicatorChart -> "Indicator"
+            is PriceChart -> "Price"
+            is VolumeChart -> "Volume"
+            else -> "Options"
+        }
+
     init {
         when (originalChart) {
             is VolumeChart -> {

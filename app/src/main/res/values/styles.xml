@@ -10,6 +10,7 @@
         <item name="colorOnPrimary">@color/primaryTextColor</item>
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
         <item name="colorOnSecondary">@color/secondaryTextColor</item>
+        <item name="colorAccent">@color/primaryColor</item>
     </style>
 
     <style name="TextAppearance.GridLabel" parent="@android:style/TextAppearance.Medium">

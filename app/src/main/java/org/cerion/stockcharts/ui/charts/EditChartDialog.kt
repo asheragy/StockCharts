@@ -59,6 +59,10 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
             dismiss()
         }
 
+        binding.cancel.setOnClickListener {
+            dismiss()
+        }
+
         overlays = binding.overlays
 
         overlays.removeAllViews() // remove placeholder used in design viewer
@@ -82,6 +86,7 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
         updateChart();
     }
     */
+
     private fun updateChart() {
         val chart = viewModel!!.chart
         chart.clearOverlays()

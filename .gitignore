@@ -2,6 +2,7 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
+/.idea/assetWizardSettings.xml
 .DS_Store
 build
 /captures
