@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.ui.charts.fakes
+package org.cerion.stockcharts.fakes
 
 import org.cerion.stocks.core.PriceRow
 import org.cerion.stocks.core.web.FetchInterval

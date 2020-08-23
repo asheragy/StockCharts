@@ -5,7 +5,6 @@ import androidx.appcompat.view.menu.ActionMenuItem
 import androidx.core.view.get
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -15,9 +14,9 @@ import com.github.mikephil.charting.charts.LineChart
 import kotlinx.coroutines.test.runBlockingTest
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stockcharts.ui.charts.fakes.FakePreferenceRepository
-import org.cerion.stockcharts.ui.charts.fakes.FakePriceHistoryDataSource
-import org.cerion.stockcharts.ui.charts.fakes.FakePriceListRepository
+import org.cerion.stockcharts.fakes.FakePreferenceRepository
+import org.cerion.stockcharts.fakes.FakePriceHistoryDataSource
+import org.cerion.stockcharts.fakes.FakePriceListRepository
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.cerion.stocks.core.repository.IPriceListRepository
 import org.cerion.stocks.core.web.PriceHistoryDataSource

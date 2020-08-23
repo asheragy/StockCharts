@@ -10,6 +10,7 @@ import org.cerion.stockcharts.ui.charts.ChartsViewModel
 import org.cerion.stockcharts.ui.positions.PositionsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolsViewModel
+import org.cerion.stocks.core.charts.ChartColors
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.cerion.stocks.core.repository.IPriceListRepository
 import org.cerion.stocks.core.web.PriceHistoryDataSource
@@ -59,7 +60,7 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    single { ChartColorScheme(get()) }
+    single<ChartColors> { ChartColorScheme(get()) }
     viewModel { SymbolsViewModel(get(), get()) }
     viewModel { SymbolDetailsViewModel(get()) }
     viewModel { ChartsViewModel(get(), get(), get(), get()) }

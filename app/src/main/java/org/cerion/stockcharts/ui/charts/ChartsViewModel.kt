@@ -22,7 +22,7 @@ class ChartsViewModel(
         private val repo: CachedPriceListRepository,
         private val sqlRepo: AndroidPriceListRepository,
         private val prefs: PreferenceRepository,
-        private val colors: ChartColorScheme) : ViewModel() {
+        private val colors: ChartColors) : ViewModel() {
 
     private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
 

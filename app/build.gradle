@@ -45,6 +45,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    sourceSets {
+        androidTest {
+            java.srcDirs += "src/sharedTest/java"
+        }
+        test {
+            java.srcDirs += "src/sharedTest/java"
+        }
+    }
 }
 
 allprojects {
@@ -95,6 +104,9 @@ dependencies {
 
     //implementation 'com.github.asheragy:stocks-core:-SNAPSHOT'
     implementation project(':core')
+
+    // Test
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
 
     // Android Test
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
