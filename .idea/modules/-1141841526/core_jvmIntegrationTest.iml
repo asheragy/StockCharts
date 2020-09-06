@@ -8,10 +8,10 @@
           <dependsOn>:core:jvmTest</dependsOn>
         </dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>core_jvmTest</sourceSet>
           <sourceSet>core_commonTest</sourceSet>
-          <sourceSet>core_commonMain</sourceSet>
+          <sourceSet>core_jvmTest</sourceSet>
           <sourceSet>core_jvmMain</sourceSet>
+          <sourceSet>core_commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <compilerSettings>

@@ -5,7 +5,6 @@ import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Event
 import org.cerion.stockcharts.repository.AndroidPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stockcharts.repository.PriceListSQLRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.*
 import org.cerion.stocks.core.indicators.AccumulationDistributionLine
@@ -17,6 +16,7 @@ import org.cerion.stocks.core.overlays.ExpMovingAverage
 import org.cerion.stocks.core.overlays.ParabolicSAR
 import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
+import org.koin.ext.scope
 
 class ChartsViewModel(
         private val repo: CachedPriceListRepository,
@@ -38,13 +38,15 @@ class ChartsViewModel(
     val editChart: LiveData<Event<StockChart>>
         get() = _editChart
 
-    val prices = MediatorLiveData<PriceList>()
+    private val _error = MutableLiveData<Event<String>>()
+    val error: LiveData<Event<String>>
+        get() = _error
+
+    val prices = MediatorLiveData<PriceList?>()
 
     private val DefaultCharts = mutableListOf(
             PriceChart(colors),
             VolumeChart(colors))
-
-
 
     private val DefaultChartsTest = mutableListOf(
             PriceChart(colors).apply {
@@ -80,45 +82,57 @@ class ChartsViewModel(
     }
 
     fun load() {
-        val lastSymbol = prefs.getSymbolHistory().firstOrNull()
+        val lastSymbol = prefs.getSymbolHistory().lastOrNull()
         if (lastSymbol != null)
             _symbol.value = lastSymbol
 
-        refresh()
+        viewModelScope.launch {
+            refresh()
+        }
     }
 
     fun load(symbol: Symbol) {
         _symbol.value = symbol
-        refresh()
-        prefs.addSymbolHistory(symbol)
+
+        viewModelScope.launch {
+            refresh()
+            // If successfully loaded prices save symbol history
+            if (prices.value != null)
+                prefs.addSymbolHistory(symbol)
+        }
     }
 
     fun setInterval(interval: Interval) {
         _interval.value = interval
-        refresh()
+        viewModelScope.launch {
+            refresh()
+        }
     }
 
-    private fun refresh() {
-        launchBusy {
+    private suspend fun refresh() {
+        runBusy {
             // On the 2nd fetch of this app instance, cleanup database if needed
             if (prices.value != null && cleanupCache) {
                 cleanupCache = false
                 sqlRepo.cleanupCache()
             }
 
-            prices.value = getPrices(_symbol.value!!.symbol)
+            val symbol = _symbol.value!!.symbol
+            try {
+                prices.value = getPricesAsync(symbol).await()
+            } catch (e: Exception) {
+                _error.value = Event(e.message ?: "Failed to load $symbol")
+                prices.value = null
+            }
         }
     }
 
-    private fun launchBusy(block: suspend () -> Unit) {
-        viewModelScope.launch {
-            try {
-                _busy.value = true
-                block()
-            }
-            finally {
-                _busy.value = false
-            }
+    private suspend fun runBusy(block: suspend () -> Unit) {
+        try {
+            _busy.value = true
+            block()
+        } finally {
+            _busy.value = false
         }
     }
 
@@ -149,14 +163,16 @@ class ChartsViewModel(
     }
 
     fun replaceChart(old: StockChart, new: StockChart) {
-        _charts = _charts.map { if(it == old) new else it }.toMutableList()
+        _charts = _charts.map { if (it == old) new else it }.toMutableList()
         charts.value = _charts
         saveCharts()
     }
 
     fun clearCache() {
-        launchBusy {
-            sqlRepo.clearCache()
+        viewModelScope.launch {
+            runBusy {
+                sqlRepo.clearCache()
+            }
         }
     }
 
@@ -170,9 +186,11 @@ class ChartsViewModel(
         saveCharts()
     }
 
-    private suspend fun getPrices(symbol: String): PriceList {
+    private suspend fun getPricesAsync(symbol: String): Deferred<PriceList> {
         return withContext(Dispatchers.IO) {
-            repo.get(symbol, interval.value!!)
+            async(Dispatchers.IO) {
+                repo.get(symbol, interval.value!!)
+            }
         }
     }
 }

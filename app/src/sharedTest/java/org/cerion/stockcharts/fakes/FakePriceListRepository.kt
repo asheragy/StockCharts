@@ -10,6 +10,12 @@ open class FakePriceListRepository : IPriceListRepository {
     }
 
     override fun get(symbol: String, interval: FetchInterval): PriceList? {
+        if (symbol == "<ex>")
+            throw Exception("error getting symbol")
+
+        if (symbol == "<null>")
+            return null
+
         return PriceList.generateSeries(500)
     }
 }

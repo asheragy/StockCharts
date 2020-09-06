@@ -46,7 +46,7 @@ class ChartsFragment : Fragment() {
 
         binding.recyclerView.adapter = adapter
 
-        val chartsChangedObserver = Observer<Any> {
+        val chartsChangedObserver = Observer<Any?> {
             adapter.setCharts(viewModel.charts.value!!, viewModel.prices.value)
         }
 
@@ -59,6 +59,12 @@ class ChartsFragment : Fragment() {
                 val fm = requireActivity().supportFragmentManager
                 val dialog = EditChartDialog.newInstance(chart, viewModel)
                 dialog.show(fm, "editDialog")
+            }
+        })
+
+        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         })
 

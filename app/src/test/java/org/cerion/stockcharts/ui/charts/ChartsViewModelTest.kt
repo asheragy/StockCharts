@@ -1,6 +1,10 @@
 package org.cerion.stockcharts.ui.charts
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.cerion.stockcharts.fakes.FakeAndroidPriceListRepository
 import org.cerion.stockcharts.fakes.FakePreferenceRepository
 import org.cerion.stockcharts.fakes.FakePriceHistoryDataSource
@@ -14,6 +18,7 @@ import org.cerion.stocks.core.charts.VolumeChart
 import org.cerion.stocks.core.functions.types.Indicator
 import org.cerion.stocks.core.indicators.RSI
 import org.cerion.stocks.core.model.Interval
+import org.cerion.stocks.core.model.Symbol
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.junit.Assert.*
 import org.junit.Before
@@ -21,6 +26,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ChartsViewModelTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val coroutineTestRule = CoroutineTestRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -84,5 +93,35 @@ class ChartsViewModelTest {
         _viewModel.replaceChart(chartToReplace, chartToAdd)
         assertEquals(2, _viewModel.charts.value!!.size)
         assertTrue(_viewModel.charts.value!![0] is IndicatorChart)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun chartsViewModel_loadsFromEndOfHistory() = runBlockingTest {
+        _prefs.addSymbolHistory(Symbol("SPY"))
+        _prefs.addSymbolHistory(Symbol("AAPL"))
+
+        _viewModel.load()
+        assertEquals("AAPL", _viewModel.symbol.value!!.symbol)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun chartsViewModel_invalidSymbolError() = runBlockingTest {
+        _viewModel.load(Symbol("<ex>")) // Throws exception
+        Thread.sleep(100) // Workaround for not injecting dispatcher
+        assertTrue(_viewModel.error.value!!.getContentIfNotHandled()!!.isNotEmpty())
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun chartsViewModel_invalidSymbolNotSaved() = runBlockingTest {
+        _viewModel.load(Symbol("<ex>")) // Throws exception
+        Thread.sleep(50)
+        assertEquals(0, _prefs.getSymbolHistory().size)
+
+        _viewModel.load(Symbol("GOOG")) // Throws exception
+        Thread.sleep(50)
+        assertEquals(1, _prefs.getSymbolHistory().size)
     }
 }
