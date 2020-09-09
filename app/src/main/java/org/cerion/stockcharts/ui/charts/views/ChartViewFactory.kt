@@ -38,7 +38,11 @@ class ChartViewFactory(private val context: Context) {
         private val blankDescription = Description().apply { text = "" }
     }
 
-    private val _textColor = if (context.isDarkTheme()) context.getColor(R.color.secondaryTextColor) else context.getColor(R.color.primaryColor)
+    private val _textColor =
+            if (context.isDarkTheme())
+                context.getColor(R.color.secondaryTextColor)
+            else
+                context.getColor(R.color.primaryTextColor)
 
     fun getChart(chart: StockChart, list: PriceList): Chart<*> {
         return when(chart) {

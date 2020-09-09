@@ -76,7 +76,7 @@ class ChartsViewModel(
         // Load saved charts
         _charts.addAll(prefs.getCharts(colors))
         if (_charts.isEmpty())
-            _charts.addAll(DefaultCharts)
+            _charts.addAll(DefaultChartsTest)
 
         charts.value = _charts
     }

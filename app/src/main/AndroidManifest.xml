@@ -23,6 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
         <activity android:name=".TestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -34,6 +36,9 @@
                     android:scheme="stockcharts" />
             </intent-filter>
         </activity>
+        -->
+
+
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

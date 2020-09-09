@@ -4,12 +4,13 @@ import android.content.Context
 import android.graphics.Color
 import com.github.mikephil.charting.utils.ColorTemplate
 import org.cerion.stockcharts.R
+import org.cerion.stockcharts.common.isDarkTheme
 import org.cerion.stocks.core.charts.ChartColors
 
 class ChartColorScheme(context: Context) : ChartColors() {
 
     init {
-        primary = Color.WHITE // TODO theme is hard coded so check does not work currently, if (context.isDarkTheme()) Color.WHITE else Color.BLACK
+        primary = if (context.isDarkTheme()) Color.WHITE else Color.BLACK
         primaryBlue = context.getColor(R.color.chart_blue)
         volumneBlue = context.getColor(R.color.chart_bar)
         positiveGreen = context.getColor(R.color.positive_green)
