@@ -6,7 +6,8 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
 def apikeyProperties = new Properties()
-apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+if(apikeyPropertiesFile.exists())
+    apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 android {
     compileSdkVersion 28
@@ -19,9 +20,9 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField("String", "TD_CONSUMER_KEY", apikeyProperties['td_consumer_key'])
-        buildConfigField("String", "TD_REDIRECT_URI", apikeyProperties['td_redirect_uri'])
-        buildConfigField("String", "TIINGO_APIKEY", apikeyProperties['tiingo'])
+        buildConfigField("String", "TD_CONSUMER_KEY", apikeyProperties.get('td_consumer_key', "\"\""))
+        buildConfigField("String", "TD_REDIRECT_URI", apikeyProperties.get('td_redirect_uri', "\"\""))
+        buildConfigField("String", "TIINGO_APIKEY", apikeyProperties.get('tiingo', "\"\""))
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
