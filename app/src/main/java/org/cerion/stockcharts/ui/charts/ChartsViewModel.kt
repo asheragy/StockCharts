@@ -16,7 +16,6 @@ import org.cerion.stocks.core.overlays.ExpMovingAverage
 import org.cerion.stocks.core.overlays.ParabolicSAR
 import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
-import org.koin.ext.scope
 
 class ChartsViewModel(
         private val repo: CachedPriceListRepository,
@@ -76,7 +75,7 @@ class ChartsViewModel(
         // Load saved charts
         _charts.addAll(prefs.getCharts(colors))
         if (_charts.isEmpty())
-            _charts.addAll(DefaultChartsTest)
+            _charts.addAll(DefaultCharts)
 
         charts.value = _charts
     }

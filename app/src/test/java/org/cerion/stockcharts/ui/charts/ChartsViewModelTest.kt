@@ -117,11 +117,11 @@ class ChartsViewModelTest {
     @Test
     fun chartsViewModel_invalidSymbolNotSaved() = runBlockingTest {
         _viewModel.load(Symbol("<ex>")) // Throws exception
-        Thread.sleep(50)
+        Thread.sleep(100)
         assertEquals(0, _prefs.getSymbolHistory().size)
 
-        _viewModel.load(Symbol("GOOG")) // Throws exception
-        Thread.sleep(50)
+        _viewModel.load(Symbol("GOOG"))
+        Thread.sleep(100)
         assertEquals(1, _prefs.getSymbolHistory().size)
     }
 }

@@ -11,6 +11,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.mikephil.charting.charts.LineChart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.repository.PreferenceRepository
@@ -37,7 +38,7 @@ val testModules = module {
 }
 
 @RunWith(AndroidJUnit4::class)
-//@ExperimentalCoroutinesApi
+@ExperimentalCoroutinesApi
 class ChartsFragmentTest : KoinTest {
 
     @Before
