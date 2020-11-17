@@ -11,6 +11,7 @@ import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.PriceRow
 import org.cerion.stocks.core.platform.KMPDate
+import org.cerion.stocks.core.platform.KMPTimeStamp
 import org.cerion.stocks.core.repository.IPriceListRepository
 import org.cerion.stocks.core.web.FetchInterval
 import java.util.*
@@ -37,7 +38,7 @@ class PriceListSQLRepository(private val context: Context) : AndroidPriceListRep
         }
 
         val result = PriceList(symbol, prices)
-        result.lastUpdated = header.lastUpdated
+        result.lastUpdated = if (header.lastUpdated != null) KMPTimeStamp(header.lastUpdated!!) else null
 
         return result
     }

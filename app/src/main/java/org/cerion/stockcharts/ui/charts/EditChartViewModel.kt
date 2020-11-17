@@ -18,7 +18,7 @@ class EditChartViewModel(val originalChart: StockChart) {
         fun onFunctionChanged()
     }
 
-    private val updatedChart = originalChart.clone() as StockChart
+    private val updatedChart = originalChart.copy()
 
     val showLineCheckbox = originalChart is PriceChart
     val showLogScale = originalChart !is IndicatorChart

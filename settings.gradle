@@ -1,5 +1,5 @@
 include ':dbgenerator'
-include ':app', ':core'
+include ':app' //, ':stocks-core'
 
-project(':core').projectDir = new File(settingsDir, '../stocks-core')
+//project(':stocks-core').projectDir = new File(settingsDir, '../stocks-core')
 

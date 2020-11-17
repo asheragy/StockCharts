@@ -73,6 +73,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -115,8 +116,8 @@ dependencies {
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    //implementation 'com.github.asheragy:stocks-core:-SNAPSHOT'
-    implementation project(':core')
+    implementation 'com.github.asheragy.stocks-core:stocks-core-jvm:339ee557da'
+    //implementation project(':stocks-core')
 
     // Test
     testImplementation "androidx.arch.core:core-testing:2.1.0"

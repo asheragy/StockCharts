@@ -2,17 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/StockCharts.iml" filepath="$PROJECT_DIR$/StockCharts.iml" group="StockCharts" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="StockCharts/app" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core.iml" filepath="$PROJECT_DIR$/../stocks-core/core.iml" group="StockCharts/core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_commonMain.iml" filepath="$PROJECT_DIR$/../stocks-core/core_commonMain.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_commonTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_commonTest.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jsMain.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jsMain.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jsTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jsTest.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1141841526/core_jvmIntegrationTest.iml" filepath="$PROJECT_DIR$/.idea/modules/-1141841526/core_jvmIntegrationTest.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jvmMain.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jvmMain.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/../stocks-core/core_jvmTest.iml" filepath="$PROJECT_DIR$/../stocks-core/core_jvmTest.iml" group="core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/dbgenerator.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/dbgenerator.iml" group="StockCharts/dbgenerator" />
+      <module fileurl="file://$PROJECT_DIR$/StockCharts.iml" filepath="$PROJECT_DIR$/StockCharts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" />
     </modules>
   </component>
 </project>
