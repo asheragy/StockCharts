@@ -20,7 +20,7 @@ class SymbolDetailsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentSymbolDetailsBinding.inflate(inflater, container, false)
 
-        val args = SymbolDetailsFragmentArgs.fromBundle(arguments!!)
+        val args = SymbolDetailsFragmentArgs.fromBundle(requireArguments())
         (requireActivity() as MainActivity).supportActionBar?.title = args.symbol
 
         chartFactory = ChartViewFactory(requireActivity())

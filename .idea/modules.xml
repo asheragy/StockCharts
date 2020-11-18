@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/StockCharts.iml" filepath="$PROJECT_DIR$/StockCharts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StockCharts.iml" filepath="$PROJECT_DIR$/.idea/modules/StockCharts.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" />
     </modules>

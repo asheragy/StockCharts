@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="horizontal"
         android:background="#88888888"
         android:visibility="gone"
         android:id="@+id/fab_overlay">
