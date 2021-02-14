@@ -6,6 +6,31 @@ import android.widget.Spinner
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import org.cerion.stocks.core.model.Interval
+
+@BindingAdapter(value = ["selectedInterval", "selectedIntervalAttrChanged"], requireAll = false)
+fun bindInterval(spinner: Spinner, interval: LiveData<Interval>, listener: InverseBindingListener?) {
+    if (interval.value != null) {
+        spinner.setSelection(interval.value!!.ordinal)
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                //newTextAttrChanged?.onChange()
+                listener?.onChange()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+}
+
+@InverseBindingAdapter(attribute = "selectedInterval")
+fun getSelectedInterval(spinner: Spinner): Interval {
+    return Interval.values()[spinner.selectedItemPosition]
+}
 
 
 @BindingAdapter(value = ["selectedValue", "selectedValueAttrChanged"], requireAll = false)

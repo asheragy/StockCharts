@@ -15,6 +15,7 @@
         <item>@string/interval_daily</item>
         <item>@string/interval_weekly</item>
         <item>@string/interval_monthly</item>
+        <item>@string/interval_quarterly</item>
     </string-array>
 
     <string-array name="functions_toolsonly">

@@ -29,9 +29,7 @@ class ChartsViewModel(
     val symbol: LiveData<Symbol>
         get() = _symbol
 
-    private val _interval = MutableLiveData(Interval.DAILY)
-    val interval: LiveData<Interval>
-        get() = _interval
+    val interval = MediatorLiveData<Interval>()
 
     private val _editChart = MutableLiveData<Event<StockChart>>()
     val editChart: LiveData<Event<StockChart>>
@@ -78,6 +76,15 @@ class ChartsViewModel(
             _charts.addAll(DefaultCharts)
 
         charts.value = _charts
+
+        interval.value = Interval.DAILY
+        interval.addSource(interval) {
+            if (prices.value != null && prices.value!!.interval != it) {
+                viewModelScope.launch {
+                    refresh()
+                }
+            }
+        }
     }
 
     fun load() {
@@ -102,10 +109,13 @@ class ChartsViewModel(
     }
 
     fun setInterval(interval: Interval) {
+        /*
         _interval.value = interval
         viewModelScope.launch {
             refresh()
         }
+
+         */
     }
 
     private suspend fun refresh() {
