@@ -257,7 +257,11 @@ class ChartViewFactory(private val context: Context) {
     private fun getAxisFormatter(dates: Array<KMPDate>, interval: Interval): ValueFormatter {
         return object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
-                val date: Date = dates[value.toInt()].jvmDate
+                val position = value.toInt()
+                if (position >= dates.size)
+                    return ""
+
+                val date: Date = dates[position].jvmDate
                 return if (interval === Interval.MONTHLY)
                     dateFormatMonthly.format(date)
                 else

@@ -2,13 +2,11 @@ package org.cerion.stockcharts.ui.charts
 
 import android.content.Context
 import android.graphics.Matrix
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
-import com.github.mikephil.charting.components.XAxis
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.DefaultChartGestureListener
 import org.cerion.stockcharts.databinding.ViewChartBinding
@@ -27,12 +25,16 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
     private var charts: List<StockChart> = emptyList()
     private val factory = ChartViewFactory(context)
     private var prices: PriceList? = null
+    private var intervals: Int = 0
     private var _viewPortMatrix: Matrix? = null
     private var _viewPortValues: FloatArray? = null
 
-    fun setCharts(charts: List<StockChart>, prices: PriceList?) {
+    fun setCharts(charts: List<StockChart>, prices: PriceList?, intervals: Int) {
         this.charts = charts
         this.prices = prices
+        this.intervals = intervals
+        _viewPortMatrix = null
+        _viewPortValues = null
         notifyDataSetChanged()
     }
 
@@ -64,6 +66,16 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
             }
             else {
                 val chartView = factory.getChart(chart, prices!!)
+                chartView as BarLineChartBase<*>
+                if (intervals != 0) {
+                    val end = prices!!.close.size.toFloat()
+                    val start = kotlin.math.max(0.0f, end - intervals.toFloat())
+
+                    chartView.setVisibleXRangeMaximum(intervals.toFloat())
+                    chartView.moveViewToX(end - start - 1)
+                    chartView.setVisibleXRangeMaximum(prices!!.close.size.toFloat()) // Workaround to make viewport manually adjustable again
+                }
+
                 val matrix = chartView.viewPortHandler.matrixTouch
 
                 chartView.onChartGestureListener = object : DefaultChartGestureListener() {

@@ -61,37 +61,32 @@
                             app:singleSelection="true">
 
                             <com.google.android.material.chip.Chip
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Widget.MaterialComponents.Chip.Action"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/interval_daily"
-                                android:onClick="@{() -> viewmodel.setInterval(Interval.DAILY)}"
-                                android:checked="@{viewmodel.interval == Interval.DAILY}"/>
+                                android:text="@{viewmodel.ranges[0]}"
+                                android:onClick="@{() -> viewmodel.setRange(0)}"/>
 
                             <com.google.android.material.chip.Chip
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Widget.MaterialComponents.Chip.Action"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/interval_weekly"
-                                android:onClick="@{() -> viewmodel.setInterval(Interval.WEEKLY)}"
-                                android:checked="@{viewmodel.interval == Interval.WEEKLY}"/>
+                                android:text="@{viewmodel.ranges[1]}"
+                                android:onClick="@{() -> viewmodel.setRange(1)}"/>
 
                             <com.google.android.material.chip.Chip
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Widget.MaterialComponents.Chip.Action"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/interval_monthly"
-                                android:onClick="@{() -> viewmodel.setInterval(Interval.MONTHLY)}"
-                                android:checked="@{viewmodel.interval == Interval.MONTHLY}"/>
+                                android:text="@{viewmodel.ranges[2]}"
+                                android:onClick="@{() -> viewmodel.setRange(2)}"/>
 
                             <com.google.android.material.chip.Chip
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Widget.MaterialComponents.Chip.Action"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:visibility="gone"
-                                android:text="@string/interval_quarterly"
-                                android:onClick="@{() -> viewmodel.setInterval(Interval.QUARTERLY)}"
-                                android:checked="@{viewmodel.interval == Interval.QUARTERLY}"/>
+                                android:text="@{viewmodel.ranges[3]}"
+                                android:onClick="@{() -> viewmodel.setRange(3)}"/>
 
                         </com.google.android.material.chip.ChipGroup>
 
@@ -99,7 +94,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:entries="@array/intervals"
-
                             app:selectedInterval="@={viewmodel.interval}"
                             android:layout_gravity="center_vertical">
                         </Spinner>

@@ -47,7 +47,12 @@ class ChartsFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         val chartsChangedObserver = Observer<Any?> {
-            adapter.setCharts(viewModel.charts.value!!, viewModel.prices.value)
+            var intervals = 0
+            viewModel.rangeSelect.value?.getContentIfNotHandled()?.also {
+                intervals = it
+            }
+
+            adapter.setCharts(viewModel.charts.value!!, viewModel.prices.value, intervals)
         }
 
         viewModel.symbol.observe(viewLifecycleOwner, Observer{
@@ -70,6 +75,7 @@ class ChartsFragment : Fragment() {
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
+        viewModel.rangeSelect.observe(viewLifecycleOwner, chartsChangedObserver)
 
         if (savedInstanceState == null) {
             // No args needed for now

@@ -17,6 +17,12 @@ import org.cerion.stocks.core.overlays.ParabolicSAR
 import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
 
+val rangeDaily = listOf("5D", "1M", "1Y", "MAX")
+val rangeWeekly = listOf("1M", "1Y", "5Y", "MAX")
+val rangeMonthly = listOf("1Y", "5Y", "10Y", "MAX")
+val rangeQuarterly = listOf("3Y", "5Y", "10Y", "MAX")
+
+
 class ChartsViewModel(
         private val repo: CachedPriceListRepository,
         private val sqlRepo: AndroidPriceListRepository,
@@ -69,6 +75,12 @@ class ChartsViewModel(
 
     private var cleanupCache = true
 
+    private val _ranges = MutableLiveData(rangeDaily)
+    val ranges: LiveData<List<String>>
+        get() = _ranges
+
+    val rangeSelect = MutableLiveData<Event<Int>>()
+
     init {
         // Load saved charts
         _charts.addAll(prefs.getCharts(colors))
@@ -83,6 +95,13 @@ class ChartsViewModel(
                 viewModelScope.launch {
                     refresh()
                 }
+            }
+
+            when(it) {
+                Interval.DAILY -> _ranges.value = rangeDaily
+                Interval.WEEKLY -> _ranges.value = rangeWeekly
+                Interval.MONTHLY -> _ranges.value = rangeMonthly
+                Interval.QUARTERLY -> _ranges.value = rangeQuarterly
             }
         }
     }
@@ -108,14 +127,35 @@ class ChartsViewModel(
         }
     }
 
-    fun setInterval(interval: Interval) {
-        /*
-        _interval.value = interval
-        viewModelScope.launch {
-            refresh()
+    fun setRange(position: Int) {
+        val range: Int = when(interval.value) {
+            Interval.DAILY -> when(position) {
+                    0 -> 5 // week
+                    1 -> 30 // month
+                    2 -> 250 // year
+                    else -> 0
+                }
+            Interval.WEEKLY -> when(position) {
+                    0 -> 20 // month
+                    1 -> 50 // year
+                    2 -> 50 * 5 // 5Y
+                    else -> 0
+                }
+            Interval.MONTHLY -> when(position) {
+                0 -> 12 // 1Y
+                1 -> 12*5 // 5Y
+                2 -> 12*10 // 10Y
+                else -> 0
+            }
+            else -> 4 * when(position) { // Quarterly
+                0 -> 3
+                1 -> 5
+                2 -> 10
+                else -> 0
+            }
         }
 
-         */
+        rangeSelect.value = Event(range)
     }
 
     private suspend fun refresh() {

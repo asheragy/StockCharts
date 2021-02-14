@@ -7,7 +7,6 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import org.cerion.stocks.core.model.Interval
 
 @BindingAdapter(value = ["selectedInterval", "selectedIntervalAttrChanged"], requireAll = false)
@@ -17,14 +16,12 @@ fun bindInterval(spinner: Spinner, interval: LiveData<Interval>, listener: Inver
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                //newTextAttrChanged?.onChange()
                 listener?.onChange()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
-
 }
 
 @InverseBindingAdapter(attribute = "selectedInterval")
