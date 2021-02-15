@@ -7,20 +7,10 @@ import org.cerion.stockcharts.repository.AndroidPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.stocks.core.PriceList
 import org.cerion.stocks.core.charts.*
-import org.cerion.stocks.core.indicators.AccumulationDistributionLine
 import org.cerion.stocks.core.indicators.MACD
 import org.cerion.stocks.core.model.Interval
 import org.cerion.stocks.core.model.Symbol
-import org.cerion.stocks.core.overlays.BollingerBands
-import org.cerion.stocks.core.overlays.ExpMovingAverage
-import org.cerion.stocks.core.overlays.ParabolicSAR
-import org.cerion.stocks.core.overlays.SimpleMovingAverage
 import org.cerion.stocks.core.repository.CachedPriceListRepository
-
-val rangeDaily = listOf("5D", "1M", "1Y", "MAX")
-val rangeWeekly = listOf("1M", "1Y", "5Y", "MAX")
-val rangeMonthly = listOf("1Y", "5Y", "10Y", "MAX")
-val rangeQuarterly = listOf("3Y", "5Y", "10Y", "MAX")
 
 
 class ChartsViewModel(
@@ -35,7 +25,8 @@ class ChartsViewModel(
     val symbol: LiveData<Symbol>
         get() = _symbol
 
-    val interval = MediatorLiveData<Interval>()
+    val intervals = listOf(Interval.DAILY, Interval.WEEKLY, Interval.MONTHLY, Interval.QUARTERLY)
+    val interval = MutableLiveData(Interval.DAILY)
 
     private val _editChart = MutableLiveData<Event<StockChart>>()
     val editChart: LiveData<Event<StockChart>>
@@ -51,6 +42,7 @@ class ChartsViewModel(
             PriceChart(colors),
             VolumeChart(colors))
 
+    /*
     private val DefaultChartsTest = mutableListOf(
             PriceChart(colors).apply {
                 addOverlay(BollingerBands())
@@ -65,6 +57,7 @@ class ChartsViewModel(
             VolumeChart(colors),
             IndicatorChart(AccumulationDistributionLine(), colors)
     )
+     */
 
     private var _charts = mutableListOf<StockChart>()
     val charts: MutableLiveData<List<StockChart>> = MutableLiveData(_charts)
@@ -75,11 +68,15 @@ class ChartsViewModel(
 
     private var cleanupCache = true
 
-    private val _ranges = MutableLiveData(rangeDaily)
-    val ranges: LiveData<List<String>>
-        get() = _ranges
-
     val rangeSelect = MutableLiveData<Event<Int>>()
+    val ranges = Transformations.map(interval) {
+        when(it) {
+            Interval.DAILY -> listOf("5D", "1M", "1Y", "MAX")
+            Interval.WEEKLY -> listOf("1M", "1Y", "5Y", "MAX")
+            Interval.MONTHLY -> listOf("1Y", "5Y", "10Y", "MAX")
+            else -> listOf("3Y", "5Y", "10Y", "MAX")
+        }
+    }
 
     init {
         // Load saved charts
@@ -89,19 +86,12 @@ class ChartsViewModel(
 
         charts.value = _charts
 
-        interval.value = Interval.DAILY
-        interval.addSource(interval) {
+        prices.addSource(interval) {
+            // Refresh only if prices are already loaded and interval was changed
             if (prices.value != null && prices.value!!.interval != it) {
                 viewModelScope.launch {
                     refresh()
                 }
-            }
-
-            when(it) {
-                Interval.DAILY -> _ranges.value = rangeDaily
-                Interval.WEEKLY -> _ranges.value = rangeWeekly
-                Interval.MONTHLY -> _ranges.value = rangeMonthly
-                Interval.QUARTERLY -> _ranges.value = rangeQuarterly
             }
         }
     }
@@ -236,6 +226,7 @@ class ChartsViewModel(
     }
 
     private suspend fun getPricesAsync(symbol: String): Deferred<PriceList> {
+        interval.value
         return withContext(Dispatchers.IO) {
             async(Dispatchers.IO) {
                 repo.get(symbol, interval.value!!)

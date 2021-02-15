@@ -93,8 +93,8 @@
                         <Spinner
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:entries="@array/intervals"
-                            app:selectedInterval="@={viewmodel.interval}"
+                            app:entries="@{viewmodel.intervals}"
+                            app:selectedValue="@={viewmodel.interval}"
                             android:layout_gravity="center_vertical">
                         </Spinner>
 
