@@ -1,5 +1,6 @@
 package org.cerion.stockcharts.common
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -18,10 +19,26 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context
     private val _results = mutableListOf<SymbolEntity>()
     private val _lookup = getSymbolsDatabase(context).symbolsDao
     private val _prefs = DefaultPreferenceRepository(context)
+    private val _crypto = mutableListOf<SymbolEntity>()
 
+    init {
+        val coins = mapOf(
+                Pair("BTC-USD", "Bitcoin"),
+                Pair("ETH-USD", "Ethereum"),
+                Pair("LTC-USD", "Litecoin"),
+                Pair("USDT-USD", "Tether"),
+                Pair("DOT1-USD", "Polkadot"),
+                Pair("ADA-USD", "Cardano"),
+                Pair("XRP-USD", "XRP"))
+        
+        coins.forEach {
+            _crypto.add(SymbolEntity(it.key, it.value, "Coin/CryptoCurrency"))
+        }
+    }
     override fun getCount(): Int = _results.size
     override fun getItem(index: Int): SymbolEntity = _results[index]
 
+    @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         if (convertView == null) {
@@ -43,6 +60,7 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context
     override fun getFilter(): Filter {
         return object : Filter() {
 
+            @SuppressLint("DefaultLocale")
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filterResults = FilterResults()
 
@@ -68,6 +86,18 @@ class SymbolSearchAdapter(context: Context) : ArrayAdapter<SymbolEntity>(context
                      */
 
                     _results.addAll(matches)
+
+                    // TODO temp until in database, add crypto currency manually
+                    if (constraint.toString().toUpperCase().startsWith("COI") || constraint.toString().toUpperCase().startsWith("CRYP"))
+                        _results.addAll(_crypto)
+                    else if (constraint.length >= 3) {
+                        val search = constraint.toString()
+                        val coins = _crypto.filter {
+                            it.symbol.startsWith(search, true) || it.name.startsWith(search, true)
+                        }
+
+                        _results.addAll(coins)
+                    }
                 }
                 else {
                     _prefs.getSymbolHistory()
