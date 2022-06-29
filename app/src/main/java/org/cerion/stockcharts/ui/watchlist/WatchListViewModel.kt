@@ -10,10 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.cerion.stockcharts.Injection
-import org.cerion.stocks.core.functions.conditions.Condition
-import org.cerion.stocks.core.functions.conditions.IndicatorCondition
-import org.cerion.stocks.core.functions.conditions.PriceCondition
-import org.cerion.stocks.core.overlays.SimpleMovingAverage
+import org.cerion.marketdata.core.functions.conditions.Condition
+import org.cerion.marketdata.core.functions.conditions.IndicatorCondition
+import org.cerion.marketdata.core.functions.conditions.PriceCondition
+import org.cerion.marketdata.core.overlays.SimpleMovingAverage
 
 class WatchListViewModel(application: Application) : AndroidViewModel(application) {
 

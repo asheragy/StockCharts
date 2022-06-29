@@ -3,14 +3,14 @@ package org.cerion.stockcharts.ui.charts
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
-import org.cerion.stocks.core.arrays.FloatArray
-import org.cerion.stocks.core.charts.IndicatorChart
-import org.cerion.stocks.core.charts.PriceChart
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.charts.VolumeChart
-import org.cerion.stocks.core.functions.IFunction
-import org.cerion.stocks.core.functions.IIndicator
-import org.cerion.stocks.core.functions.types.Indicator
+import org.cerion.marketdata.core.arrays.FloatArray
+import org.cerion.marketdata.core.charts.IndicatorChart
+import org.cerion.marketdata.core.charts.PriceChart
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.charts.VolumeChart
+import org.cerion.marketdata.core.functions.IFunction
+import org.cerion.marketdata.core.functions.IIndicator
+import org.cerion.marketdata.core.functions.types.Indicator
 import java.util.*
 
 class EditChartViewModel(val originalChart: StockChart) {

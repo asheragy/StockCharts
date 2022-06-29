@@ -13,9 +13,9 @@ import org.cerion.stockcharts.R
 import org.cerion.stockcharts.ui.charts.views.FunctionAdapterItem.Companion.getList
 import org.cerion.stockcharts.ui.charts.views.FunctionAdapterItem.Companion.indexOf
 import org.cerion.stockcharts.common.TAG
-import org.cerion.stocks.core.functions.IOverlay
-import org.cerion.stocks.core.functions.types.IFunctionEnum
-import org.cerion.stocks.core.functions.types.Overlay
+import org.cerion.marketdata.core.functions.IOverlay
+import org.cerion.marketdata.core.functions.types.IFunctionEnum
+import org.cerion.marketdata.core.functions.types.Overlay
 
 class OverlayEditControl(context: Context, allowedOverlays: List<IFunctionEnum>) : LinearLayout(context) {
 

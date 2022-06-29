@@ -11,8 +11,8 @@ import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.DefaultChartGestureListener
 import org.cerion.stockcharts.databinding.ViewChartBinding
 import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.StockChart
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.charts.StockChart
 
 
 interface StockChartListener {

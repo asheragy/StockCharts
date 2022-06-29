@@ -4,19 +4,20 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.model.OHLCVRow
+import org.cerion.marketdata.core.platform.KMPDate
+import org.cerion.marketdata.core.platform.KMPTimeStamp
+import org.cerion.marketdata.core.repository.PriceListRepository
+import org.cerion.marketdata.core.web.FetchInterval
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.database.PriceListEntity
 import org.cerion.stockcharts.database.PriceRowEntity
 import org.cerion.stockcharts.database.getDatabase
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.PriceRow
-import org.cerion.stocks.core.platform.KMPDate
-import org.cerion.stocks.core.platform.KMPTimeStamp
-import org.cerion.stocks.core.repository.IPriceListRepository
-import org.cerion.stocks.core.web.FetchInterval
+import java.time.ZoneId
 import java.util.*
 
-interface AndroidPriceListRepository : IPriceListRepository {
+interface AndroidPriceListRepository : PriceListRepository {
     suspend fun clearCache()
     suspend fun cleanupCache()
 }
@@ -34,7 +35,7 @@ class PriceListSQLRepository(private val context: Context) : AndroidPriceListRep
         val dbPrices = pricesDao.getAll(symbol, interval.ordinal)
 
         val prices = dbPrices.map {
-            PriceRow(KMPDate(it.date), it.open, it.high, it.low, it.close, it.volume)
+            OHLCVRow(it.date.toKMPDate(), it.open, it.high, it.low, it.close, it.volume)
         }
 
         val result = PriceList(symbol, prices)
@@ -57,7 +58,7 @@ class PriceListSQLRepository(private val context: Context) : AndroidPriceListRep
 
             // Add prices
             val dbPrices = list.map {
-                PriceRowEntity(list.symbol, interval, it.date.jvmDate, it.open, it.high, it.low, it.close, it.volume)
+                PriceRowEntity(list.symbol, interval, it.date.toDate(), it.open, it.high, it.low, it.close, it.volume)
             }
 
             pricesDao.insert(dbPrices)
@@ -113,4 +114,18 @@ class PriceListSQLRepository(private val context: Context) : AndroidPriceListRep
         optimize()
     }
      */
+}
+
+fun Date.toKMPDate(): KMPDate {
+    return KMPDate(this.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate())
+}
+
+fun KMPDate.toDate(): Date {
+    return Date.from(
+        this.jvmDate.atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+    )
 }

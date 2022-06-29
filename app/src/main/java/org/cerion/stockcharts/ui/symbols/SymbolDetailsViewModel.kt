@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.cerion.stockcharts.repository.PriceListSQLRepository
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.PriceChart
-import org.cerion.stocks.core.web.FetchInterval
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.charts.PriceChart
+import org.cerion.marketdata.core.web.FetchInterval
 
 // TODO may need to take the cached repository version
 class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : ViewModel() {

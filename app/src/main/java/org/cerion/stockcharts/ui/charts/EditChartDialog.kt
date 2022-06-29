@@ -10,11 +10,11 @@ import org.cerion.stockcharts.R
 import org.cerion.stockcharts.ui.charts.views.OverlayEditControl
 import org.cerion.stockcharts.ui.charts.views.ParametersEditControl
 import org.cerion.stockcharts.databinding.DialogChartEditBinding
-import org.cerion.stocks.core.charts.IndicatorChart
-import org.cerion.stocks.core.charts.PriceChart
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.functions.IIndicator
-import org.cerion.stocks.core.functions.ISimpleOverlay
+import org.cerion.marketdata.core.charts.IndicatorChart
+import org.cerion.marketdata.core.charts.PriceChart
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.functions.IIndicator
+import org.cerion.marketdata.core.functions.ISimpleOverlay
 
 class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeListener {
 

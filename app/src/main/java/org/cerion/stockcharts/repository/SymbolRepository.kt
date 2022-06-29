@@ -4,7 +4,7 @@ import android.content.Context
 import org.cerion.stockcharts.database.SymbolDao
 import org.cerion.stockcharts.database.SymbolEntity
 import org.cerion.stockcharts.database.getDatabase
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 
 class SymbolRepository(private val dao: SymbolDao) {
 

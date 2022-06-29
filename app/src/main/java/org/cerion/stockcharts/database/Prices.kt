@@ -60,7 +60,7 @@ data class PriceListEntity(val symbol: String, val interval: Int) {
 data class PriceRowEntity(
         val symbol: String,
         val interval: Int,
-        val date: Date,
+        val date: Date, // TODO should be localdate
         val open: Float,
         val high: Float,
         val low: Float,

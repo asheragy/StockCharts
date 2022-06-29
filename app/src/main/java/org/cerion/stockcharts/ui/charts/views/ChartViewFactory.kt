@@ -13,19 +13,18 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.charts.*
+import org.cerion.marketdata.core.charts.CandleDataSet
+import org.cerion.marketdata.core.charts.DataSet
+import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.platform.KMPDate
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.isDarkTheme
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.*
-import org.cerion.stocks.core.charts.CandleDataSet
-import org.cerion.stocks.core.charts.DataSet
-import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.platform.KMPDate
 import java.math.BigDecimal
 import java.math.MathContext
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.exp
 
 class ChartViewFactory(private val context: Context) {
@@ -33,8 +32,8 @@ class ChartViewFactory(private val context: Context) {
     companion object {
         private const val CHART_HEIGHT_PRICE = 800
         private const val CHART_HEIGHT = 400
-        private val dateFormat: DateFormat = SimpleDateFormat("MMM d, yy", Locale.ENGLISH)
-        private val dateFormatMonthly: DateFormat = SimpleDateFormat("MMM ''yy", Locale.ENGLISH)
+        private var dateFormat = DateTimeFormatter.ofPattern("MMM d, yy")
+        private var dateFormatMonthly = DateTimeFormatter.ofPattern("MMM ''yy")
         private val blankDescription = Description().apply { text = "" }
     }
 
@@ -261,7 +260,7 @@ class ChartViewFactory(private val context: Context) {
                 if (position >= dates.size)
                     return ""
 
-                val date: Date = dates[position].jvmDate
+                val date: LocalDate = dates[position].jvmDate
                 return if (interval === Interval.MONTHLY)
                     dateFormatMonthly.format(date)
                 else

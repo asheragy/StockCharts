@@ -3,9 +3,9 @@ package org.cerion.stockcharts;
 import android.content.Context;
 
 import org.cerion.stockcharts.repository.PriceListSQLRepository;
-import org.cerion.stocks.core.repository.CachedPriceListRepository;
-import org.cerion.stocks.core.repository.DefaultPriceHistoryDates;
-import org.cerion.stocks.core.web.clients.YahooFinance;
+import org.cerion.marketdata.core.repository.CachedPriceListRepository;
+import org.cerion.marketdata.core.repository.DefaultPriceHistoryDates;
+import org.cerion.marketdata.webclients.yahoo.YahooFinance;
 
 @Deprecated
 public class Injection {

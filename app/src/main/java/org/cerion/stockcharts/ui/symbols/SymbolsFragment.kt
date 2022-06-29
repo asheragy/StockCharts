@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.ui.FragmentHomeDirections
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SymbolsFragment : Fragment() {

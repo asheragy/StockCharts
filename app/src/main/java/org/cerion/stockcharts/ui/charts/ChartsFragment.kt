@@ -14,8 +14,8 @@ import org.cerion.stockcharts.appCompatActivity
 import org.cerion.stockcharts.common.SymbolSearchView
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.Symbol
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChartsFragment : Fragment() {

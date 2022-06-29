@@ -5,12 +5,12 @@ import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Event
 import org.cerion.stockcharts.repository.AndroidPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.*
-import org.cerion.stocks.core.indicators.MACD
-import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.model.Symbol
-import org.cerion.stocks.core.repository.CachedPriceListRepository
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.charts.*
+import org.cerion.marketdata.core.indicators.MACD
+import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.Symbol
+import org.cerion.marketdata.core.repository.CachedPriceListRepository
 
 
 class ChartsViewModel(

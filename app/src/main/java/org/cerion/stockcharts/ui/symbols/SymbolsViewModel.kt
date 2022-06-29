@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.repository.SymbolRepository
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 
 class SymbolsViewModel(private val symbolRepo: SymbolRepository, application: Application) : AndroidViewModel(application) {
 

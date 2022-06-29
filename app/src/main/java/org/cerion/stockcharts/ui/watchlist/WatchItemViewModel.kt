@@ -5,11 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.cerion.stockcharts.common.Utils
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.functions.conditions.ICondition
-import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.repository.CachedPriceListRepository
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.functions.conditions.ICondition
+import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.repository.CachedPriceListRepository
 
 class WatchItemViewModel(private val repo: CachedPriceListRepository, private val condition: ICondition, val symbol: String) {
 
@@ -47,8 +47,8 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
 
     private fun apply(list: PriceList) {
         val size = list.size
-        val price = list.last.close
-        val change = list.last.getPercentDiff(list[size - 2])
+        val price = list.last().close
+        val change = list.last().getPercentDiff(list[size - 2])
 
         // TODO include current quote since its not in pricelist
         var low = list.low[size - 1]
@@ -62,7 +62,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
         }
 
         var range = high - low
-        var diff = list.last.close - low
+        var diff = list.last().close - low
         var percent = diff / range
         weekPosition.set((percent * 100).toInt())
 
@@ -82,7 +82,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
         }
 
         range = high - low
-        diff = list.last.close - low
+        diff = list.last().close - low
         percent = diff / range
 
         yearPosition.set((percent * 100).toInt())

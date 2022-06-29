@@ -1,7 +1,7 @@
 package org.cerion.stockcharts.database
 
 import androidx.room.*
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 
 
 @Entity(tableName = "symbols")

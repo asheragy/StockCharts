@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="item" type="org.cerion.stocks.core.model.Symbol"/>
+        <variable name="item" type="org.cerion.marketdata.core.model.Symbol"/>
     </data>
 
     <LinearLayout

@@ -2,10 +2,9 @@ package org.cerion.stockcharts.ui.charts
 
 import android.content.Context
 import android.graphics.Color
-import com.github.mikephil.charting.utils.ColorTemplate
+import org.cerion.marketdata.core.charts.ChartColors
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.isDarkTheme
-import org.cerion.stocks.core.charts.ChartColors
 
 class ChartColorScheme(context: Context) : ChartColors() {
 

@@ -6,7 +6,7 @@
 
     <data>
         <variable name="viewmodel" type="org.cerion.stockcharts.ui.charts.ChartsViewModel" />
-        <import type="org.cerion.stocks.core.model.Interval"/>
+        <import type="org.cerion.marketdata.core.model.Interval"/>
         <import type="android.view.View"/>
     </data>
 

@@ -8,7 +8,7 @@ import android.view.View.OnCreateContextMenuListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.databinding.ListItemSymbolBinding
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 
 internal class RecyclerViewAdapter(private val listener: SymbolListener) : RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder>() {
 

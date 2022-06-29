@@ -3,9 +3,9 @@ package org.cerion.stockcharts.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import org.cerion.stocks.core.charts.ChartColors
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.charts.ChartColors
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.Symbol
 
 private const val KEY_CHARTS = "charts"
 private const val KEY_SYMBOL_HISTORY = "symbolHistory"

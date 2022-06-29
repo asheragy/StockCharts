@@ -2,9 +2,9 @@ package org.cerion.stockcharts.repository
 
 import org.cerion.stockcharts.database.Account
 import org.cerion.stockcharts.database.AccountDao
-import org.cerion.stocks.core.model.Position
-import org.cerion.stocks.core.web.clients.RequestException
-import org.cerion.stocks.core.web.clients.TDAmeritrade
+import org.cerion.marketdata.core.model.Position
+import org.cerion.marketdata.core.web.clients.RequestException
+import org.cerion.marketdata.core.web.clients.TDAmeritrade
 import java.util.*
 import java.util.concurrent.TimeUnit
 

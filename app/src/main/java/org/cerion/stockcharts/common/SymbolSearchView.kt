@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.R
 import androidx.appcompat.widget.SearchView
 import org.cerion.stockcharts.database.toSymbol
-import org.cerion.stocks.core.model.Symbol
+import org.cerion.marketdata.core.model.Symbol
 
 class SymbolSearchView(context: Context, attrs: AttributeSet?) : SearchView(context, attrs) {
 

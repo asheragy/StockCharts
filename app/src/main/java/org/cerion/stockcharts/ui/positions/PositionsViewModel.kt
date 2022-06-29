@@ -11,8 +11,8 @@ import org.cerion.stockcharts.database.Account
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.AccountRepository
 import org.cerion.stockcharts.repository.PositionRepository
-import org.cerion.stocks.core.model.Position
-import org.cerion.stocks.core.web.clients.TDAmeritrade
+import org.cerion.marketdata.core.model.Position
+import org.cerion.marketdata.core.web.clients.TDAmeritrade
 
 class PositionsViewModel(application: Application, val tdapi: TDAmeritrade) : AndroidViewModel(application) {
 

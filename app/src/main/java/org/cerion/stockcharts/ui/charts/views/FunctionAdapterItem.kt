@@ -1,7 +1,7 @@
 package org.cerion.stockcharts.ui.charts.views
 
-import org.cerion.stocks.core.functions.IFunction
-import org.cerion.stocks.core.functions.types.IFunctionEnum
+import org.cerion.marketdata.core.functions.IFunction
+import org.cerion.marketdata.core.functions.types.IFunctionEnum
 import java.util.*
 
 /**
