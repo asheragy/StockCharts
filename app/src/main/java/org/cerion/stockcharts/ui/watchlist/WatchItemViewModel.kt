@@ -9,7 +9,7 @@ import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.StockChart
 import org.cerion.marketdata.core.functions.conditions.ICondition
 import org.cerion.marketdata.core.model.Interval
-import org.cerion.marketdata.core.repository.CachedPriceListRepository
+import org.cerion.stockcharts.repository.CachedPriceListRepository
 
 class WatchItemViewModel(private val repo: CachedPriceListRepository, private val condition: ICondition, val symbol: String) {
 

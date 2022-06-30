@@ -2,8 +2,6 @@ package org.cerion.stockcharts
 
 import android.app.Application
 import org.cerion.marketdata.core.charts.ChartColors
-import org.cerion.marketdata.core.repository.CachedPriceListRepository
-import org.cerion.marketdata.core.repository.PriceListRepository
 import org.cerion.marketdata.core.web.PriceHistoryDataSource
 import org.cerion.marketdata.core.web.clients.TDAmeritrade
 import org.cerion.marketdata.webclients.yahoo.YahooFinance
@@ -52,8 +50,7 @@ val databaseModule = module {
 }
 
 val repositoryModule = module {
-    single<AndroidPriceListRepository> { PriceListSQLRepository(get()) }  // Needed for AndroidPriceListRepository
-    single<PriceListRepository> { PriceListSQLRepository(get()) }        // Needed for cachedRepository
+    single<PriceListRepository> { PriceListSQLRepository(get()) }
     single { SymbolRepository(get() as SymbolDao) } // TODO remove cast after 2nd constructor is removed
     single<PreferenceRepository> { DefaultPreferenceRepository(get()) }
     single { CachedPriceListRepository(get(), get() ) }

@@ -3,21 +3,21 @@ package org.cerion.stockcharts.ui.charts
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Event
-import org.cerion.stockcharts.repository.AndroidPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.*
 import org.cerion.marketdata.core.indicators.MACD
 import org.cerion.marketdata.core.model.Interval
 import org.cerion.marketdata.core.model.Symbol
-import org.cerion.marketdata.core.repository.CachedPriceListRepository
+import org.cerion.stockcharts.repository.CachedPriceListRepository
+import org.cerion.stockcharts.repository.PriceListRepository
 
 
 class ChartsViewModel(
-        private val repo: CachedPriceListRepository,
-        private val sqlRepo: AndroidPriceListRepository,
-        private val prefs: PreferenceRepository,
-        private val colors: ChartColors) : ViewModel() {
+    private val repo: CachedPriceListRepository,
+    private val sqlRepo: PriceListRepository,
+    private val prefs: PreferenceRepository,
+    private val colors: ChartColors) : ViewModel() {
 
     private val DefaultSymbol = Symbol("^GSPC", "S&P 500")
 

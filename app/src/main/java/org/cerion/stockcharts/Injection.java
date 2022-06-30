@@ -2,9 +2,9 @@ package org.cerion.stockcharts;
 
 import android.content.Context;
 
+import org.cerion.stockcharts.repository.CachedPriceListRepository;
+import org.cerion.stockcharts.repository.DefaultPriceHistoryDates;
 import org.cerion.stockcharts.repository.PriceListSQLRepository;
-import org.cerion.marketdata.core.repository.CachedPriceListRepository;
-import org.cerion.marketdata.core.repository.DefaultPriceHistoryDates;
 import org.cerion.marketdata.webclients.yahoo.YahooFinance;
 
 @Deprecated
