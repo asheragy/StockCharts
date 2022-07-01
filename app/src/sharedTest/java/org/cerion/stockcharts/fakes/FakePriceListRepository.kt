@@ -1,10 +1,10 @@
 package org.cerion.stockcharts.fakes
 
-import org.cerion.stocks.core.PriceList
-import org.cerion.stocks.core.repository.IPriceListRepository
-import org.cerion.stocks.core.web.FetchInterval
+import org.cerion.marketdata.core.PriceList
+import org.cerion.marketdata.core.web.FetchInterval
+import org.cerion.stockcharts.repository.PriceListRepository
 
-open class FakePriceListRepository : IPriceListRepository {
+open class FakePriceListRepository : PriceListRepository {
     override fun add(list: PriceList) {
         // Nothing, only need to fake the return
     }
@@ -17,5 +17,11 @@ open class FakePriceListRepository : IPriceListRepository {
             return null
 
         return PriceList.generateSeries(500)
+    }
+
+    override suspend fun clearCache() {
+    }
+
+    override suspend fun cleanupCache() {
     }
 }

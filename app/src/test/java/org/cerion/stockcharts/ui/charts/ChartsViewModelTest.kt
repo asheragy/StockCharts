@@ -2,24 +2,19 @@ package org.cerion.stockcharts.ui.charts
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
-import org.cerion.stockcharts.fakes.FakeAndroidPriceListRepository
+import org.cerion.marketdata.core.charts.ChartColors
+import org.cerion.marketdata.core.charts.IndicatorChart
+import org.cerion.marketdata.core.charts.PriceChart
+import org.cerion.marketdata.core.charts.VolumeChart
+import org.cerion.marketdata.core.indicators.RSI
+import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.Symbol
 import org.cerion.stockcharts.fakes.FakePreferenceRepository
 import org.cerion.stockcharts.fakes.FakePriceHistoryDataSource
 import org.cerion.stockcharts.fakes.FakePriceListRepository
-import org.cerion.stockcharts.repository.AndroidPriceListRepository
+import org.cerion.stockcharts.repository.CachedPriceListRepository
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stocks.core.charts.ChartColors
-import org.cerion.stocks.core.charts.IndicatorChart
-import org.cerion.stocks.core.charts.PriceChart
-import org.cerion.stocks.core.charts.VolumeChart
-import org.cerion.stocks.core.functions.types.Indicator
-import org.cerion.stocks.core.indicators.RSI
-import org.cerion.stocks.core.model.Interval
-import org.cerion.stocks.core.model.Symbol
-import org.cerion.stocks.core.repository.CachedPriceListRepository
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +40,7 @@ class ChartsViewModelTest {
         _cachedRepo = CachedPriceListRepository(priceListRepository, priceHistory)
         _prefs = FakePreferenceRepository()
 
-        _viewModel = ChartsViewModel(_cachedRepo, FakeAndroidPriceListRepository(), _prefs, ChartColors())
+        _viewModel = ChartsViewModel(_cachedRepo, FakePriceListRepository(), _prefs, ChartColors())
     }
 
     @Test
@@ -61,7 +56,7 @@ class ChartsViewModelTest {
     @Test
     fun chartsViewModel_loadsFromPrefs() {
         _prefs.saveCharts(listOf(VolumeChart()))
-        _viewModel = ChartsViewModel(_cachedRepo, FakeAndroidPriceListRepository(), _prefs, ChartColors())
+        _viewModel = ChartsViewModel(_cachedRepo, FakePriceListRepository(), _prefs, ChartColors())
 
         assertEquals(1, _viewModel.charts.value!!.size)
         assertTrue(_viewModel.charts.value!![0] is VolumeChart)

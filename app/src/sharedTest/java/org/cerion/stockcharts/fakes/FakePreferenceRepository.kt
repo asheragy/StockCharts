@@ -1,9 +1,9 @@
 package org.cerion.stockcharts.fakes
 
+import org.cerion.marketdata.core.charts.ChartColors
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.Symbol
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.stocks.core.charts.ChartColors
-import org.cerion.stocks.core.charts.StockChart
-import org.cerion.stocks.core.model.Symbol
 
 class FakePreferenceRepository : PreferenceRepository {
 
