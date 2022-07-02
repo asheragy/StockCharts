@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/dbgenerator" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

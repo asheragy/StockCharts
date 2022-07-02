@@ -4,8 +4,8 @@ import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.model.Interval
 import org.cerion.marketdata.core.platform.KMPDate
 import org.cerion.marketdata.core.platform.KMPTimeStamp
-import org.cerion.marketdata.core.web.FetchInterval
-import org.cerion.marketdata.core.web.PriceHistoryDataSource
+import org.cerion.marketdata.webclients.FetchInterval
+import org.cerion.marketdata.webclients.PriceHistoryDataSource
 import java.time.LocalDate
 import java.util.*
 
@@ -120,6 +120,7 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
             list.lastUpdated = KMPTimeStamp()
         } catch (e: Exception) {
             // nothing
+            e.printStackTrace()
         }
 
         if (list != null && list.size > 0) {

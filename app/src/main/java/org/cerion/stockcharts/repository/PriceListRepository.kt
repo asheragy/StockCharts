@@ -8,7 +8,7 @@ import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.model.OHLCVRow
 import org.cerion.marketdata.core.platform.KMPDate
 import org.cerion.marketdata.core.platform.KMPTimeStamp
-import org.cerion.marketdata.core.web.FetchInterval
+import org.cerion.marketdata.webclients.FetchInterval
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.database.PriceListEntity
 import org.cerion.stockcharts.database.PriceRowEntity

@@ -4,7 +4,12 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/StockCharts.iml" filepath="$PROJECT_DIR$/.idea/modules/StockCharts.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/StockCharts.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/StockCharts.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.test.iml" filepath="$PROJECT_DIR$/.idea/modules/dbgenerator/StockCharts.dbgenerator.test.iml" />
     </modules>
   </component>
 </project>
