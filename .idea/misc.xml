@@ -3,8 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/activity_test.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/dialog_chart_edit.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_charts.xml" value="0.13020833333333334" />
-        <entry key="app/src/main/res/layout/list_item_symbol.xml" value="0.13020833333333334" />
+        <entry key="app/src/main/res/layout/fragment_crypto.xml" value="0.3494791666666667" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/fragment_symbol_details.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/fragment_symbols.xml" value="0.1828125" />
+        <entry key="app/src/main/res/layout/fragment_watchlist.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/layout_symbol_details.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/list_item_crypto.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/list_item_symbol.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/list_item_watch.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/positions_fragment.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/price_list_item.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/view_chart.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/view_fab_child.xml" value="0.35052083333333334" />
       </map>
     </option>
   </component>

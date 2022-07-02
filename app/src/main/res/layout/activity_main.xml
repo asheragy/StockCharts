@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_fragment"
-    android:name="org.cerion.stockcharts.ui.charts.ChartsFragment"
+    android:name="org.cerion.stockcharts.ui.crypto.CryptoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
