@@ -78,9 +78,13 @@ class ChartsFragment : Fragment() {
         viewModel.rangeSelect.observe(viewLifecycleOwner, chartsChangedObserver)
 
         if (savedInstanceState == null) {
-            // No args needed for now
-            //val args = if (arguments != null) ChartsFragmentArgs.fromBundle(arguments!!) else null
-            viewModel.load()
+            if (arguments != null) {
+                val str = ChartsFragmentArgs.fromBundle(requireArguments()).symbol
+                val symbol = Symbol(str)
+                viewModel.load(symbol)
+            }
+            else
+                viewModel.load()
         }
 
         return binding.root

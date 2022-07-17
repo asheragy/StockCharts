@@ -5,7 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.databinding.ListItemCryptoBinding
 
-class CryptoListAdapter : RecyclerView.Adapter<CryptoListAdapter.ViewHolder>() {
+interface CryptoListListener {
+    fun onClick(symbol: String)
+}
+
+class CryptoListAdapter(val listener: CryptoListListener) : RecyclerView.Adapter<CryptoListAdapter.ViewHolder>() {
 
     private var items = emptyList<CryptoRow>()
 
@@ -32,6 +36,10 @@ class CryptoListAdapter : RecyclerView.Adapter<CryptoListAdapter.ViewHolder>() {
         fun bind(item: CryptoRow) {
             binding.name.text = item.id
             binding.price.text = item.price.toString()
+
+            binding.root.setOnClickListener {
+                listener.onClick(item.symbol)
+            }
         }
     }
 
