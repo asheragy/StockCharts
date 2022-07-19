@@ -118,8 +118,8 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'com.github.asheragy.MarketData:core:fda3c84287'
-    implementation 'com.github.asheragy.MarketData:webclients:fda3c84287'
+    implementation 'com.github.asheragy.MarketData:core:e57f4dd2be'
+    implementation 'com.github.asheragy.MarketData:webclients:e57f4dd2be'
 
     // Test
     testImplementation 'junit:junit:4.12'
