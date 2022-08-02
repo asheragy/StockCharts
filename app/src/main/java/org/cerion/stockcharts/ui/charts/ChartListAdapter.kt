@@ -11,8 +11,8 @@ import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.DefaultChartGestureListener
 import org.cerion.stockcharts.databinding.ViewChartBinding
 import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.OHLCVTable
 
 
 interface StockChartListener {
@@ -24,14 +24,14 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
 
     private var charts: List<StockChart> = emptyList()
     private val factory = ChartViewFactory(context)
-    private var prices: PriceList? = null
+    private var table: OHLCVTable? = null
     private var intervals: Int = 0
     private var _viewPortMatrix: Matrix? = null
     private var _viewPortValues: FloatArray? = null
 
-    fun setCharts(charts: List<StockChart>, prices: PriceList?, intervals: Int) {
+    fun setCharts(charts: List<StockChart>, table: OHLCVTable?, intervals: Int) {
         this.charts = charts
-        this.prices = prices
+        this.table = table
         this.intervals = intervals
         _viewPortMatrix = null
         _viewPortValues = null
@@ -61,19 +61,19 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
             val frame = binding.chartFrame
             frame.removeAllViews()
 
-            if (prices.isNullOrEmpty()) {
+            if (table.isNullOrEmpty()) {
                 frame.addView(factory.getEmptyChart())
             }
             else {
-                val chartView = factory.getChart(chart, prices!!)
+                val chartView = factory.getChart(chart, table!!)
                 chartView as BarLineChartBase<*>
                 if (intervals != 0) {
-                    val end = prices!!.close.size.toFloat()
+                    val end = table!!.close.size.toFloat()
                     val start = kotlin.math.max(0.0f, end - intervals.toFloat())
 
                     chartView.setVisibleXRangeMaximum(intervals.toFloat())
                     chartView.moveViewToX(end - start - 1)
-                    chartView.setVisibleXRangeMaximum(prices!!.close.size.toFloat()) // Workaround to make viewport manually adjustable again
+                    chartView.setVisibleXRangeMaximum(table!!.close.size.toFloat()) // Workaround to make viewport manually adjustable again
                 }
 
                 val matrix = chartView.viewPortHandler.matrixTouch

@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.cerion.stockcharts.repository.PriceListSQLRepository
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.PriceChart
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.marketdata.webclients.FetchInterval
 
 // TODO may need to take the cached repository version
@@ -17,9 +17,9 @@ class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : Vi
     val details: LiveData<SymbolDetails>
         get() = _details
 
-    private val _prices = MutableLiveData<PriceList>()
-    val prices: LiveData<PriceList>
-        get() = _prices
+    private val _table = MutableLiveData<OHLCVTable>()
+    val table: LiveData<OHLCVTable>
+        get() = _table
 
     val chart = PriceChart()
 
@@ -33,7 +33,7 @@ class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : Vi
         }
 
         viewModelScope.launch {
-            _prices.value = priceRepo.get(symbol, FetchInterval.DAILY)
+            _table.value = priceRepo.get(symbol, FetchInterval.DAILY)
         }
     }
 }

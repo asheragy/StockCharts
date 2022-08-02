@@ -4,10 +4,10 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import org.cerion.stockcharts.common.Event
 import org.cerion.stockcharts.repository.PreferenceRepository
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.*
 import org.cerion.marketdata.core.indicators.MACD
 import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.marketdata.core.model.Symbol
 import org.cerion.stockcharts.repository.CachedPriceListRepository
 import org.cerion.stockcharts.repository.PriceListRepository
@@ -36,7 +36,7 @@ class ChartsViewModel(
     val error: LiveData<Event<String>>
         get() = _error
 
-    val prices = MediatorLiveData<PriceList?>()
+    val table = MediatorLiveData<OHLCVTable?>()
 
     private val DefaultCharts = mutableListOf(
             PriceChart(colors),
@@ -86,9 +86,9 @@ class ChartsViewModel(
 
         charts.value = _charts
 
-        prices.addSource(interval) {
+        table.addSource(interval) {
             // Refresh only if prices are already loaded and interval was changed
-            if (prices.value != null && prices.value!!.interval != it) {
+            if (table.value != null && table.value!!.interval != it) {
                 viewModelScope.launch {
                     refresh()
                 }
@@ -112,7 +112,7 @@ class ChartsViewModel(
         viewModelScope.launch {
             refresh()
             // If successfully loaded prices save symbol history
-            if (prices.value != null)
+            if (table.value != null)
                 prefs.addSymbolHistory(symbol)
         }
     }
@@ -151,17 +151,17 @@ class ChartsViewModel(
     private suspend fun refresh() {
         runBusy {
             // On the 2nd fetch of this app instance, cleanup database if needed
-            if (prices.value != null && cleanupCache) {
+            if (table.value != null && cleanupCache) {
                 cleanupCache = false
                 sqlRepo.cleanupCache()
             }
 
             val symbol = _symbol.value!!.symbol
             try {
-                prices.value = getPricesAsync(symbol).await()
+                table.value = getPricesAsync(symbol).await()
             } catch (e: Exception) {
                 _error.value = Event(e.message ?: "Failed to load $symbol")
-                prices.value = null
+                table.value = null
             }
         }
     }
@@ -225,7 +225,7 @@ class ChartsViewModel(
         saveCharts()
     }
 
-    private suspend fun getPricesAsync(symbol: String): Deferred<PriceList> {
+    private suspend fun getPricesAsync(symbol: String): Deferred<OHLCVTable> {
         interval.value
         return withContext(Dispatchers.IO) {
             async(Dispatchers.IO) {

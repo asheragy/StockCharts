@@ -5,10 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.cerion.stockcharts.common.Utils
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.StockChart
 import org.cerion.marketdata.core.functions.conditions.ICondition
 import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.stockcharts.repository.CachedPriceListRepository
 
 class WatchItemViewModel(private val repo: CachedPriceListRepository, private val condition: ICondition, val symbol: String) {
@@ -27,8 +27,8 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
 
             loading.set(true)
             try {
-                val prices = repo.get(symbol, Interval.DAILY)
-                apply(prices)
+                val table = repo.get(symbol, Interval.DAILY)
+                apply(table)
             } catch (e: Exception) {
                 // TODO set error state
                 e.printStackTrace()
@@ -45,24 +45,24 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
     val chart: StockChart
         get() = condition.chart
 
-    private fun apply(list: PriceList) {
-        val size = list.size
-        val price = list.last().close
-        val change = list.last().getPercentDiff(list[size - 2])
+    private fun apply(table: OHLCVTable) {
+        val size = table.size
+        val price = table.last().close
+        val change = table.last().getPercentDiff(table[size - 2])
 
         // TODO include current quote since its not in pricelist
-        var low = list.low[size - 1]
+        var low = table.low[size - 1]
         for (j in size - 5 until size) {
-            if (list.low[j] < low) low = list.low[j]
+            if (table.low[j] < low) low = table.low[j]
         }
 
-        var high = list.high[size - 1]
+        var high = table.high[size - 1]
         for (j in size - 5 until size) {
-            if (list.high[j] > high) high = list.high[j]
+            if (table.high[j] > high) high = table.high[j]
         }
 
         var range = high - low
-        var diff = list.last().close - low
+        var diff = table.last().close - low
         var percent = diff / range
         weekPosition.set((percent * 100).toInt())
 
@@ -70,23 +70,23 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
 
         // Year
         var start = 250
-        if (list.size < start) start = 0
-        low = list.low[size - 1]
+        if (table.size < start) start = 0
+        low = table.low[size - 1]
         for (j in size - start until size) {
-            if (list.low[j] < low) low = list.low[j]
+            if (table.low[j] < low) low = table.low[j]
         }
 
-        high = list.high[size - 1]
+        high = table.high[size - 1]
         for (j in size - start until size) {
-            if (list.high[j] > high) high = list.high[j]
+            if (table.high[j] > high) high = table.high[j]
         }
 
         range = high - low
-        diff = list.last().close - low
+        diff = table.last().close - low
         percent = diff / range
 
         yearPosition.set((percent * 100).toInt())
-        isTrue.set(condition.eval(list))
+        isTrue.set(condition.eval(table))
 
         // Set strings
         this.price.set(Utils.decimalFormat.format(price.toDouble()))

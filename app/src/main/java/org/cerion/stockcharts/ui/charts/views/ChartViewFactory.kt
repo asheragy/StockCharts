@@ -13,11 +13,11 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.charts.*
 import org.cerion.marketdata.core.charts.CandleDataSet
 import org.cerion.marketdata.core.charts.DataSet
 import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.marketdata.core.platform.KMPDate
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.isDarkTheme
@@ -43,11 +43,11 @@ class ChartViewFactory(private val context: Context) {
             else
                 context.getColor(R.color.primaryTextColor)
 
-    fun getChart(chart: StockChart, list: PriceList): Chart<*> {
+    fun getChart(chart: StockChart, table: OHLCVTable): Chart<*> {
         return when(chart) {
-            is PriceChart -> getPriceChart(chart, list)
-            is IndicatorChart -> getLineChart(chart, list)
-            is VolumeChart -> getVolumeChart(chart, list)
+            is PriceChart -> getPriceChart(chart, table)
+            is IndicatorChart -> getLineChart(chart, table)
+            is VolumeChart -> getVolumeChart(chart, table)
             else -> throw NotImplementedError()
         }
     }
@@ -59,22 +59,22 @@ class ChartViewFactory(private val context: Context) {
         }
     }
 
-    private fun getPriceChart(pchart: PriceChart, list: PriceList): Chart<*> {
+    private fun getPriceChart(pchart: PriceChart, table: OHLCVTable): Chart<*> {
         val chart: BarLineChartBase<*>
-        val sets = getDataSets(pchart, list)
-        if (pchart.candleData && pchart.canShowCandleData(list)) {
+        val sets = getDataSets(pchart, table)
+        if (pchart.candleData && pchart.canShowCandleData(table)) {
             val data = CombinedData()
             data.setData(getCandleData(sets))
             data.setData(getLineData(sets))
 
             chart = CombinedChart(context)
-            setChartDefaults(chart, pchart, list)
+            setChartDefaults(chart, pchart, table)
             chart.drawOrder = arrayOf(DrawOrder.CANDLE, DrawOrder.LINE)
             chart.data = data
         }
         else {
             chart = LineChart(context)
-            setChartDefaults(chart, pchart, list)
+            setChartDefaults(chart, pchart, table)
             val lineData = getLineData(sets)
             chart.data = lineData
         }
@@ -87,22 +87,22 @@ class ChartViewFactory(private val context: Context) {
         return chart
     }
 
-    private fun getLineChart(ichart: IndicatorChart, list: PriceList): Chart<*> {
+    private fun getLineChart(ichart: IndicatorChart, table: OHLCVTable): Chart<*> {
         return LineChart(context).apply {
-            setChartDefaults(this, ichart, list)
+            setChartDefaults(this, ichart, table)
             minimumHeight = CHART_HEIGHT
 
-            val sets = getDataSets(ichart, list)
+            val sets = getDataSets(ichart, table)
             data = getLineData(sets)
             setLegend(this, sets)
         }
     }
 
-    private fun getVolumeChart(vchart: VolumeChart, list: PriceList): Chart<*> {
+    private fun getVolumeChart(vchart: VolumeChart, table: OHLCVTable): Chart<*> {
         return CombinedChart(context).apply {
-            setChartDefaults(this, vchart, list)
+            setChartDefaults(this, vchart, table)
 
-            val dataSets = getDataSets(vchart, list)
+            val dataSets = getDataSets(vchart, table)
             data = CombinedData().apply {
                 setData(getBarData(dataSets))
                 setData(getLineData(dataSets))
@@ -114,7 +114,7 @@ class ChartViewFactory(private val context: Context) {
         }
     }
 
-    private fun setChartDefaults(chart: BarLineChartBase<*>, stockchart: StockChart, list: PriceList) {
+    private fun setChartDefaults(chart: BarLineChartBase<*>, stockchart: StockChart, table: OHLCVTable) {
         if (chart.data != null)
             throw AssertionError("chart defaults should be set before data") // Needed for viewPortOffsets to work properly
 
@@ -128,7 +128,7 @@ class ChartViewFactory(private val context: Context) {
             axisRight.setLabelCount(3, false)
             axisRight.textColor = _textColor
 
-            xAxis.valueFormatter = getAxisFormatter(stockchart.getDates(list), list.interval)
+            xAxis.valueFormatter = getAxisFormatter(stockchart.getDates(table), table.interval)
             xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
             // Always start at position 0 even if data set starts after that
             xAxis.axisMinimum = 0f
@@ -138,8 +138,8 @@ class ChartViewFactory(private val context: Context) {
         }
     }
 
-    private fun getDataSets(chart: StockChart, list: PriceList): List<IDataSet> {
-        return chart.getDataSets(list)
+    private fun getDataSets(chart: StockChart, table: OHLCVTable): List<IDataSet> {
+        return chart.getDataSets(table)
     }
 
     private fun getBarData(sets: List<IDataSet>): BarData {

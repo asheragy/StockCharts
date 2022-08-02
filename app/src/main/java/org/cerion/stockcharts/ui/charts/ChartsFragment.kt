@@ -4,7 +4,6 @@ import android.graphics.Matrix
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
@@ -52,7 +51,7 @@ class ChartsFragment : Fragment() {
                 intervals = it
             }
 
-            adapter.setCharts(viewModel.charts.value!!, viewModel.prices.value, intervals)
+            adapter.setCharts(viewModel.charts.value!!, viewModel.table.value, intervals)
         }
 
         viewModel.symbol.observe(viewLifecycleOwner, Observer{
@@ -74,7 +73,7 @@ class ChartsFragment : Fragment() {
         })
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
-        viewModel.prices.observe(viewLifecycleOwner, chartsChangedObserver)
+        viewModel.table.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.rangeSelect.observe(viewLifecycleOwner, chartsChangedObserver)
 
         if (savedInstanceState == null) {

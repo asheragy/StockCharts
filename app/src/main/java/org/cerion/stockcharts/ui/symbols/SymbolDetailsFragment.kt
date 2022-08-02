@@ -31,7 +31,7 @@ class SymbolDetailsFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        viewModel.prices.observe(viewLifecycleOwner, Observer {
+        viewModel.table.observe(viewLifecycleOwner, Observer {
             val chart = chartFactory.getChart(viewModel.chart, it)
             binding.chartFrame.removeAllViews()
             binding.chartFrame.addView(chart)
