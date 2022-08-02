@@ -4,10 +4,9 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.model.OHLCVRow
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.marketdata.core.platform.KMPDate
-import org.cerion.marketdata.core.platform.KMPTimeStamp
 import org.cerion.marketdata.webclients.FetchInterval
 import org.cerion.stockcharts.common.TAG
 import org.cerion.stockcharts.database.PriceListEntity
@@ -17,8 +16,8 @@ import java.time.ZoneId
 import java.util.*
 
 interface PriceListRepository {
-    fun add(list: PriceList)
-    fun get(symbol: String, interval: FetchInterval): PriceList?
+    fun add(list: OHLCVTable)
+    fun get(symbol: String, interval: FetchInterval): Pair<OHLCVTable?, Date?>
     suspend fun clearCache()
     suspend fun cleanupCache()
 }
@@ -29,9 +28,9 @@ class PriceListSQLRepository(private val context: Context) : PriceListRepository
     private val priceListDao = roomDb.priceListDao
     private val pricesDao = roomDb.pricesDao
 
-    override fun get(symbol: String, interval: FetchInterval): PriceList? {
+    override fun get(symbol: String, interval: FetchInterval): Pair<OHLCVTable?, Date?> {
         val header = priceListDao.get(symbol, interval.ordinal)
-                ?: return null
+                ?: return Pair(null, null)
 
         val dbPrices = pricesDao.getAll(symbol, interval.ordinal)
 
@@ -39,13 +38,12 @@ class PriceListSQLRepository(private val context: Context) : PriceListRepository
             OHLCVRow(it.date.toKMPDate(), it.open, it.high, it.low, it.close, it.volume)
         }
 
-        val result = PriceList(symbol, prices)
-        result.lastUpdated = if (header.lastUpdated != null) KMPTimeStamp(header.lastUpdated!!) else null
+        val result = OHLCVTable(symbol, prices)
 
-        return result
+        return Pair(result, header.lastUpdated)
     }
 
-    override fun add(list: PriceList) {
+    override fun add(list: OHLCVTable) {
         val interval = list.interval.ordinal
 
         // Delete existing + cascade deletes prices

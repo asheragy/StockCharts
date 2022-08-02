@@ -1,9 +1,8 @@
 package org.cerion.stockcharts.repository
 
-import org.cerion.marketdata.core.PriceList
 import org.cerion.marketdata.core.model.Interval
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.marketdata.core.platform.KMPDate
-import org.cerion.marketdata.core.platform.KMPTimeStamp
 import org.cerion.marketdata.webclients.FetchInterval
 import org.cerion.marketdata.webclients.PriceHistoryDataSource
 import java.time.LocalDate
@@ -31,7 +30,7 @@ class DefaultPriceHistoryDates : PriceHistoryDates {
 
 class CachedPriceListRepository(private val repo: PriceListRepository, private val api: PriceHistoryDataSource, private val dates: PriceHistoryDates = DefaultPriceHistoryDates()) {
 
-    fun get(symbol: String, interval: Interval): PriceList {
+    fun get(symbol: String, interval: Interval): OHLCVTable {
         val fetchInterval = when(interval) {
             Interval.DAILY -> FetchInterval.DAILY
             Interval.WEEKLY -> FetchInterval.WEEKLY
@@ -42,17 +41,18 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
         var update = false
         val retrieveFrom: Date? = null
 
-        if (cachedResult == null) {
+        if (cachedResult.first == null) {
             update = true
         }
-        else if(cachedResult.lastUpdated != null) {
+        else if(cachedResult.second != null) {
+            val lastUpdated = cachedResult.second
             val now = Date()
-            var diff = now.time - cachedResult.lastUpdated!!.time
+            var diff = now.time - lastUpdated!!.time
             diff /= (1000 * 60 * 60).toLong()
             val hours = diff
             val days = diff / 24
 
-            println(symbol + " " + fetchInterval.name + " last updated " + cachedResult.lastUpdated + " (" + days + " days ago)")
+            println(symbol + " " + fetchInterval.name + " last updated " + lastUpdated + " (" + days + " days ago)")
 
             // TODO, smarter updates based on last price obtained and weekends
             if (fetchInterval === FetchInterval.DAILY && hours >= 12)
@@ -90,10 +90,10 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
         val result = if (update)
             updatePrices(symbol, interval, fetchInterval)
         else
-            cachedResult!!
+            cachedResult.first!!
 
         if (interval == Interval.MONTHLY && dates.monthlyStartDate != null)
-            return result.truncate(dates.monthlyStartDate!!)
+            return result.truncate(dates.monthlyStartDate!!, null)
         if (interval == Interval.QUARTERLY)
             return result.toQuarterly()
         if (interval == Interval.YEARLY)
@@ -102,8 +102,9 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
         return result
     }
 
-    private fun updatePrices(symbol: String, interval: Interval, fetchInterval: FetchInterval): PriceList {
-        var list: PriceList? = null
+    private fun updatePrices(symbol: String, interval: Interval, fetchInterval: FetchInterval): OHLCVTable {
+        var table: OHLCVTable? = null
+
         try {
             //val cal = Calendar.getInstance()
             //cal.set(1990, Calendar.JANUARY, 1)
@@ -116,20 +117,19 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
             val startDate = kmpStartDate?.jvmDate
 
             val prices = api.getPrices(symbol, fetchInterval, startDate)
-            list = PriceList(symbol, prices)
-            list.lastUpdated = KMPTimeStamp()
+            table = OHLCVTable(symbol, prices)
         } catch (e: Exception) {
             // nothing
             e.printStackTrace()
         }
 
-        if (list != null && list.size > 0) {
-            repo.add(list)
+        if (table != null && table.size > 0) {
+            repo.add(table)
             println("Updated prices for $symbol")
         } else {
             throw Exception("Failed to get updated prices for $symbol")
         }
 
-        return list
+        return table
     }
 }

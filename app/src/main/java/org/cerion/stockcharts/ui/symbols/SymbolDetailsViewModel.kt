@@ -17,8 +17,8 @@ class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : Vi
     val details: LiveData<SymbolDetails>
         get() = _details
 
-    private val _table = MutableLiveData<OHLCVTable>()
-    val table: LiveData<OHLCVTable>
+    private val _table = MutableLiveData<OHLCVTable?>()
+    val table: LiveData<OHLCVTable?>
         get() = _table
 
     val chart = PriceChart()
@@ -33,7 +33,8 @@ class SymbolDetailsViewModel(private val priceRepo: PriceListSQLRepository) : Vi
         }
 
         viewModelScope.launch {
-            _table.value = priceRepo.get(symbol, FetchInterval.DAILY)
+
+            _table.value = priceRepo.get(symbol, FetchInterval.DAILY).first
         }
     }
 }

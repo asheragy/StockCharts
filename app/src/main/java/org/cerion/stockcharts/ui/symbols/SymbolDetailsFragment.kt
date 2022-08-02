@@ -32,9 +32,11 @@ class SymbolDetailsFragment : Fragment() {
         }
 
         viewModel.table.observe(viewLifecycleOwner, Observer {
-            val chart = chartFactory.getChart(viewModel.chart, it)
-            binding.chartFrame.removeAllViews()
-            binding.chartFrame.addView(chart)
+            if (it != null) {
+                val chart = chartFactory.getChart(viewModel.chart, it)
+                binding.chartFrame.removeAllViews()
+                binding.chartFrame.addView(chart)
+            }
         })
 
         viewModel.load(args.symbol)
