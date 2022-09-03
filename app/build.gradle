@@ -111,7 +111,7 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    def marketData_commit = "7cacafdaff"
+    def marketData_commit = "96563dcc1f"
     implementation "com.github.asheragy.MarketData:core:$marketData_commit"
     implementation "com.github.asheragy.MarketData:webclients:$marketData_commit"
 

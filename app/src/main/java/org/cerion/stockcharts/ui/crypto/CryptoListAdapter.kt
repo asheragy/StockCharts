@@ -13,7 +13,7 @@ interface CryptoListListener {
 class CryptoListAdapter(val listener: CryptoListListener) : RecyclerView.Adapter<CryptoListAdapter.ViewHolder>() {
 
     private var items = emptyList<CryptoRow>()
-    val decimalFormat = DecimalFormat("##.00")
+    val decimalFormat = DecimalFormat("#0.00")
 
     fun setRows(list: List<CryptoRow>) {
         items = list
@@ -37,8 +37,12 @@ class CryptoListAdapter(val listener: CryptoListListener) : RecyclerView.Adapter
     inner class ViewHolder internal constructor(val binding: ListItemCryptoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CryptoRow) {
             binding.name.text = item.name
-            binding.price.text = item.price.toString()
-            binding.change.text = decimalFormat.format(item.change24h) + "%"
+            item.quote?.also {
+                binding.price.text = it.price.toString()
+                binding.changeHour.text = decimalFormat.format(it.changeHour)
+                binding.changeDay.text = decimalFormat.format(it.changeDay)
+                binding.changeWeek.text = decimalFormat.format(it.changeWeek)
+            }
 
             binding.root.setOnClickListener {
                 listener.onClick(item.symbol)

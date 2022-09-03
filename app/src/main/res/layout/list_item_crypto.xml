@@ -5,27 +5,65 @@
     android:padding="16dp"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/name"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        tools:text="Ethereum">
-    </TextView>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textStyle="bold"
+            android:paddingBottom="4dp"
+            android:textAlignment="center"
+            tools:text="Ethereum">
+        </TextView>
 
-    <TextView
-        android:id="@+id/price"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:text="1000.01">
-    </TextView>
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_weight="2"
+            tools:text="1000.01">
+        </TextView>
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/change"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:text="5.0%">
-    </TextView>
+        android:layout_weight="2"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/change_hour"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            tools:text="-0.67">
+        </TextView>
+
+        <TextView
+            android:id="@+id/change_day"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            tools:text="2.34">
+        </TextView>
+
+        <TextView
+            android:id="@+id/change_week"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            tools:text="9.34">
+        </TextView>
+    </LinearLayout>
+
+
 </LinearLayout>

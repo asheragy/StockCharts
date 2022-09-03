@@ -12,8 +12,7 @@ import org.cerion.marketdata.webclients.coingecko.CoinGecko
 
 data class CryptoRow(val name: String,
                      val symbol: String) {
-    var price: Double = 0.0
-    var change24h: Double = 0.0
+    var quote: CoinGecko.DetailedQuote? = null
 }
 
 class CryptoViewModel : ViewModel() {
@@ -37,12 +36,11 @@ class CryptoViewModel : ViewModel() {
 
             val result = withContext(Dispatchers.IO) {
                 val ids = mappings.keys.toList()
-                val response = api.getPrices(ids)
+                val response = api.getDetailedQuotes(ids)
 
                 response.forEach {
                     mappings[it.id]?.apply {
-                        this.price = it.price
-                        this.change24h = it.change24h
+                        this.quote = it
                     }
                 }
 
