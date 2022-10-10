@@ -7,12 +7,13 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarLineChartBase
+import com.github.mikephil.charting.components.YAxis.AxisDependency
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.OHLCVTable
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.common.DefaultChartGestureListener
 import org.cerion.stockcharts.databinding.ViewChartBinding
 import org.cerion.stockcharts.ui.charts.views.ChartViewFactory
-import org.cerion.marketdata.core.charts.StockChart
-import org.cerion.marketdata.core.model.OHLCVTable
 
 
 interface StockChartListener {
@@ -57,6 +58,9 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
     }
 
     inner class ViewHolder internal constructor(val binding: ViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
+        val chart: BarLineChartBase<*>
+            get() = itemView.findViewById(R.id.chart_view)
+
         fun bind(chart: StockChart, first: Boolean) {
             val frame = binding.chartFrame
             frame.removeAllViews()
@@ -75,6 +79,9 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
                     chartView.moveViewToX(end - start - 1)
                     chartView.setVisibleXRangeMaximum(table!!.close.size.toFloat()) // Workaround to make viewport manually adjustable again
                 }
+
+                // TODO not sure what this does in intervals block above
+                chartView.moveViewToX(chartView.getXChartMax())
 
                 val matrix = chartView.viewPortHandler.matrixTouch
 
@@ -102,7 +109,6 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
                 Handler().postDelayed({
                     syncMatrix(this) // This was not working unless it was inside here, possibly related to bug OR viewport stuff needs to go AFTER this operation is done
                 }, 10)
-
                  */
 
                 if (!first)
@@ -120,13 +126,16 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
         _viewPortValues = values
 
         syncMatrix(viewHolder)
+
+        // Adjust Y axis to fit scale of new view
+        adjustYaxis(viewHolder.chart)
     }
 
     private fun syncMatrix(viewHolder: ChartListAdapter.ViewHolder) {
         if (_viewPortMatrix == null || _viewPortValues == null)
             return
 
-        val tempChart = viewHolder.itemView.findViewById<BarLineChartBase<*>>(R.id.chart_view)
+        val tempChart = viewHolder.chart
         val otherMatrix: Matrix = tempChart.viewPortHandler.matrixTouch
 
         // Realtime refresh is called from a matrix parameter, only need to update if its NOT the chart currently being resized
@@ -140,5 +149,29 @@ class ChartListAdapter(context: Context, private val chartListener: StockChartLi
         _otherVals[Matrix.MSKEW_X] = _viewPortValues!![Matrix.MSKEW_X]
         otherMatrix.setValues(_otherVals)
         tempChart.viewPortHandler.refresh(otherMatrix, tempChart, true)
+    }
+
+    private fun adjustYaxis(chart: BarLineChartBase<*>) {
+        val lowestVisibleX: Float = chart.lowestVisibleX
+        val highestVisibleX: Float = chart.highestVisibleX
+
+        val chartData = chart.data
+        chartData.calcMinMaxY(lowestVisibleX, highestVisibleX)
+
+        chart.xAxis.calculate(chartData.xMin, chartData.xMax)
+        calculateMinMaxForYAxis(chart, AxisDependency.LEFT)
+        calculateMinMaxForYAxis(chart, AxisDependency.RIGHT)
+
+        chart.calculateOffsets()
+    }
+
+    private fun calculateMinMaxForYAxis(chart: BarLineChartBase<*>, axisDependency: AxisDependency) {
+        val chartData = chart.data
+        val yAxis = chart.getAxis(axisDependency)
+        if (yAxis.isEnabled) {
+            val yMin = chartData.getYMin(axisDependency)
+            val yMax = chartData.getYMax(axisDependency)
+            yAxis.calculate(yMin, yMax)
+        }
     }
 }

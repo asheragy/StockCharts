@@ -8,13 +8,13 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.Symbol
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.appCompatActivity
 import org.cerion.stockcharts.common.SymbolSearchView
 import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.databinding.FragmentChartsBinding
-import org.cerion.marketdata.core.charts.StockChart
-import org.cerion.marketdata.core.model.Symbol
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChartsFragment : Fragment() {
@@ -42,7 +42,6 @@ class ChartsFragment : Fragment() {
         }
 
         adapter = ChartListAdapter(requireContext(), chartListener)
-
         binding.recyclerView.adapter = adapter
 
         val chartsChangedObserver = Observer<Any?> {
