@@ -92,8 +92,21 @@ class CachedPriceListRepository(private val repo: PriceListRepository, private v
         else
             cachedResult.first!!
 
-        if (interval == Interval.MONTHLY && dates.monthlyStartDate != null)
-            return result.truncate(dates.monthlyStartDate!!, null)
+        if (interval == Interval.MONTHLY && dates.monthlyStartDate != null) {
+            if (dates.monthlyStartDate == null)
+                return result
+
+            // TODO this logic should go in the truncate function to not require exact
+            var firstDate = result.dates.first()
+            for(i in 0 until result.dates.size) {
+                if (result.dates[i] >= dates.monthlyStartDate!!) {
+                    firstDate = result.dates[i]
+                    break
+                }
+            }
+
+            return result.truncate(firstDate, null)
+        }
         if (interval == Interval.QUARTERLY)
             return result.toQuarterly()
         if (interval == Interval.YEARLY)
