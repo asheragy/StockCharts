@@ -70,12 +70,12 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
+        //maven { url 'https://jitpack.io' }
     }
 }
 
 repositories {
-    maven { url "https://jitpack.io" }
+    //maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -85,12 +85,11 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    def lifecycle_version = "2.1.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
@@ -111,7 +110,7 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    def marketData_commit = "96563dcc1f"
+    def marketData_commit = "1330040302"
     implementation "com.github.asheragy.MarketData:core:$marketData_commit"
     implementation "com.github.asheragy.MarketData:webclients:$marketData_commit"
 

@@ -1,22 +1,23 @@
 package org.cerion.stockcharts.fakes
 
-import org.cerion.marketdata.core.PriceList
-import org.cerion.marketdata.core.web.FetchInterval
+import org.cerion.marketdata.core.model.OHLCVTable
+import org.cerion.marketdata.webclients.FetchInterval
 import org.cerion.stockcharts.repository.PriceListRepository
+import java.util.*
 
 open class FakePriceListRepository : PriceListRepository {
-    override fun add(list: PriceList) {
+    override fun add(list: OHLCVTable) {
         // Nothing, only need to fake the return
     }
 
-    override fun get(symbol: String, interval: FetchInterval): PriceList? {
+    override fun get(symbol: String, interval: FetchInterval): Pair<OHLCVTable?, Date?> {
         if (symbol == "<ex>")
             throw Exception("error getting symbol")
 
         if (symbol == "<null>")
-            return null
+            return Pair(null, null)
 
-        return PriceList.generateSeries(500)
+        return Pair(OHLCVTable.generateSeries(500), Date())
     }
 
     override suspend fun clearCache() {

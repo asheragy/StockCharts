@@ -28,7 +28,9 @@ class CryptoViewModel : ViewModel() {
         "matic-network" to CryptoRow("Polygon/Matic", "MATIC-USD"),
         "algorand" to CryptoRow("Algorand","ALGO-USD"),
         "ethereum" to CryptoRow("Ethereum","ETH-USD"),
-        "solana" to CryptoRow("Solana","SOL-USD")
+        "solana" to CryptoRow("Solana","SOL-USD"),
+        "binancecoin" to CryptoRow("BNB","BNB-USD"),
+        "litecoin" to CryptoRow("Litecoin","LTC-USD")
     )
 
     fun load() {

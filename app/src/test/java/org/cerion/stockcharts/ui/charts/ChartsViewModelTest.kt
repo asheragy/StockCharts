@@ -14,6 +14,7 @@ import org.cerion.stockcharts.fakes.FakePreferenceRepository
 import org.cerion.stockcharts.fakes.FakePriceHistoryDataSource
 import org.cerion.stockcharts.fakes.FakePriceListRepository
 import org.cerion.stockcharts.repository.CachedPriceListRepository
+import org.cerion.stockcharts.repository.DefaultPriceHistoryDates
 import org.cerion.stockcharts.repository.PreferenceRepository
 import org.junit.Assert.*
 import org.junit.Before
@@ -37,7 +38,8 @@ class ChartsViewModelTest {
     fun init() {
         val priceListRepository = FakePriceListRepository()
         val priceHistory = FakePriceHistoryDataSource()
-        _cachedRepo = CachedPriceListRepository(priceListRepository, priceHistory)
+        val dates = DefaultPriceHistoryDates()
+        _cachedRepo = CachedPriceListRepository(priceListRepository, priceHistory, dates)
         _prefs = FakePreferenceRepository()
 
         _viewModel = ChartsViewModel(_cachedRepo, FakePriceListRepository(), _prefs, ChartColors())
