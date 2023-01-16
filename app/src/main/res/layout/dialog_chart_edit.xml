@@ -31,11 +31,11 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="@{viewmodel.title}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
                 <ImageButton
@@ -51,21 +51,19 @@
 
 
             <CheckBox
+                android:id="@+id/check_logscale"
                 android:text="Log Scale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="@={viewmodel.logScale}"
-                tools:checked="true"
-                android:visibility="@{viewmodel.showLogScale ? View.VISIBLE : View.GONE}"
-                android:id="@+id/check_logscale" />
+                tools:checked="true" />
 
             <CheckBox
+                android:id="@+id/check_linechart"
                 android:text="Line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={viewmodel.lineChart}"
-                android:visibility="@{viewmodel.showLineCheckbox ? View.VISIBLE:View.GONE}"
-                android:id="@+id/check_linechart" />
+                android:checked="@={viewmodel.lineChart}" />
 
             <Spinner
                 android:id="@+id/function"
@@ -74,7 +72,6 @@
                 android:paddingVertical="5dp"
                 android:selectedItemPosition="@={viewmodel.functionIndex}"
                 android:entries="@{viewmodel.functions}"
-                android:visibility="@{viewmodel.showFunctions ? View.VISIBLE : View.GONE}"
                 tools:entries="@array/functions_toolsonly"/>
 
             <org.cerion.stockcharts.ui.charts.views.ParametersEditControl
@@ -93,10 +90,10 @@
             </org.cerion.stockcharts.ui.charts.views.ParametersEditControl>
 
             <LinearLayout
+                android:id="@+id/overlays_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="@{viewmodel.showAddOverlay ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"

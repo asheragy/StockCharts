@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.databinding.Observable
+import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.fragment.app.DialogFragment
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.ui.charts.views.OverlayEditControl
@@ -45,6 +47,15 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
 
         binding = DialogChartEditBinding.bind(view)
         binding.viewmodel = viewModel
+        binding.title.text = viewModel.title
+        binding.checkLogscale.visibility = if(viewModel.showLogScale) View.VISIBLE else View.GONE
+        binding.checkLinechart.visibility = if(viewModel.showLineCheckbox) View.VISIBLE else View.GONE
+        binding.function.visibility = if(viewModel.showFunctions) View.VISIBLE else View.GONE
+
+        viewModel.showAddOverlay.observe(viewLifecycleOwner) {
+            binding.overlaysSection.visibility = if(it) View.VISIBLE else View.GONE
+        }
+
         // TODO add as binding
         binding.addOverlay.setOnClickListener { onAddOverlay() }
 
@@ -124,8 +135,8 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
     private fun setIndicator(instance: IIndicator) {
         if (indicatorChart().indicator !== instance) indicatorChart().indicator = instance
         // If overlay is not allowed then hide it
-        if (!viewModel!!.showAddOverlay.get()!!) {
-            overlays!!.removeAllViews()
+        if (!viewModel.showAddOverlay.value!!) {
+            overlays.removeAllViews()
         }
         // Add parameters
         val params = instance.params

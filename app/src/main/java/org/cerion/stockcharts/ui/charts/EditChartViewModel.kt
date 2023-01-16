@@ -3,6 +3,8 @@ package org.cerion.stockcharts.ui.charts
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import org.cerion.marketdata.core.arrays.FloatArray
 import org.cerion.marketdata.core.charts.IndicatorChart
 import org.cerion.marketdata.core.charts.PriceChart
@@ -27,7 +29,11 @@ class EditChartViewModel(val originalChart: StockChart) {
     var functions: MutableList<String> = ArrayList()
     private val functionMap: MutableMap<String, IFunction> = HashMap()
     private var mFunctionListener: OnFunctionChangeListener? = null
-    var showAddOverlay = ObservableField(true)
+
+    private val _showAddOverlay = MutableLiveData(true)
+    val showAddOverlay: LiveData<Boolean>
+        get() = _showAddOverlay
+
     var functionIndex = ObservableField<Int>()
     var logScale = ObservableField<Boolean>()
     var lineChart = ObservableField<Boolean>()
@@ -86,7 +92,7 @@ class EditChartViewModel(val originalChart: StockChart) {
     private fun initFunctions() {
         functionIndex.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                showAddOverlay.set(functionAllowOverlays())
+                _showAddOverlay.value = functionAllowOverlays()
                 if (mFunctionListener != null) mFunctionListener!!.onFunctionChanged()
             }
         })
@@ -108,6 +114,6 @@ class EditChartViewModel(val originalChart: StockChart) {
 
     private fun functionAllowOverlays(): Boolean {
         val ii = function!!
-        return ii.resultType == FloatArray::class.java
+        return ii.resultType == FloatArray::class
     }
 }
