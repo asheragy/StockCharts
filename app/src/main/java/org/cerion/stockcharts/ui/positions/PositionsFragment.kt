@@ -33,6 +33,7 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
         return binding.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.positions_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -46,6 +47,7 @@ class PositionsFragment : androidx.fragment.app.Fragment() {
         super.onResume()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId) {

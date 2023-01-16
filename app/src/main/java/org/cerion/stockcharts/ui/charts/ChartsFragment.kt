@@ -88,6 +88,7 @@ class ChartsFragment : Fragment() {
         return binding.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.charts_menu, menu)
         MenuCompat.setGroupDividerEnabled(menu, true)
@@ -105,6 +106,7 @@ class ChartsFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.add_indicator -> viewModel.addIndicatorChart()
