@@ -1,8 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-apply plugin: "androidx.navigation.safeargs.kotlin"
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    // TODO see if kapt is needed after removing databinding
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+}
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
 def apikeyProperties = new Properties()
@@ -10,12 +12,13 @@ if(apikeyPropertiesFile.exists())
     apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 android {
-    compileSdkVersion 33
+    namespace 'org.cerion.stockcharts'
+    compileSdk 33
 
     defaultConfig {
         applicationId "org.cerion.stockcharts"
         minSdkVersion 28
-        targetSdkVersion 33
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -33,17 +36,14 @@ android {
         }
     }
 
-    viewBinding {
-        enabled = true
-    }
-
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
 
     compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
@@ -58,21 +58,6 @@ android {
             java.srcDirs += "src/sharedTest/java"
         }
     }
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/license.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt', 'META-INF/notice.txt', 'META-INF/AL2.0', 'META-INF/LGPL2.1']
-        }
-    }
-    namespace 'org.cerion.stockcharts'
-
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        //maven { url 'https://jitpack.io' }
-    }
 }
 
 dependencies {
@@ -83,7 +68,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    kapt "androidx.lifecycle:lifecycle-compiler:2.5.1"
+    //kapt "androidx.lifecycle:lifecycle-compiler:2.5.1"
 
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
@@ -98,12 +83,9 @@ dependencies {
 
     def room_version = "2.5.0"
     implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    //kapt "androidx.room:room-compiler:$room_version"
 
-    implementation "org.koin:koin-android:$koin_version"
-    implementation "org.koin:koin-android-scope:$koin_version"
-    implementation "org.koin:koin-android-viewmodel:$koin_version"
-    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+    implementation "io.insert-koin:koin-android:3.3.2"
 
     //implementation 'com.google.firebase:firebase-appindexing:10.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
@@ -122,7 +104,7 @@ dependencies {
     testImplementation "androidx.test:core:1.5.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.5.1"
-    androidTestImplementation "org.koin:koin-test:2.0.1"
+    //androidTestImplementation "org.koin:koin-test:2.0.1"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
 
 }

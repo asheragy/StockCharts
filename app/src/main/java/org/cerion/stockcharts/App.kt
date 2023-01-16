@@ -16,7 +16,7 @@ import org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
