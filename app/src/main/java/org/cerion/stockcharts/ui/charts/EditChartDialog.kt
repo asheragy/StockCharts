@@ -4,19 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import androidx.databinding.Observable
-import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.fragment.app.DialogFragment
-import org.cerion.stockcharts.R
-import org.cerion.stockcharts.ui.charts.views.OverlayEditControl
-import org.cerion.stockcharts.ui.charts.views.ParametersEditControl
-import org.cerion.stockcharts.databinding.DialogChartEditBinding
 import org.cerion.marketdata.core.charts.IndicatorChart
 import org.cerion.marketdata.core.charts.PriceChart
 import org.cerion.marketdata.core.charts.StockChart
 import org.cerion.marketdata.core.functions.IIndicator
 import org.cerion.marketdata.core.functions.ISimpleOverlay
+import org.cerion.stockcharts.R
+import org.cerion.stockcharts.common.BindingUtils
+import org.cerion.stockcharts.databinding.DialogChartEditBinding
+import org.cerion.stockcharts.ui.charts.views.OverlayEditControl
+import org.cerion.stockcharts.ui.charts.views.ParametersEditControl
 
 class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeListener {
 
@@ -46,17 +47,18 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
         val view = inflater.inflate(R.layout.dialog_chart_edit, container)
 
         binding = DialogChartEditBinding.bind(view)
-        binding.viewmodel = viewModel
         binding.title.text = viewModel.title
         binding.checkLogscale.visibility = if(viewModel.showLogScale) View.VISIBLE else View.GONE
-        binding.checkLinechart.visibility = if(viewModel.showLineCheckbox) View.VISIBLE else View.GONE
+        binding.checkCandlestick.visibility = if(viewModel.showLineCheckbox) View.VISIBLE else View.GONE
         binding.function.visibility = if(viewModel.showFunctions) View.VISIBLE else View.GONE
 
         viewModel.showAddOverlay.observe(viewLifecycleOwner) {
             binding.overlaysSection.visibility = if(it) View.VISIBLE else View.GONE
         }
 
-        // TODO add as binding
+        BindingUtils.setTwoWayBinding(viewLifecycleOwner, binding.checkLogscale, viewModel.logScale)
+        BindingUtils.setTwoWayBinding(viewLifecycleOwner, binding.checkCandlestick, viewModel.candleStick)
+
         binding.addOverlay.setOnClickListener { onAddOverlay() }
 
         binding.remove.setOnClickListener {
@@ -74,10 +76,32 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
             dismiss()
         }
 
+        if (viewModel.showFunctions) {
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, viewModel.functions)
+            binding.function.adapter = adapter
+
+            binding.function.setSelection(viewModel.functionIndex.value!!)
+            binding.function.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    viewModel.functionIndex.value = position
+                }
+            }
+
+            viewModel.functionIndex.observe(viewLifecycleOwner) {
+                binding.function.setSelection(it)
+            }
+        }
+
         overlays = binding.overlays
 
         overlays.removeAllViews() // remove placeholder used in design viewer
-        viewModel!!.setFunctionListener(this@EditChartDialog)
+        viewModel.setFunctionListener(this@EditChartDialog)
         if (chart is IndicatorChart) {
             setIndicator((chart as IndicatorChart).indicator)
         }
@@ -99,19 +123,19 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
     */
 
     private fun updateChart() {
-        val chart = viewModel!!.chart
+        val chart = viewModel.chart
         chart.clearOverlays()
         // TODO overlays and parameters all need to be in viewmodel
-/*
-        if (chart instanceof IndicatorChart) {
-            final IIndicator instance = viewModel.getFunction();
-            instance.setParams( getParametersControl().getParameters() );
-            indicatorChart().setIndicator(instance);
+
+        if (chart is IndicatorChart) {
+            val instance = viewModel.function!!
+            instance.setParams(*parametersControl.parameters)
+            indicatorChart().indicator = instance
         }
-        */
-// Get overlay parameters
-        for (i in 0 until overlays!!.childCount) {
-            val editControl = overlays!!.getChildAt(i) as OverlayEditControl
+
+        // Get overlay parameters
+        for (i in 0 until overlays.childCount) {
+            val editControl = overlays.getChildAt(i) as OverlayEditControl
             if (chart is PriceChart) {
                 chart.addOverlay(editControl.overlayFunction)
             } else chart.addOverlay((editControl.overlayFunction as ISimpleOverlay))
@@ -144,7 +168,7 @@ class EditChartDialog : DialogFragment(), EditChartViewModel.OnFunctionChangeLis
     }
 
     private val parametersControl: ParametersEditControl
-        private get() {
+        get() {
             if (chart is IndicatorChart) return binding!!.parameters
             throw RuntimeException()
         }

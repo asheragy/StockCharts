@@ -15,3 +15,5 @@ val Any.TAG: String
 fun Context.isDarkTheme(): Boolean = isEmulator() || (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES)
 
 fun isEmulator(): Boolean = BuildConfig.DEBUG && Build.FINGERPRINT.contains("generic")
+
+

@@ -1,21 +1,18 @@
 package org.cerion.stockcharts.ui.charts
 
-import androidx.databinding.Observable
-import androidx.databinding.Observable.OnPropertyChangedCallback
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import org.cerion.marketdata.core.arrays.FloatArray
 import org.cerion.marketdata.core.charts.IndicatorChart
 import org.cerion.marketdata.core.charts.PriceChart
 import org.cerion.marketdata.core.charts.StockChart
 import org.cerion.marketdata.core.charts.VolumeChart
-import org.cerion.marketdata.core.functions.IFunction
 import org.cerion.marketdata.core.functions.IIndicator
 import org.cerion.marketdata.core.functions.types.Indicator
-import java.util.*
 
-class EditChartViewModel(val originalChart: StockChart) {
+class EditChartViewModel(val originalChart: StockChart) : ViewModel() {
     interface OnFunctionChangeListener {
         fun onFunctionChanged()
     }
@@ -26,17 +23,18 @@ class EditChartViewModel(val originalChart: StockChart) {
     val showLogScale = originalChart !is IndicatorChart
     val showFunctions = originalChart is IndicatorChart
 
-    var functions: MutableList<String> = ArrayList()
-    private val functionMap: MutableMap<String, IFunction> = HashMap()
+    private val functionMap = Indicator.values().map { it.instance }.associateBy { it.name }
+    val functions = functionMap.keys.toList().sorted()
+
     private var mFunctionListener: OnFunctionChangeListener? = null
 
     private val _showAddOverlay = MutableLiveData(true)
     val showAddOverlay: LiveData<Boolean>
         get() = _showAddOverlay
 
-    var functionIndex = ObservableField<Int>()
-    var logScale = ObservableField<Boolean>()
-    var lineChart = ObservableField<Boolean>()
+    val functionIndex = MutableLiveData(0)
+    val logScale = MutableLiveData(false)
+    val candleStick = MutableLiveData(false)
 
     val title: String
         get() = when(originalChart) {
@@ -49,11 +47,11 @@ class EditChartViewModel(val originalChart: StockChart) {
     init {
         when (originalChart) {
             is VolumeChart -> {
-                logScale.set(originalChart.logScale)
+                logScale.value = originalChart.logScale
             }
             is PriceChart -> {
-                logScale.set(originalChart.logScale)
-                lineChart.set(!originalChart.candleData)
+                logScale.value = originalChart.logScale
+                candleStick.value = originalChart.candleData
             }
         }
 
@@ -65,11 +63,11 @@ class EditChartViewModel(val originalChart: StockChart) {
         get() {
             when(updatedChart) {
                 is PriceChart -> {
-                    updatedChart.logScale = logScale.get()!!
-                    updatedChart.candleData = !lineChart.get()!!
+                    updatedChart.logScale = logScale.value!!
+                    updatedChart.candleData = candleStick.value!!
                 }
                 is VolumeChart -> {
-                    updatedChart.logScale = logScale.get()!!
+                    updatedChart.logScale = logScale.value!!
                 }
                 is IndicatorChart -> {
                     // TODO this clears overlays, need to have those in VM too
@@ -85,30 +83,30 @@ class EditChartViewModel(val originalChart: StockChart) {
 
     val function: IIndicator?
         get() {
-            val name = functions[functionIndex.get()!!]
-            return functionMap[name] as IIndicator?
+            val name = functions[functionIndex.value!!]
+            return functionMap[name]
         }
 
+    override fun onCleared() {
+        // TODO is this necessary
+        if (functionIndex.hasObservers())
+            functionIndex.removeObserver(functionIndexObserver)
+    }
+
+    private lateinit var functionIndexObserver: Observer<Int>
+
     private fun initFunctions() {
-        functionIndex.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
-            override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                _showAddOverlay.value = functionAllowOverlays()
-                if (mFunctionListener != null) mFunctionListener!!.onFunctionChanged()
-            }
-        })
-
         if (originalChart is IndicatorChart) {
-            val values = Indicator.values()
-            for (e in values) {
-                val f = e.instance
-                functionMap[f.name] = f
-                functions.add(f.name)
+            functionIndexObserver = Observer<Int> {
+                _showAddOverlay.value = functionAllowOverlays()
+                if (mFunctionListener != null)
+                    mFunctionListener!!.onFunctionChanged()
             }
 
-            functions.sort()
+            functionIndex.observeForever(functionIndexObserver)
 
             val index = functions.indexOf(originalChart.indicator.name)
-            functionIndex.set(index)
+            functionIndex.value = index
         }
     }
 
