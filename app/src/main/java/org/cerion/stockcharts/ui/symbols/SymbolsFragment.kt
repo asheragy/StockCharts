@@ -21,9 +21,10 @@ class SymbolsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_symbols, container, false)
 
         val adapter = RecyclerViewAdapter(object : RecyclerViewAdapter.SymbolListener {
-            override fun click(symbol: Symbol) {
-                val action = FragmentHomeDirections.actionFragmentHomeToSymbolDetailsFragment(symbol.symbol)
-                findNavController().navigate(action)
+            override fun click(symbol: String) {
+                // TODO removed details, have this go to charts
+                //val action = FragmentHomeDirections.actionFragmentHomeToSymbolDetailsFragment(symbol.symbol)
+                //findNavController().navigate(action)
             }
         })
 

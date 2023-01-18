@@ -1,58 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable name="item" type="org.cerion.marketdata.core.model.Symbol"/>
-    </data>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="5dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/symbol"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp">
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:paddingEnd="10dp"
+            tools:text="Symbol"/>
 
-            <TextView
-                android:id="@+id/symbol"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceListItem"
-                android:paddingEnd="10dp"
-                android:text="@{item.symbol}"
-                tools:text="Symbol"/>
-
-            <TextView
-                android:id="@+id/exchange"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@{item.exchange}"
-                tools:text="Exchange"
-                android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-                android:textAlignment="viewEnd" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/exchange"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="8dp">
-
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{item.name}"
-                tools:text="Name"/>
-
-        </LinearLayout>
-
+            android:layout_weight="1"
+            tools:text="Exchange"
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+            android:textAlignment="viewEnd" />
     </LinearLayout>
-</layout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Name"/>
+    </LinearLayout>
+</LinearLayout>

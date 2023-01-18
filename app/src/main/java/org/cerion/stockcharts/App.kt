@@ -11,7 +11,6 @@ import org.cerion.stockcharts.database.getDatabase
 import org.cerion.stockcharts.repository.*
 import org.cerion.stockcharts.ui.charts.ChartColorScheme
 import org.cerion.stockcharts.ui.charts.ChartsViewModel
-import org.cerion.stockcharts.ui.symbols.SymbolDetailsViewModel
 import org.cerion.stockcharts.ui.symbols.SymbolsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -58,6 +57,5 @@ val repositoryModule = module {
 val viewModelModule = module {
     single<ChartColors> { ChartColorScheme(get()) }
     viewModel { SymbolsViewModel(get(), get()) }
-    viewModel { SymbolDetailsViewModel(get()) }
     viewModel { ChartsViewModel(get(), get(), get(), get()) }
 }

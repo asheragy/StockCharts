@@ -6,22 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.cerion.stockcharts.databinding.FragmentWatchlistBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class WatchListFragment : Fragment(), View.OnClickListener {
 
     private lateinit var adapter: RecyclerViewAdapter
     private lateinit var binding: FragmentWatchlistBinding
-    private lateinit var viewModel: WatchListViewModel
+    private val viewModel: WatchListViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWatchlistBinding.inflate(inflater, container, false)
-
-        viewModel = ViewModelProvider(this).get(WatchListViewModel::class.java)
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
 
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -35,6 +31,11 @@ class WatchListFragment : Fragment(), View.OnClickListener {
         viewModel.items.observe(viewLifecycleOwner, Observer {
             adapter.setItems(it)
         })
+
+        // TODO do something with viewModel.loading
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.load()
+        }
 
         return binding.root
     }

@@ -13,7 +13,7 @@ import org.cerion.marketdata.core.model.Symbol
 internal class RecyclerViewAdapter(private val listener: SymbolListener) : RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder>() {
 
     interface SymbolListener {
-        fun click(symbol: Symbol)
+        fun click(symbol: String)
     }
 
     private var items = emptyList<Symbol>()
@@ -38,12 +38,13 @@ internal class RecyclerViewAdapter(private val listener: SymbolListener) : Recyc
     inner class ListItemViewHolder(var binding: ListItemSymbolBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener, OnCreateContextMenuListener {
 
         fun bind(item: Symbol) {
-            binding.item = item
-            binding.executePendingBindings()
+            binding.symbol.text = item.symbol
+            binding.exchange.text = item.exchange
+            binding.name.text = item.name
         }
 
         override fun onClick(v: View) {
-            val symbol = binding.item!!
+            val symbol = binding.symbol.text.toString()
             listener.click(symbol)
         }
 

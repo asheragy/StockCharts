@@ -1,23 +1,21 @@
 package org.cerion.stockcharts.ui.watchlist
 
-import android.app.Application
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.cerion.stockcharts.Injection
 import org.cerion.marketdata.core.functions.conditions.Condition
 import org.cerion.marketdata.core.functions.conditions.IndicatorCondition
 import org.cerion.marketdata.core.functions.conditions.PriceCondition
 import org.cerion.marketdata.core.overlays.SimpleMovingAverage
+import org.cerion.stockcharts.repository.CachedPriceListRepository
 
-class WatchListViewModel(application: Application) : AndroidViewModel(application) {
+class WatchListViewModel(private val repo: CachedPriceListRepository) : ViewModel() {
 
-    private val repo = Injection.getPriceListRepository(application)
     private var job = Job()
     private val scope = CoroutineScope(job + Dispatchers.Main )
 
