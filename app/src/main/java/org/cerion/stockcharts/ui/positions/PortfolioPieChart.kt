@@ -8,8 +8,19 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.utils.ColorTemplate
 import org.cerion.marketdata.core.model.Position
 import java.util.*
+
+data class GenericPosition(
+    override val cash: Boolean,
+    override val pricePerShare: Double,
+    override val quantity: Double,
+    override val symbol: String,
+    override val totalValue: Double
+) : Position
+
+
 
 class PortfolioPieChart(context: Context?, attrs: AttributeSet?) : PieChart(context, attrs) {
 
@@ -44,12 +55,7 @@ class PortfolioPieChart(context: Context?, attrs: AttributeSet?) : PieChart(cont
         dataSet.valueTextSize = 12f
         dataSet.valueFormatter = PercentFormatter()
 
-        colors.add(Color.GRAY)
-        colors.add(Color.BLUE)
-        colors.add(Color.RED)
-        colors.add(Color.CYAN)
-        colors.add(Color.YELLOW)
-        colors.add(Color.MAGENTA)
+        colors.addAll(ColorTemplate.PASTEL_COLORS.toList())
         dataSet.colors = colors
         val pieData = PieData(dataSet)
         data = pieData

@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
+import org.cerion.marketdata.core.model.Position
 import org.cerion.stockcharts.databinding.FragmentCryptoBinding
+import org.cerion.stockcharts.ui.positions.GenericPosition
 
 
 class CryptoFragment : Fragment() {
@@ -17,7 +19,6 @@ class CryptoFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentCryptoBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
 
         val adapter = CryptoListAdapter(object : CryptoListListener {
             override fun onClick(symbol: String) {
@@ -35,8 +36,13 @@ class CryptoFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
+        viewModel.positions.observe(viewLifecycleOwner) {
+            binding.chart.setPositions(it)
+        }
+
         binding.recyclerView.adapter = adapter
         binding.recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+
 
         viewModel.load()
 
