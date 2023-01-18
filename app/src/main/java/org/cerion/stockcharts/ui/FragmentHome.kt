@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -15,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.repository.PriceListSQLRepository
-import org.cerion.stockcharts.ui.positions.PositionsFragment
 import org.cerion.stockcharts.ui.symbols.SymbolsFragment
 import org.cerion.stockcharts.ui.watchlist.WatchListFragment
 
@@ -79,8 +77,7 @@ class FragmentHome : Fragment() {
         override fun createFragment(position: Int): Fragment {
             return when(position) {
                 0 -> SymbolsFragment()
-                1 -> PositionsFragment()
-                2 -> WatchListFragment()
+                1 -> WatchListFragment()
                 else -> throw NotImplementedError()
             }
         }
@@ -88,8 +85,7 @@ class FragmentHome : Fragment() {
         fun getTitle(position: Int): String {
             return when (position) {
                 0 -> "Symbols"
-                1 -> "Positions"
-                2 -> "Watch List"
+                1 -> "Watch List"
                 else -> throw NotImplementedError()
             }
         }

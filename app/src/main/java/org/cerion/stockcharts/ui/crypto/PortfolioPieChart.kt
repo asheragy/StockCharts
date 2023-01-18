@@ -1,4 +1,4 @@
-package org.cerion.stockcharts.ui.positions
+package org.cerion.stockcharts.ui.crypto
 
 import android.content.Context
 import android.graphics.Color
@@ -11,16 +11,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import org.cerion.marketdata.core.model.Position
 import java.util.*
-
-data class GenericPosition(
-    override val cash: Boolean,
-    override val pricePerShare: Double,
-    override val quantity: Double,
-    override val symbol: String,
-    override val totalValue: Double
-) : Position
-
-
 
 class PortfolioPieChart(context: Context?, attrs: AttributeSet?) : PieChart(context, attrs) {
 

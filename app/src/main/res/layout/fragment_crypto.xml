@@ -23,12 +23,12 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
             </androidx.recyclerview.widget.RecyclerView>
 
-            <org.cerion.stockcharts.ui.positions.PortfolioPieChart
+            <org.cerion.stockcharts.ui.crypto.PortfolioPieChart
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.3"
                 android:id="@+id/chart">
-            </org.cerion.stockcharts.ui.positions.PortfolioPieChart>
+            </org.cerion.stockcharts.ui.crypto.PortfolioPieChart>
         </LinearLayout>
 
 

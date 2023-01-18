@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import org.cerion.marketdata.core.model.Position
 import org.cerion.stockcharts.databinding.FragmentCryptoBinding
-import org.cerion.stockcharts.ui.positions.GenericPosition
 
 
 class CryptoFragment : Fragment() {
