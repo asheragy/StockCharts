@@ -3,12 +3,17 @@ package org.cerion.stockcharts.ui.charts
 import android.graphics.Matrix
 import android.os.Bundle
 import android.view.*
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
 import androidx.core.view.MenuCompat
 import androidx.core.view.children
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.google.android.material.chip.Chip
 import org.cerion.marketdata.core.charts.StockChart
+import org.cerion.marketdata.core.model.Interval
 import org.cerion.marketdata.core.model.Symbol
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.appCompatActivity
@@ -25,8 +30,6 @@ class ChartsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentChartsBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewmodel = viewModel
 
         appCompatActivity?.setSupportActionBar(binding.toolbar)
         setHasOptionsMenu(true)
@@ -53,23 +56,50 @@ class ChartsFragment : Fragment() {
             adapter.setCharts(viewModel.charts.value!!, viewModel.table.value, intervals)
         }
 
-        viewModel.symbol.observe(viewLifecycleOwner, Observer{
-            appCompatActivity?.supportActionBar?.title = it.symbol
-        })
+        viewModel.busy.observe(viewLifecycleOwner) {
+            binding.loadingBar.visibility = if(it) View.VISIBLE else View.GONE
+        }
 
-        viewModel.editChart.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.symbol.observe(viewLifecycleOwner) {
+            appCompatActivity?.supportActionBar?.title = it.symbol
+            binding.title.text = it.name
+        }
+
+        // Intervals
+        binding.interval.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+            override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+                viewModel.interval.value = Interval.values()[position]
+            }
+        }
+
+        viewModel.ranges.observe(viewLifecycleOwner) {
+            it.forEachIndexed { index, label ->
+                val chip = binding.ranges[index] as Chip
+                chip.text = label
+            }
+        }
+
+        binding.ranges.children.forEachIndexed { index, view ->
+            view as Chip
+            view.setOnClickListener {
+                viewModel.setRange(index)
+            }
+        }
+
+        viewModel.editChart.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandled()?.let { chart ->
                 val fm = requireActivity().supportFragmentManager
                 val dialog = EditChartDialog.newInstance(chart, viewModel)
                 dialog.show(fm, "editDialog")
             }
-        })
+        }
 
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.error.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandled()?.let { message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
-        })
+        }
 
         viewModel.charts.observe(viewLifecycleOwner, chartsChangedObserver)
         viewModel.table.observe(viewLifecycleOwner, chartsChangedObserver)

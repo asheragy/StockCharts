@@ -71,8 +71,8 @@ class ChartsViewModel(
     val rangeSelect = MutableLiveData<Event<Int>>()
     val ranges = Transformations.map(interval) {
         when(it) {
-            Interval.DAILY -> listOf("5D", "1M", "1Y", "MAX")
-            Interval.WEEKLY -> listOf("1M", "1Y", "5Y", "MAX")
+            Interval.DAILY -> listOf("1M", "6M", "1Y", "MAX")
+            Interval.WEEKLY -> listOf("3M", "1Y", "5Y", "MAX")
             Interval.MONTHLY -> listOf("1Y", "5Y", "10Y", "MAX")
             else -> listOf("3Y", "5Y", "10Y", "MAX")
         }
@@ -119,14 +119,16 @@ class ChartsViewModel(
 
     fun setRange(position: Int) {
         val range: Int = when(interval.value) {
+            // TODO daily is wrong with crypto
+            // Logic should be built in charts
             Interval.DAILY -> when(position) {
-                    0 -> 5 // week
-                    1 -> 30 // month
+                    0 -> 30 // 1 month
+                    1 -> 125 // 6 month
                     2 -> 250 // year
                     else -> 0
                 }
             Interval.WEEKLY -> when(position) {
-                    0 -> 20 // month
+                    0 -> 12 // 3 month
                     1 -> 50 // year
                     2 -> 50 * 5 // 5Y
                     else -> 0
