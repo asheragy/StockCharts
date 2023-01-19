@@ -1,10 +1,10 @@
 package org.cerion.stockcharts.ui.watchlist
 
-import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import org.cerion.stockcharts.common.Utils
 import org.cerion.marketdata.core.charts.StockChart
 import org.cerion.marketdata.core.functions.conditions.ICondition
 import org.cerion.marketdata.core.model.Interval
@@ -14,18 +14,21 @@ import org.cerion.stockcharts.repository.CachedPriceListRepository
 class WatchItemViewModel(private val repo: CachedPriceListRepository, private val condition: ICondition, val symbol: String) {
 
     // TODO change to livedata
-    val price = ObservableField("--")
-    val change = ObservableField("--")
-    val weekPosition = ObservableField(0)
-    val yearPosition = ObservableField(0)
-    val isTrue = ObservableField(false)
-    val loading = ObservableField(true)
+    //val price = ObservableField("--")
+    //val change = ObservableField("--")
+    //val weekPosition = ObservableField(0)
+    //val yearPosition = ObservableField(0)
+    //val isTrue = ObservableField(false)
+
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean>
+        get() = _loading
 
     suspend fun update() {
         withContext(Dispatchers.IO) {
             delay(1000)
 
-            loading.set(true)
+            _loading.value = true
             try {
                 val table = repo.get(symbol, Interval.DAILY)
                 apply(table)
@@ -34,7 +37,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
                 e.printStackTrace()
             }
 
-            loading.set(false)
+            _loading.value = false
         }
     }
 
@@ -46,6 +49,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
         get() = condition.chart
 
     private fun apply(table: OHLCVTable) {
+        /*
         val size = table.size
         val price = table.last().close
         val change = table.last().getPercentDiff(table[size - 2])
@@ -91,5 +95,7 @@ class WatchItemViewModel(private val repo: CachedPriceListRepository, private va
         // Set strings
         this.price.set(Utils.decimalFormat.format(price.toDouble()))
         this.change.set(Utils.decimalFormat.format(change.toDouble()) + "%")
+
+         */
     }
 }

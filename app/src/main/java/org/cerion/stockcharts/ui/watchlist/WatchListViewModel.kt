@@ -1,6 +1,5 @@
 package org.cerion.stockcharts.ui.watchlist
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,8 +21,6 @@ class WatchListViewModel(private val repo: CachedPriceListRepository) : ViewMode
     private val _items = MutableLiveData(emptyList<WatchItemViewModel>())
     val items: LiveData<List<WatchItemViewModel>>
         get() = _items
-
-    val loading = ObservableField(false)
 
     fun load() {
         // TODO load items from database

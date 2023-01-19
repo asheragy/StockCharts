@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable name="viewModel" type="org.cerion.stockcharts.ui.watchlist.WatchItemViewModel"/>
-        <import type="android.view.View"/>
-    </data>
-
     <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+    <!--
         <ProgressBar
+            android:id="@+id/loading_bar"
             android:layout_width="wrap_content"
             android:layout_height="10dp"
             android:indeterminateOnly="true"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_centerInParent="true"
-            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"/>
+            android:layout_centerInParent="true" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,12 +37,13 @@
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
+-->
                 <!--
                 Symbol             Price      %Chg    Week [Range]
             Above SMA 20                          Year [Range]
                 -->
 
+    <!--
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -124,8 +118,5 @@
 
             </LinearLayout>
         </LinearLayout>
+        -->
     </RelativeLayout>
-
-
-</layout>
-

@@ -32,14 +32,14 @@ internal class RecyclerViewAdapter() : RecyclerView.Adapter<RecyclerViewAdapter.
     inner class ListItemViewHolder(var binding: ListItemWatchBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         init {
-            binding.weekRange.isEnabled = false
-            binding.yearRange.isEnabled = false
+            //binding.weekRange.isEnabled = false
+            //binding.yearRange.isEnabled = false
             binding.root.setOnClickListener(this)
         }
 
-        fun bind(item: WatchItemViewModel) {
-            binding.viewModel = item
-            binding.executePendingBindings()
+        fun bind(viewModel: WatchItemViewModel) {
+            //binding.viewModel = viewModel
+            //binding.executePendingBindings()
         }
 
         override fun onClick(v: View) { // TODO open charts activity/fragment
