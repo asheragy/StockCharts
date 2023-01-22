@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/fragmentHome"
-        android:name="org.cerion.stockcharts.ui.FragmentHome"
+        android:name="org.cerion.stockcharts.ui.HomeFragment"
         android:label="Stock Charts" >
         <action
             android:id="@+id/action_fragmentHome_to_chartsFragment"
@@ -14,7 +14,7 @@
     <fragment
         android:id="@+id/chartsFragment"
         android:name="org.cerion.stockcharts.ui.charts.ChartsFragment"
-        android:label="">
+        android:label="ChartsFragment">
         <argument
             android:name="symbol"
             app:argType="string" />

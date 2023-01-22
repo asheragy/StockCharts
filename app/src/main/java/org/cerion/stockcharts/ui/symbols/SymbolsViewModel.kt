@@ -14,7 +14,10 @@ class SymbolsViewModel(private val symbolRepo: SymbolRepository, private val td:
     private val scope = CoroutineScope(job + Dispatchers.Main )
 
     private val emptyQuote: Quote? = null
-    private val symbols = listOf("TSLA", "OHI")
+
+    private val etf = listOf("SPY", "VNQ", "BND", "VXUS", "FXI")
+    private val symbols = etf
+
     private val _items = MutableLiveData(emptyMap<String, Quote?>())
     val items: LiveData<Map<String, Quote?>>
         get() = _items

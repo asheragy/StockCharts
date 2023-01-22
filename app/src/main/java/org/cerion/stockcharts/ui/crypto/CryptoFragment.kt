@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import org.cerion.stockcharts.databinding.FragmentCryptoBinding
+import org.cerion.stockcharts.ui.HomeFragmentDirections
 
 
 class CryptoFragment : Fragment() {
@@ -20,7 +21,7 @@ class CryptoFragment : Fragment() {
 
         val adapter = CryptoListAdapter(object : CryptoListListener {
             override fun onClick(symbol: String) {
-                val action = CryptoFragmentDirections.actionCryptoFragmentToChartsFragment(symbol)
+                val action = HomeFragmentDirections.actionFragmentHomeToChartsFragment(symbol)
                 findNavController().navigate(action)
             }
         })

@@ -14,10 +14,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cerion.stockcharts.R
 import org.cerion.stockcharts.repository.PriceListSQLRepository
+import org.cerion.stockcharts.ui.crypto.CryptoFragment
 import org.cerion.stockcharts.ui.symbols.SymbolsFragment
 import org.cerion.stockcharts.ui.watchlist.WatchListFragment
 
-class FragmentHome : Fragment() {
+class HomeFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -72,20 +73,20 @@ class FragmentHome : Fragment() {
     }
 
     private inner class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 3
+        override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
             return when(position) {
-                0 -> SymbolsFragment()
-                1 -> WatchListFragment()
+                0 -> CryptoFragment()
+                1 -> SymbolsFragment()
                 else -> throw NotImplementedError()
             }
         }
 
         fun getTitle(position: Int): String {
             return when (position) {
-                0 -> "Symbols"
-                1 -> "Watch List"
+                0 -> "Crypto"
+                1 -> "ETF"
                 else -> throw NotImplementedError()
             }
         }
