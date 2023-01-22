@@ -1,47 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:padding="5dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
-
+        android:orientation="vertical">
         <TextView
             android:id="@+id/symbol"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            android:paddingEnd="10dp"
-            tools:text="Symbol"/>
+            android:layout_weight="2"
+            android:textStyle="bold"
+            android:paddingBottom="4dp"
+            android:textAlignment="center"
+            tools:text="SPY">
+        </TextView>
 
         <TextView
-            android:id="@+id/exchange"
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_weight="2"
+            tools:text="395.88">
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/low"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            tools:text="Exchange"
-            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
-            android:textAlignment="viewEnd" />
-    </LinearLayout>
+            android:textAlignment="textEnd"
+            tools:text="348.11">
+        </TextView>
 
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="8dp">
+        <SeekBar
+            android:id="@+id/range"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            tools:progress="60">
+        </SeekBar>
 
         <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
+            android:id="@+id/high"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="Name"/>
+            android:layout_weight="1"
+            tools:text="462.07"/>
     </LinearLayout>
+
+
 </LinearLayout>

@@ -7,8 +7,8 @@ import android.view.View
 import android.view.View.OnCreateContextMenuListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.cerion.marketdata.webclients.tda.Quote
 import org.cerion.stockcharts.databinding.ListItemSymbolBinding
-import org.cerion.marketdata.core.model.Symbol
 
 internal class RecyclerViewAdapter(private val listener: SymbolListener) : RecyclerView.Adapter<RecyclerViewAdapter.ListItemViewHolder>() {
 
@@ -16,10 +16,10 @@ internal class RecyclerViewAdapter(private val listener: SymbolListener) : Recyc
         fun click(symbol: String)
     }
 
-    private var items = emptyList<Symbol>()
+    private var items = emptyList<Pair<String, Quote?>>()
 
-    fun setItems(items: List<Symbol>) {
-        this.items = items
+    fun setItems(items: Map<String, Quote?>) {
+        this.items = items.toList()
         notifyDataSetChanged()
     }
 
@@ -37,10 +37,16 @@ internal class RecyclerViewAdapter(private val listener: SymbolListener) : Recyc
 
     inner class ListItemViewHolder(var binding: ListItemSymbolBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener, OnCreateContextMenuListener {
 
-        fun bind(item: Symbol) {
-            binding.symbol.text = item.symbol
-            binding.exchange.text = item.exchange
-            binding.name.text = item.name
+        fun bind(item: Pair<String, Quote?>) {
+            binding.symbol.text = item.first
+            item.second?.apply {
+                binding.price.text = price.toString()
+                binding.low.text = low52.toString()
+                binding.high.text = high52.toString()
+
+                val percent = (price - low52) / (high52 - low52)
+                binding.range.progress = (percent * 100).toInt()
+            }
         }
 
         override fun onClick(v: View) {

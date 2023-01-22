@@ -4,13 +4,9 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.cerion.stockcharts.R
-import org.cerion.stockcharts.ui.FragmentHomeDirections
-import org.cerion.marketdata.core.model.Symbol
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SymbolsFragment : Fragment() {
@@ -44,9 +40,9 @@ class SymbolsFragment : Fragment() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         if (item.groupId == RecyclerViewAdapter.CONTEXT_MENU_GROUP_ID) {
 
-            val s = viewModel.items.value!![item.order]
+            val s = viewModel.items.value!!.keys.toList()[item.order]
             when (item.itemId) {
-                RecyclerViewAdapter.CONTEXT_MENU_DELETE -> viewModel.delete(s.symbol)
+                RecyclerViewAdapter.CONTEXT_MENU_DELETE -> viewModel.delete(s)
                 else -> return super.onContextItemSelected(item)
             }
             return true
