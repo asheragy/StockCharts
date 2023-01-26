@@ -15,6 +15,16 @@ class SymbolsFragment : Fragment() {
 
     private val viewModel: SymbolsViewModel by viewModel()
 
+    companion object {
+        fun newInstance(category: SymbolCategory): SymbolsFragment {
+            val fragment = SymbolsFragment()
+            val args = Bundle()
+            args.putString("category", category.name)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_symbols, container, false)
 
@@ -34,6 +44,10 @@ class SymbolsFragment : Fragment() {
         viewModel.items.observe(viewLifecycleOwner, Observer {
             adapter.setItems(it)
         })
+
+        arguments?.getString("category")?.also {
+            viewModel.load(SymbolCategory.valueOf(it))
+        }
 
         return view
     }

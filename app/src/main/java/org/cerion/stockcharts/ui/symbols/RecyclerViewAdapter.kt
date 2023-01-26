@@ -1,5 +1,6 @@
 package org.cerion.stockcharts.ui.symbols
 
+import android.graphics.Color
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
@@ -43,6 +44,14 @@ internal class RecyclerViewAdapter(private val listener: SymbolListener) : Recyc
                 binding.price.text = price.toString()
                 binding.low.text = low52.toString()
                 binding.high.text = high52.toString()
+
+                val neg = change < 0
+                val changePercent = String.format("%.2f",change)
+                binding.change.text = "(${if(neg) "" else "+"}$changePercent%)"
+
+                val red = Color.parseColor("#B71C1C")
+                val green = Color.parseColor("#41c300")
+                binding.change.setTextColor(if(neg) red else green)
 
                 val percent = (price - low52) / (high52 - low52)
                 binding.range.progress = (percent * 100).toInt()
